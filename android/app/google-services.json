@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "314979320905",
+    "project_id": "assign-erp",
+    "storage_bucket": "assign-erp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:314979320905:android:99af7c5b704258c0e46b98",
+        "android_client_info": {
+          "package_name": "com.assigndevelopers.erp.assign_erp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKbYNavXV-NIYj1sDEYVK5Hua-Uc0XaLQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

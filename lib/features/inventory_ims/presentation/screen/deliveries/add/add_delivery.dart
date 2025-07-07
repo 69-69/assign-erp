@@ -1,0 +1,189 @@
+import 'package:assign_erp/core/constants/app_colors.dart';
+import 'package:assign_erp/core/util/async_progress_dialog.dart';
+import 'package:assign_erp/core/util/custom_bottom_sheet.dart';
+import 'package:assign_erp/core/util/custom_snack_bar.dart';
+import 'package:assign_erp/core/util/size_config.dart';
+import 'package:assign_erp/core/util/top_header_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/barcode_scanner.dart';
+import 'package:assign_erp/core/widgets/custom_button.dart';
+import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
+import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
+import 'package:assign_erp/features/customer_crm/data/data_sources/remote/get_customers.dart';
+import 'package:assign_erp/features/inventory_ims/data/data_sources/remote/get_orders.dart';
+import 'package:assign_erp/features/inventory_ims/data/models/delivery_model.dart';
+import 'package:assign_erp/features/inventory_ims/presentation/bloc/delivery/delivery_bloc.dart';
+import 'package:assign_erp/features/inventory_ims/presentation/bloc/inventory_bloc.dart';
+import 'package:assign_erp/features/inventory_ims/presentation/screen/deliveries/widget/form_inputs.dart';
+import 'package:assign_erp/features/inventory_ims/presentation/screen/widget/print_order_invoice.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+extension AddDelivery on BuildContext {
+  Future<void> openAddDelivery({Widget? header}) =>
+      openBottomSheet(isExpand: false, child: _AddDelivery(header: header));
+}
+
+class _AddDelivery extends StatelessWidget {
+  final Widget? header;
+
+  const _AddDelivery({this.header});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomBottomSheet(
+      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
+      initialChildSize: 0.90,
+      maxChildSize: 0.90,
+      header: _buildHeader(context),
+      child: _buildBody(context),
+    );
+  }
+
+  TopHeaderRow _buildHeader(BuildContext context) {
+    return TopHeaderRow(
+      title: Text(
+        'Add Delivery',
+        semanticsLabel: 'add delivery',
+        style: context.ofTheme.textTheme.titleLarge?.copyWith(
+          color: kGrayColor,
+        ),
+      ),
+      btnText: 'Close',
+      onPress: () => Navigator.pop(context),
+    );
+  }
+
+  _buildBody(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
+      child: _AddDeliveryBody(),
+    );
+  }
+}
+
+class _AddDeliveryBody extends StatefulWidget {
+  const _AddDeliveryBody();
+
+  @override
+  State<_AddDeliveryBody> createState() => _AddDeliveryBodyState();
+}
+
+class _AddDeliveryBodyState extends State<_AddDeliveryBody> {
+  String _selectedOrderNumber = '';
+  String? _selectedDeliveryStatus;
+  String? _selectedDeliveryType;
+
+  final _formKey = GlobalKey<FormState>();
+  final _barcodeController = TextEditingController();
+  final _deliveryPersonController = TextEditingController();
+  final _deliveryPhoneController = TextEditingController();
+  final _remarksController = TextEditingController();
+
+  @override
+  void dispose() {
+    _deliveryPhoneController.dispose();
+    _deliveryPersonController.dispose();
+    _barcodeController.dispose();
+    _remarksController.dispose();
+    super.dispose();
+  }
+
+  void _onSubmit() {
+    if (_formKey.currentState!.validate()) {
+      final item = Delivery(
+        orderNumber: _selectedOrderNumber,
+        barcode: _barcodeController.text,
+        status: _selectedDeliveryStatus ?? '',
+        deliveryType: _selectedDeliveryType ?? '',
+        deliveryPhone: _selectedDeliveryStatus ?? '',
+        deliveryPerson: _deliveryPersonController.text,
+        remarks: _remarksController.text,
+
+        storeNumber: context.employee!.storeNumber,
+        createdBy: context.employee!.fullName,
+      );
+
+      context.read<DeliveryBloc>().add(AddInventory<Delivery>(data: item));
+
+      _formKey.currentState!.reset();
+
+      _confirmPrintoutDialog();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      child: _buildBody(context),
+    );
+  }
+
+  Column _buildBody(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        const SizedBox(height: 20.0),
+        OrderNumberDropdown(
+          onChanged: (orderNumber, productName) =>
+              setState(() => _selectedOrderNumber = orderNumber),
+        ),
+        const SizedBox(height: 20.0),
+        DeliveryStatusAndTypesDropdown(
+          onTypeChange: (t) => setState(() => _selectedDeliveryType = t),
+          onStatusChange: (s) => setState(() => _selectedDeliveryStatus = s),
+        ),
+        const SizedBox(height: 20.0),
+        DeliveryPersonAndPhoneInput(
+          deliveryPersonController: _deliveryPersonController,
+          deliveryPhoneController: _deliveryPhoneController,
+        ),
+        const SizedBox(height: 20.0),
+        RemarksTextField(controller: _remarksController),
+        const SizedBox(height: 20.0),
+        BarcodeScannerWithTextField(
+          controller: _barcodeController,
+          onChanged: (t) => setState(() {}),
+        ),
+        const SizedBox(height: 20.0),
+        context.elevatedBtn(label: 'Add Delivery', onPressed: _onSubmit),
+      ],
+    );
+  }
+
+  Future<void> _confirmPrintoutDialog() async {
+    final isConfirmed = await context.confirmAction(
+      const Text('Would you like to print the Invoice & Way-bill?'),
+      title: "Invoice & Way-Bill",
+      onAccept: "Print",
+      onReject: "Cancel",
+    );
+
+    if (mounted && isConfirmed) {
+      // Show progress dialog while loading data
+      await context.progressBarDialog(
+        request: _printout(),
+        onSuccess: (_) =>
+            context.showAlertOverlay('Delivery successfully created'),
+        onError: (error) => context.showAlertOverlay(
+          'Invoice & Way-Bill printout failed: $error',
+          bgColor: kDangerColor,
+        ),
+      );
+    }
+  }
+
+  Future<dynamic> _printout() =>
+      Future.delayed(const Duration(seconds: 3), () async {
+        // Simulate loading supplier and company info
+        final orders = await GetOrders.getWithSameId(_selectedOrderNumber);
+        final cus = await GetCustomers.byCustomerId(orders.first.customerId);
+        if (orders.isNotEmpty && cus.isNotEmpty) {
+          PrintOrderInvoice(
+            orders: orders,
+            customer: cus,
+          ).onPrintIn(title: 'delivery note');
+        }
+      });
+}

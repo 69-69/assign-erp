@@ -1,0 +1,63 @@
+import 'package:flutter/material.dart';
+import 'package:assign_erp/core/constants/app_colors.dart';
+import 'package:assign_erp/core/util/url_launcher_helper.dart';
+
+class DeveloperInfo extends StatelessWidget {
+  const DeveloperInfo({
+    super.key,
+    this.padding,
+    this.margin,
+    this.fontSize,
+  });
+
+  final double? fontSize;
+  final EdgeInsets? padding, margin;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      padding: padding ?? const EdgeInsets.all(5.0),
+      // margin: margin ?? const EdgeInsets.only(bottom: 20),
+      child: _buildBody(),
+    );
+  }
+
+  _buildBody() {
+    return GestureDetector(
+      onTap: () async => await UrlLaunchUtil.urlLauncher(
+        url: 'https://assigndevelopers.com',
+        inApp: false,
+      ),
+      child: ListTile(
+        title: Text.rich(
+          textAlign: TextAlign.center,
+          TextSpan(
+            text: 'Designed By: ',
+            style: const TextStyle(color: kGrayColor),
+            children: [
+              TextSpan(
+                text: 'assignDevelopers Inc.',
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  color: kLightBlueColor,
+                  fontSize: fontSize ?? 15,
+                ),
+              ),
+            ],
+          ),
+        ),
+        subtitle:
+        Text(
+          '+233 24-105-9995',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontWeight: FontWeight.w400,
+            color: kLightBlueColor,
+            fontSize: fontSize ?? 15,
+          ),
+        ),
+      ),
+    );
+  }
+}

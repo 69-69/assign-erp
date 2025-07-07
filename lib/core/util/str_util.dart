@@ -1,0 +1,220 @@
+import 'dart:math';
+
+import 'package:flutter/material.dart';
+
+/// Check if value is empty or null [isNullOrEmpty]
+extension SanitizeExtensions on String? {
+  bool get isNullOrEmpty =>
+      this == null ||
+      this!.trim().isEmpty ||
+      this == "null" ||
+      this == "null null";
+
+  bool get isNumeric => double.tryParse(this ?? '') != null;
+
+  // Method to check if the string is a full name
+  bool get isFullName {
+    if (isNullOrEmpty) {
+      return false;
+    }
+
+    // Split the string by whitespace and check if there are exactly two parts
+    final parts = this!.trim().split(RegExp(r'\s+'));
+    return parts.length >= 2;
+  }
+
+  // Method to get the first and last names
+  (String firstName, String lastName) get fullNameParts {
+    if (!isFullName) {
+      return ('', '');
+    }
+
+    final parts = this!.trim().split(RegExp(r'\s+'));
+    return (parts.first, parts.last);
+  }
+
+  // Remove whitespace from string
+  String trimWhitespace(String whiteSpace) {
+    if (isNullOrEmpty) return this!;
+    int startSlice = 0;
+    int endSlice = this!.length;
+
+    // Remove leading whitespace from string
+    if (this!.startsWith(whiteSpace)) startSlice = 1;
+
+    // Remove ending whitespace from string
+    if (this!.endsWith(whiteSpace)) endSlice -= 1;
+
+    return this!.substring(startSlice, endSlice);
+  }
+
+  /// Replace 'ORD' in the orderNumber with 'INV' [convertOrderNumberToInvoiceNumber]
+  /// ORD: Orders
+  /// EX: ORD-632-20246872 as Order number, will be INV-632-20246872 as Invoice number
+  String get convertOrderNumberToInvoiceNumber {
+    if (isNullOrEmpty) {
+      return '';
+    }
+
+    return this!.contains('ORD') ? this!.replaceAll('ORD', 'INV') : this!;
+  }
+
+  // Function to replace matched substrings using the map
+  String _replaceMatch(Match match) {
+    // Define a map for pattern replacements
+    // 'ORD'-> 'INV', 'POR'-> 'REC'
+    final Map<String, String> replacementMap = {'ORD': 'INV', 'POR': 'REC'};
+
+    // Retrieve the matched substring safely
+    final matched = match.group(0);
+    // Return the replacement value from the map or the original matched substring
+    return replacementMap[matched ?? ''] ?? matched ?? '';
+  }
+
+  /// Replace 'ORD' or 'POR' in the orderNumber with 'INV' or REC [convertOrderNumberTo]
+  /// ORD: Orders, POR: POS-Order
+  /// INV: Invoice, REC: Receipt
+  /// EX: ORD-632-20246872 as Order number,
+  /// will be INV-632-20246872 as Invoice number
+  /// or REC-632-20246872 as Invoice number
+  /// Convert Order & POS Order Number to either Invoice-no. or purchase-Order-no
+  String get convertOrderNumberTo {
+    // Create a regular expression pattern to match 'ORD', 'POR'
+    RegExp regex = RegExp(r'\b(ORD|POR)\b');
+
+    return this!.replaceAllMapped(regex, _replaceMatch);
+  }
+}
+
+extension ToCurrencyFormat on double {
+  get toCurrency => '$this'.isNullOrEmpty ? this : toStringAsFixed(2);
+}
+
+/// get the first/last index of a list GetIndexPosition
+extension GetIndexPosition on List {
+  int get getFirstIndex => isEmpty ? -1 : 0;
+
+  int get getLastIndex => isNotEmpty ? length - 1 : 0;
+}
+
+extension CaseSenitive on String {
+  /// Create username from email address
+  String get emailToUsername {
+    final random = Random();
+
+    // Helper function to generate a random number as a string
+    String generateRandomNumber(int length) =>
+        List.generate(length, (_) => random.nextInt(10)).join();
+
+    // Replace characters in the email address with random numbers
+    String replaceWithRandom(String input, RegExp pattern, int length) {
+      return input.replaceAllMapped(
+        pattern,
+        (_) => generateRandomNumber(length),
+      );
+    }
+
+    // Replace '@' and '.' characters with random numbers
+    String replacedAt = replaceWithRandom(this, RegExp(r'@'), 3);
+    String replacedDots = replaceWithRandom(
+      replacedAt,
+      RegExp(r'\.(?![^.]*\.)'),
+      2,
+    );
+    String replacedDomainExtension = replaceWithRandom(
+      replacedDots,
+      RegExp(r'\.(?:[a-zA-Z]{2,}|[0-9]+|[a-zA-Z]{2,}\.[a-zA-Z]{2,})$'),
+      3,
+    );
+
+    return replacedDomainExtension;
+  }
+
+  /// Convert lowerCamelCase to two separate words
+  /// Ex: 'dataType' to 'Data Type' [separateWord]
+  String get separateWord =>
+      replaceAllMapped(RegExp(r'([a-z])([A-Z])'), (match) {
+        return '${match.group(1)} ${match.group(2)}';
+      });
+
+  /// This will put the first letter in UpperCase, will print 'Name'
+  /// print(TextTools.toUppercaseFirstLetter(text: 'name'));
+  /// This will put the first letter in UpperCase, will print 'What Is Your Name'
+  /// print(TextTools.toUppercaseFirstLetter(text: 'what is your name'));
+  String get toUppercaseFirstLetter =>
+      !isNullOrEmpty ? replaceFirst(this[0], this[0].toUpperCase()) : this;
+
+  /// This will put the first letter in UpperCase, will print 'What Is Your Name'
+  /// print(TextTools.toUppercaseFirstLetterEach('what is your name'));
+  String get toUppercaseFirstLetterEach => !isNullOrEmpty
+      ? split(' ')
+            .map(
+              (word) => word.isNullOrEmpty
+                  ? word
+                  : word[0].toUpperCase() + word.substring(1),
+            ) // Handles empty words
+            .join(' ')
+      : this;
+
+  /// This will put the letter in position 1 in UpperCase, will print 'nAme'
+  /// print(TextTools.toUppercaseAnyLetter(text: 'name', position: 1));
+  String toUppercaseAnyLetter({required int position}) =>
+      replaceFirst(this[position], this[position].toUpperCase());
+
+  /// This will put the all letters in LowerCase, will print 'name'
+  /// print(TextTools.toLowercaseFirstLetter(text: 'NAME'));
+  String get toLowercaseAllLetter => toLowerCase();
+
+  /// Convert All letters to UpperCase
+  String get toUppercaseAllLetter => toUpperCase();
+
+  /// This will put the first letter in LowerCase, will print 'nAME'
+  /// print(TextTools.toLowercaseFirstLetter(text: 'NAME'));
+  String get toLowercaseFirstLetter =>
+      replaceFirst(this[0], this[0].toLowerCase());
+
+  /// This will put the letter in position 1 in LowerCase, will print 'NaME'
+  /// print(TextTools.toLowercaseAnyLetter(text: 'NAME'));
+  String toLowercaseAnyLetter({required int position}) =>
+      replaceFirst(this[position], this[position].toLowerCase());
+}
+
+/// Copy/Paste text or string to/from Clipboard
+extension CopyTextToClipboard on BuildContext {
+  SelectionArea copyPasteText({String? str, Widget? child}) =>
+      SelectionArea(child: child ?? Text(str ?? ''));
+}
+
+/* USAGE:
+* final flat = flattenToStringMap({
+  'data': 'Steve',
+  'label': 'name',
+  'account': {'date': 'jan. 12 2025', 'role': 'user'},
+});
+print(flat);
+* Output:
+* {
+  'data': 'Steve',
+  'label': 'name',
+  'account.date': 'jan. 12 2025',
+  'account.role': 'user',
+}
+*/
+Map<String, String> createNewMap(dynamic map, [String prefix = '']) {
+  final result = <String, String>{};
+  if (map is Map) {
+    for (var entry in map.entries) {
+      final key = prefix.isEmpty
+          ? entry.key.toString()
+          : '$prefix.${entry.key}';
+      final value = entry.value;
+      if (value is Map) {
+        result.addAll(createNewMap(value, key));
+      } else {
+        result[key] = value.toString();
+      }
+    }
+    return result;
+  }
+  throw ArgumentError('Input is not a valid map: $map');
+}

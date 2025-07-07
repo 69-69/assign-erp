@@ -1,0 +1,187 @@
+import 'dart:async';
+
+import 'package:assign_erp/core/constants/collection_type_enum.dart';
+import 'package:assign_erp/core/network/data_sources/local/cache_data_model.dart';
+import 'package:assign_erp/core/network/data_sources/remote/repository/firestore_repository.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+import 'package:hive/hive.dart';
+
+class LiveChatRepository extends FirestoreRepository {
+  late final Box<CacheData> _cacheBox;
+
+  final CollectionType? collectionType;
+
+  final String collectionPath;
+  final FirebaseFirestore firestore;
+  StreamSubscription? _dataSubscription;
+
+  final StreamController<List<CacheData>> _dataController =
+      StreamController<List<CacheData>>.broadcast();
+  bool _isDataControllerClosed = false;
+
+  Stream<List<CacheData>> get dataStream => _dataController.stream;
+
+  LiveChatRepository({
+    this.collectionType,
+    required this.firestore,
+    required this.collectionPath,
+    super.collectionRef,
+  }) : super(
+         collectionType: collectionType,
+         firestore: firestore,
+         collectionPath: collectionPath,
+       ) {
+    _init();
+  }
+
+  Future<void> _init() async {
+    _cacheBox = await _openCacheBox();
+  }
+
+  /** PRIVATE METHODS */
+
+  /// Track last emitted data
+  List<CacheData>? _lastEmittedData;
+
+  /// Open/Create Cache Hive-Box [_openCacheBox]
+  Future<Box<CacheData>> _openCacheBox() async {
+    if (!Hive.isBoxOpen(collectionPath)) {
+      return await Hive.openBox<CacheData>(collectionPath);
+    }
+    return Hive.box<CacheData>(collectionPath);
+  }
+
+  /// Emit Data / Add Event to Stream [_emitDataToStream]
+  void _emitDataToStream() {
+    if (!_isDataControllerClosed) {
+      final data = _getFromCache();
+      // Emit only if data has changed to avoid duplicate entries in the UI
+      if (!listEquals(data, _lastEmittedData)) {
+        _dataController.add(data);
+        _lastEmittedData = data;
+      }
+    }
+  }
+
+  /// Add to Cache/localStorage [_addToCache]
+  /// [key] - The ID of the document to be added to the cache.
+  Future<void> _addToCache(String key, CacheData cacheData) async {
+    await _cacheBox.put(key, cacheData);
+  }
+
+  /// Read/Get all cache data [_getFromCache]
+  List<CacheData> _getFromCache() {
+    return _cacheBox.values.toList();
+  }
+
+  /// Add New BackUp Data to Remote-Server (Firestore) [_backupNewDataToFirestore]
+  Future<String> _backupNewDataToFirestore(
+    CacheData item, {
+    required String workspaceId,
+    String? userName,
+    String? chatId,
+  }) async {
+    final data = await sendChatMessage(
+      item.data,
+      userName: userName,
+      workspaceId: workspaceId,
+      chatId: chatId,
+    );
+
+    return data.id;
+  }
+
+  /// Convert QuerySnapshot to `List<CacheData>` [_toList]
+  List<CacheData> _toList(QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+    return querySnapshot.size > 0
+        ? querySnapshot.docs.map((doc) => _fromMap(doc.data(), doc.id)).toList()
+        : [];
+  }
+
+  CacheData _fromMap(Map<String, dynamic> data, String id) =>
+      CacheData.fromMap(data, documentId: id);
+
+  /// Update/Push to Cache / LocalStorage [_updateCacheWithData]
+  void _updateCacheWithData(List<CacheData> data) {
+    for (var model in data) {
+      _addToCache(model.id, model); // Add or update each item in the cache
+    }
+    _emitDataToStream(); // Update the stream with the latest data
+  }
+
+  /// LIVE CHAT METHODS
+  Future<void> refreshChatCache(String workspaceId, String chatId) async {
+    await _dataSubscription?.cancel();
+
+    _dataSubscription =
+        getChatMessages(workspaceId: workspaceId, chatId: chatId).listen((
+          snapshot,
+        ) {
+          debugPrint('Chat-Snapshot: ${snapshot.docs.first.data()}');
+          final List<CacheData> data = _toList(snapshot);
+          _updateCacheWithData(data);
+        }, onError: (e) => debugPrint('Chat Error: $e'));
+  }
+
+  Future<void> refreshChatOverviewCache(String workspaceId) async {
+    await _dataSubscription?.cancel();
+
+    _dataSubscription = getChatSummaries(workspaceId: workspaceId).listen((
+      snapshot,
+    ) {
+      final data = _toList(snapshot);
+      _updateCacheWithData(data);
+    }, onError: (e) => debugPrint('Chat Overview Error: $e'));
+  }
+
+  Future<void> sendChat(
+    Map<String, dynamic> data, {
+    required String workspaceId,
+    String? userName,
+    String? chatId,
+  }) async {
+    final cacheData = CacheData.fromCache(data, '');
+
+    // Add to remote DB
+    final docId = await _backupNewDataToFirestore(
+      cacheData,
+      workspaceId: workspaceId,
+      userName: userName,
+      chatId: chatId,
+    );
+    // Add to Cache/localStorage
+    await _addToCache(docId, cacheData);
+    // Update the stream with the latest data
+    _emitDataToStream();
+  }
+
+  Stream<List<CacheData>> getChatByWorkspace({
+    required String workspaceId,
+    required String chatId,
+  }) {
+    refreshChatCache(workspaceId, chatId);
+    return dataStream;
+  }
+
+  Stream<List<CacheData>> getChatOverviewsByWorkspaceStream({
+    required String workspaceId,
+  }) {
+    refreshChatOverviewCache(workspaceId);
+    return dataStream;
+  }
+
+  /// Dispose or cancel Subscription [cancelDataSubscription]
+  void cancelDataSubscription() {
+    _dataSubscription?.cancel();
+    _closeStreamController();
+  }
+
+  /// Close the stream controller [_closeStreamController]
+  void _closeStreamController() {
+    if (!_isDataControllerClosed) {
+      _dataController.close();
+      _isDataControllerClosed = true;
+    }
+  }
+}

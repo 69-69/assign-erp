@@ -1,0 +1,72 @@
+name: assign_erp
+description: "Integrated management system to help organizations manage and automate core business processes"
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# APP VERSIONING OVERVIEW
+
+# Format: MAJOR.MINOR.PATCH+BUILD (Example: 1.0.0+1)
+
+# Version Components:
+# - Major: Significant changes or breaking updates
+# - Minor: New features (backward-compatible)
+# - Patch: Bug fixes and minor improvements
+# - Build/Revision: Incremented on each build (platform-specific)
+
+# Platform Version Transitions:
+# iOS      → Current: 1.0.0+1 → Next: 1.0.0+2
+# Android  → Current: 1.0.0+1 → Next: 1.0.0+2
+# Web      → Current: 1.0.0+1 → Next: 1.0.0+2
+# Windows  → Current: 1.0.0+1 → Next: 1.0.0+2
+# macOS    → Current: 1.0.0+1 → Next: 1.0.0+2
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  firebase_core: ^3.14.0
+  firebase_auth: ^5.6.0
+  firebase_storage: ^12.4.7
+  cloud_firestore: ^5.6.9
+  bcrypt: ^1.1.3
+  collection: ^1.19.1
+  go_router: ^15.2.3
+  formz: ^0.8.0
+  equatable: ^2.0.7
+  flutter_bloc: ^9.1.1
+  hive: ^2.2.3
+  intl: ^0.20.2
+  hive_flutter: ^1.1.0
+  pdf: ^3.11.3
+  printing: ^5.14.2
+  dropdown_search: ^6.0.2
+  url_launcher: ^6.3.1
+  image_picker: ^1.1.2
+  barcode_scan2: ^4.5.1
+  fl_chart: ^1.0.0
+  flutter_tts: ^4.2.3
+  path_provider: ^2.1.5
+  async: ^2.13.0
+  device_info_plus: ^11.5.0
+  file_picker: ^10.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+  build_runner: ^2.5.3
+  hive_generator: ^2.0.1
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/print/
