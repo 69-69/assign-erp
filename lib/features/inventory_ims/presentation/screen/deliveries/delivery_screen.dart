@@ -19,10 +19,10 @@ class DeliveryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<DeliveryBloc>(
-      create: (context) => DeliveryBloc(
-        firestore: FirebaseFirestore.instance,
-      )..add(GetInventory<Delivery>()),
-      child:  CustomScaffold(
+      create: (context) =>
+          DeliveryBloc(firestore: FirebaseFirestore.instance)
+            ..add(GetInventories<Delivery>()),
+      child: CustomScaffold(
         title: deliveryScreenTitle.toUpperCase(),
         body: _buildBody(),
         actions: const [],
@@ -45,7 +45,7 @@ class DeliveryScreen extends StatelessWidget {
         {'label': 'Pending', 'icon': Icons.pending},
         {
           'label': 'Shipped or Dispatched',
-          'icon': Icons.local_shipping_outlined
+          'icon': Icons.local_shipping_outlined,
         },
         {'label': 'Delivered', 'icon': Icons.checklist},
       ],

@@ -1,5 +1,6 @@
 import 'package:assign_erp/core/constants/collection_type_enum.dart';
 import 'package:assign_erp/core/network/data_sources/remote/repository/firestore_helper.dart';
+import 'package:assign_erp/core/util/debug_printify.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// A repository class for managing Firestore operations. [FirestoreRepository]
@@ -7,8 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 /// This class provides methods for querying, retrieving, adding, updating,
 /// and deleting documents in a Firestore collection.
 class FirestoreRepository extends FirestoreHelper {
-  final CollectionType _collectionType;
   final String? _collectionName;
+  final CollectionType _collectionType;
   final CollectionReference<Map<String, dynamic>>? _collectionRef;
 
   /// Default Constructor
@@ -16,7 +17,6 @@ class FirestoreRepository extends FirestoreHelper {
   ///
   /// [collectionPath] is the path to the Firestore collection you want to manage.
   /// [collectionRef] is an optional reference to a specific Firestore collection.
-  /// [authCacheService] is used to retrieve workspace information.
   /// [firestore] is the Firestore instance used for database operations.
   FirestoreRepository({
     String? collectionPath,
@@ -50,6 +50,7 @@ class FirestoreRepository extends FirestoreHelper {
   /// - A [CollectionReference] pointing to the Firestore collection based on the given conditions.
   CollectionReference<Map<String, dynamic>> get _resolvedCollectionRef {
     if (_collectionRef != null) return _collectionRef;
+    prettyPrint('collection-Type', _collectionType.label);
 
     return getCollectionRef(
       _collectionName ?? '',
@@ -329,7 +330,8 @@ class FirestoreRepository extends FirestoreHelper {
     // Update chat metadata
     final chatUpdateData = <String, dynamic>{
       'lastMessage': data['message'],
-      'lastTimestamp': data['timestamp'],
+      'updatedAt': data['createdAt'],
+      'isResolved': false,
       if (userName != null) 'userName': userName,
     };
 
@@ -343,12 +345,12 @@ class FirestoreRepository extends FirestoreHelper {
 
   /// Get a stream of chat overviews ordered by latest activity.
   /// `/collectionPath/workspaceId/chats/`
-  Stream<QuerySnapshot<Map<String, dynamic>>> getChatSummaries({
+  Stream<QuerySnapshot<Map<String, dynamic>>> getChatOverviews({
     required String workspaceId,
   }) {
     return _chatRef(
       workspaceId: workspaceId,
-    ).orderBy('lastTimestamp', descending: true).snapshots();
+    ).orderBy('updatedAt', descending: true).snapshots();
   }
 
   /// Get real-time messages for a specific chat (i.e., user).
@@ -360,7 +362,7 @@ class FirestoreRepository extends FirestoreHelper {
     return _chatRef(workspaceId: workspaceId)
         .doc(chatId)
         .collection('messages')
-        .orderBy('timestamp', descending: true)
+        .orderBy('createdAt', descending: true)
         .snapshots();
   }
 

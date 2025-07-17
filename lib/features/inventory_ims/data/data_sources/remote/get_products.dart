@@ -6,18 +6,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class GetProducts {
   // static final productBloc = ProductBloc(firestore: FirebaseFirestore.instance);
 
-  static Future<InventoryLoaded<Product>> _dataLoadedState(
-      ProductBloc bloc) async {
+  static Future<InventoriesLoaded<Product>> _dataLoadedState(
+    ProductBloc bloc,
+  ) async {
     return await bloc.stream.firstWhere(
-      (state) => state is InventoryLoaded<Product>,
-    ) as InventoryLoaded<Product>;
+          (state) => state is InventoriesLoaded<Product>,
+        )
+        as InventoriesLoaded<Product>;
   }
 
   static Future<List<Product>> load() async {
     final productBloc = ProductBloc(firestore: FirebaseFirestore.instance);
 
     // Load all data initially to pass to the search delegate
-    productBloc.add(GetInventory<Product>());
+    productBloc.add(GetInventories<Product>());
 
     // Ensure to wait for the data to be loaded
     final allData = await _dataLoadedState(productBloc);
@@ -29,13 +31,16 @@ class GetProducts {
     final productBloc = ProductBloc(firestore: FirebaseFirestore.instance);
 
     // Load all data initially to pass to the search delegate
-    productBloc
-        .add(GetInventoryById<Product>(field: field, documentId: productId));
+    productBloc.add(
+      GetInventoryById<Product>(field: field, documentId: productId),
+    );
 
     // Ensure to wait for the data to be loaded
-    final state = await productBloc.stream.firstWhere(
-      (state) => state is SingleInventoryLoaded<Product>,
-    ) as SingleInventoryLoaded<Product>;
+    final state =
+        await productBloc.stream.firstWhere(
+              (state) => state is InventoryLoaded<Product>,
+            )
+            as InventoryLoaded<Product>;
 
     return state.data.isEmpty ? Product.notFound : state.data;
   }
@@ -46,12 +51,14 @@ class GetProducts {
     final productBloc = ProductBloc(firestore: FirebaseFirestore.instance);
 
     // Load all data initially to pass to the search delegate
-    productBloc.add(SearchInventory<Product>(
-      field: 'sku',
-      optField: 'batchId',
-      auxField: 'name',
-      query: term,
-    ));
+    productBloc.add(
+      SearchInventory<Product>(
+        field: 'sku',
+        optField: 'batchId',
+        auxField: 'name',
+        query: term,
+      ),
+    );
 
     // Ensure to wait for the data to be loaded
     final allData = await _dataLoadedState(productBloc);
@@ -93,13 +100,16 @@ class GetProducts {
     final productBloc = ProductBloc(firestore: FirebaseFirestore.instance);
 
     // Load all data initially to pass to the search delegate
-    productBloc
-        .add(GetInventoryById<Product>(field: 'barcode', documentId: barcode));
+    productBloc.add(
+      GetInventoryById<Product>(field: 'barcode', documentId: barcode),
+    );
 
     // Ensure to wait for the data to be loaded
-    final state = await productBloc.stream.firstWhere(
-      (state) => state is SingleInventoryLoaded<Product>,
-    ) as SingleInventoryLoaded<Product>;
+    final state =
+        await productBloc.stream.firstWhere(
+              (state) => state is InventoryLoaded<Product>,
+            )
+            as InventoryLoaded<Product>;
 
     final product = state.data;
 

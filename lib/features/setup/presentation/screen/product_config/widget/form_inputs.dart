@@ -1,4 +1,4 @@
-import 'package:assign_erp/core/util/adaptive_layout.dart';
+import 'package:assign_erp/core/widgets/adaptive_layout.dart';
 import 'package:assign_erp/core/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 

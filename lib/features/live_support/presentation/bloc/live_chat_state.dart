@@ -29,24 +29,6 @@ class ChatLoaded<T> extends LiveChatState<T> {
   List<Object?> get props => [data];
 }
 
-class ChatOverviewsLoaded<T> extends LiveChatState<T> {
-  final List<T> data;
-
-  const ChatOverviewsLoaded(this.data);
-
-  @override
-  List<Object?> get props => [data];
-}
-
-class ChatOverviewLoaded<T> extends LiveChatState<T> {
-  final T data;
-
-  const ChatOverviewLoaded(this.data);
-
-  @override
-  List<Object?> get props => [data];
-}
-
 class ChatAdded<T> extends LiveChatState<T> {
   final String? message;
 

@@ -1,13 +1,14 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/network/data_sources/models/workspace_model.dart';
+import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
-import 'package:assign_erp/core/widgets/custom_text_field.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/live_support/data/models/live_chat_model.dart';
 import 'package:assign_erp/features/live_support/presentation/bloc/chat/chat_bloc.dart';
 import 'package:assign_erp/features/live_support/presentation/bloc/live_chat_bloc.dart';
+import 'package:assign_erp/features/live_support/presentation/widget/chat_input.dart';
 import 'package:assign_erp/features/setup/data/models/employee_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,8 +22,9 @@ class ClientChatDashboard extends StatefulWidget {
 }
 
 class _ClientChatDashboardState extends State<ClientChatDashboard> {
-  // final _chatService = LiveSupportService();
+  final ScrollController _scrollController = ScrollController();
   final _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
 
   Workspace? get _workspace => context.workspace;
   Employee? get _employee => context.employee;
@@ -31,7 +33,28 @@ class _ClientChatDashboardState extends State<ClientChatDashboard> {
   @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        // Get current scroll position and max scroll extent
+        final currentPosition = _scrollController.position.pixels;
+        final maxScrollExtent = _scrollController.position.maxScrollExtent;
+
+        // Only scroll to the bottom if the user is already at the bottom
+        if (currentPosition == maxScrollExtent) {
+          _scrollController.animateTo(
+            maxScrollExtent,
+            duration: kAnimateDuration,
+            curve: Curves.easeOut,
+          );
+        }
+      }
+    });
   }
 
   Future<void> _sendMessage() async {
@@ -53,13 +76,18 @@ class _ClientChatDashboardState extends State<ClientChatDashboard> {
     /// 3. Add message to BLoC
     context.read<ChatBloc>().add(
       AddChat<LiveChatMessage>(
-        message: message,
-        userName: userName,
         workspaceId: workspaceId,
+        userName: userName,
+        message: message,
+        chatId: _chatId,
       ),
     );
 
     _controller.clear();
+    // After adding the message, scroll to the bottom
+    _scrollToBottom();
+    // Refocus the TextField
+    FocusScope.of(context).requestFocus(_focusNode);
   }
 
   @override
@@ -70,7 +98,11 @@ class _ClientChatDashboardState extends State<ClientChatDashboard> {
       actions: const [],
       floatingActionButton: Container(
         margin: const EdgeInsets.symmetric(horizontal: 40),
-        child: _buildChatInput(),
+        child: ChatInput(
+          controller: _controller,
+          focusNode: _focusNode,
+          onFieldSubmitted: _sendMessage,
+        ),
       ),
       floatingActionBtnLocation: FloatingActionButtonLocation.miniCenterFloat,
     );
@@ -111,60 +143,50 @@ class _ClientChatDashboardState extends State<ClientChatDashboard> {
   }
 
   ListView _buildMessageBody(List<LiveChatMessage> messages) {
+    // Sort messages by ascending createdAt before displaying
+    messages.sort((a, b) {
+      final aTime = a.createdAt ?? DateTime(0);
+      final bTime = b.createdAt ?? DateTime(0);
+      return aTime.compareTo(bTime);
+    });
+
+    // After messages are loaded or updated, scroll to the bottom
+    _scrollToBottom();
+
     return ListView.builder(
+      reverse: true,
       itemCount: messages.length,
       padding: const EdgeInsets.only(bottom: 100),
       itemBuilder: (context, index) {
         final message = messages[index];
         final isMe = message.senderId == _chatId;
-        return Align(
-          alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-            padding: const EdgeInsets.all(10),
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.7,
-            ),
-            decoration: BoxDecoration(
-              color: isMe ? Colors.blue : Colors.grey,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              message.message,
-              style: const TextStyle(color: Colors.white),
-            ),
-          ),
-        );
+
+        return _listCard(isMe, message);
       },
     );
   }
 
-  Widget _buildChatInput() {
-    return CustomTextField(
-      key: const Key('live_chat_support_field'),
-      controller: _controller,
-      keyboardType: TextInputType.none,
-      textInputAction: TextInputAction.send,
-      onFieldSubmitted: (_) => _sendMessage(),
-      inputDecoration: InputDecoration(
-        isDense: true,
-        contentPadding: const EdgeInsets.all(1.0),
-        hintText: 'Enter your message...',
-        label: const Text('Live Support'),
-        alignLabelWithHint: true,
-        filled: true,
-        fillColor: kLightBlueColor.withAlpha((0.2 * 255).toInt()),
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        prefixIcon: const Icon(Icons.support_agent, size: 15),
-        suffixIcon: IconButton(
-          icon: const Icon(Icons.send, color: kPrimaryLightColor),
-          onPressed: () => _sendMessage(),
+  Align _listCard(bool isMe, LiveChatMessage message) {
+    return Align(
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        padding: const EdgeInsets.all(10),
+        constraints: BoxConstraints(maxWidth: context.screenWidth * 0.7),
+        decoration: BoxDecoration(
+          color: isMe ? kSuccessColor : kGrayBlueColor,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          message.message,
+          style: const TextStyle(color: kLightColor),
         ),
       ),
     );
   }
 }
 
+/// -------------End-------
 /*class _ClientChatDashboardState extends State<ClientChatDashboard> {
   final _chatService = LiveSupportService();
   final _controller = TextEditingController();

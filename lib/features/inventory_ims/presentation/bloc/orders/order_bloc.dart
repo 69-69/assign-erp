@@ -8,16 +8,19 @@ class OrderBloc extends InventoryBloc<Orders> {
   final FirebaseFirestore _firestore;
 
   OrderBloc({required super.firestore})
-      : _firestore = firestore,
-        super(
-          collectionPath: ordersDBCollectionPath,
-          fromFirestore: (data, id) => Orders.fromMap(data, id),
-          toFirestore: (so) => so.toMap(),
-          toCache: (so) => so.toCache(),
-        );
+    : _firestore = firestore,
+      super(
+        collectionPath: ordersDBCollectionPath,
+        fromFirestore: (data, id) => Orders.fromMap(data, id),
+        toFirestore: (so) => so.toMap(),
+        toCache: (so) => so.toCache(),
+      );
 
   // Create New Delivery for Order
-  Future<void> createNewDeliveryForOrder(String orderNumber, String storeNumber) async {
+  Future<void> createNewDeliveryForOrder(
+    String orderNumber,
+    String storeNumber,
+  ) async {
     // Creates a new Delivery object with initial data and adds it to Firestore
     final fromDelivery = Delivery.fromMap({
       'orderNumber': orderNumber,
@@ -34,7 +37,7 @@ class OrderBloc extends InventoryBloc<Orders> {
     await _firestore.collection(deliveryDBCollectionPath).add(toDelivery);
 
     // Triggers an event to update the state or UI with the new order data
-    add(GetInventory<Orders>());
+    add(GetInventories<Orders>());
   }
 }
 

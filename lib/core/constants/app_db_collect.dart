@@ -60,7 +60,7 @@ const requestPriceQuoteDBCollectionPath = 'request_price_quote_inventory_db';
 // ---------------------------
 
 /// Firebase collection for Workspaces live customer chat support
-const liveChatSupportDBCollectionPath = 'workspaces_live_chat_support_db';
+const liveChatSupportDBCollectionPath = 'live_chat_support_db';
 
 // ---------------------------
 // ⚙️ Setup & Configuration Collections
@@ -69,8 +69,8 @@ const liveChatSupportDBCollectionPath = 'workspaces_live_chat_support_db';
 /// Firebase Collection to associate agents with their clients
 const agentClientsDBCollection = 'agents_clients_mapping_db';
 
-/// Firebase collection for user manuals and documentation
-const userManualDBCollectionPath = 'user_manual_db';
+/// Firebase collection for user guides/manuals and documentation
+const userGuideDBCollectionPath = 'user_guide_db';
 
 /// Firebase collection for employee accounts
 const employeesDBCollectionPath = 'employee_account_db';

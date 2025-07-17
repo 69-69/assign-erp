@@ -1,19 +1,26 @@
+import 'package:assign_erp/config/routes/route_names.dart';
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/network/data_sources/models/dashboard_model.dart';
-import 'package:assign_erp/core/util/neumorphism.dart';
+import 'package:assign_erp/core/network/data_sources/models/workspace_role.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/core/widgets/dashboard_metrics.dart';
 import 'package:assign_erp/core/widgets/delayed_tooltip.dart';
+import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/side_nav.dart';
+import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class TileCard extends StatefulWidget {
   final Color? bgColor;
   final bool isAdaptive;
-  final List<DashboardTile> tiles;
   final void Function()? onTap;
+  final List<DashboardTile> tiles;
+  final String metricsTitle;
+  final String metricsSubtitle;
+  final Map<String, int>? metrics;
 
   const TileCard({
     super.key,
@@ -21,6 +28,9 @@ class TileCard extends StatefulWidget {
     required this.tiles,
     this.onTap,
     this.bgColor,
+    this.metrics,
+    this.metricsTitle = '',
+    this.metricsSubtitle = '',
   });
 
   @override
@@ -39,7 +49,9 @@ class _TileCardState extends State<TileCard> {
   void _updateMaxCrossAxisExtent() {
     // context.isMobile ? screenW :
     var screenW = context.screenWidth;
-    maxCrossAxisExtent = (context.isPortraitMode ? screenW / 2 : screenW / 3);
+    maxCrossAxisExtent = (context.isMiniMobile
+        ? screenW
+        : (context.isPortraitMode ? screenW / 2 : screenW / 3));
   }
 
   @override
@@ -47,22 +59,42 @@ class _TileCardState extends State<TileCard> {
     double pad = 20;
 
     return widget.tiles.length > 1
-        ? Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SideNav(tiles: widget.tiles),
-              Expanded(child: _buildBody(context, pad)),
-            ],
-          )
-        : _buildBody(context, pad);
+        ? _buildBody(context, pad)
+        : _buildGridView(context, pad);
   }
 
-  GridView _buildBody(BuildContext context, double pad) {
+  Row _buildBody(BuildContext context, double pad) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SideNav(tiles: widget.tiles),
+        Expanded(
+          child: widget.metrics != null
+              ? Column(
+                  children: [
+                    DashboardMetrics(
+                      title: widget.metricsTitle,
+                      subtitle: widget.metricsSubtitle,
+                      metrics: widget.metrics!,
+                    ),
+
+                    // create full-width card for summary of the inventory in the dash
+                    const SizedBox(height: 10),
+                    Expanded(child: _buildGridView(context, pad)),
+                  ],
+                )
+              : _buildGridView(context, pad),
+        ),
+      ],
+    );
+  }
+
+  GridView _buildGridView(BuildContext context, double pad) {
     return GridView.builder(
       primary: false,
       itemCount: widget.tiles.length,
-      physics: const RangeMaintainingScrollPhysics(),
       padding: EdgeInsets.all(pad),
+      physics: const RangeMaintainingScrollPhysics(),
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: maxCrossAxisExtent,
         // mainAxisExtent: maxCrossAxisExtent,
@@ -76,31 +108,65 @@ class _TileCardState extends State<TileCard> {
       itemBuilder: (context, index) {
         final tile = widget.tiles[index];
         // isLastIndex = index == tile.length - 1;
-        return _buildCard(context, tile: tile);
+        return _buildCard(context, index: index, tile: tile);
       },
     );
   }
 
-  _buildCard(BuildContext context, {required DashboardTile tile}) {
+  _buildCard(
+    BuildContext context, {
+    int index = 0,
+    required DashboardTile tile,
+  }) {
     final viewCard = tile.label.contains('logo')
         ? _buildLogoCard(context, tile)
         : _buildIconCard(tile, context);
 
-    return AnimatedContainer(
-      // width: context.mediaShortSize / 1.3, Color(0xff4a5d8c)
-      padding: const EdgeInsets.all(20.0),
-      duration: kAnimateDuration,
-      decoration: BoxDecoration(
-        color: widget.bgColor ?? context.colorScheme.secondary,
-        borderRadius: BorderRadius.circular(10),
+    return InkWell(
+      mouseCursor: SystemMouseCursors.click,
+      onHover: (value) => TooltipController.enabled = value,
+      onTapDown: (details) => TooltipController.enabled = true,
+      onFocusChange: (value) => TooltipController.enabled = value,
+      onTapUp: (details) => TooltipController.enabled = false,
+      onTap:
+          widget.onTap ??
+          () async {
+            // Check if the WorkspaceRole is AgentFranchise and tile action is liveChatSupport
+            final shouldStop = await checkLiveChatSupportAccess(
+              context,
+              tile.action,
+            );
+            if (shouldStop) return;
+
+            if (context.mounted) {
+              tile.param.entries.isEmpty
+                  ? context.goNamed(tile.action)
+                  : context.goNamed(
+                      tile.action,
+                      extra: tile.param,
+                      pathParameters: tile.param,
+                    );
+            }
+          },
+      child: AnimatedContainer(
+        alignment: Alignment.center,
+        // width: context.mediaShortSize / 1.3, Color(0xff4a5d8c)
+        padding: const EdgeInsets.all(20.0),
+        duration: kAnimateDuration,
+        decoration: BoxDecoration(
+          color:
+              widget.bgColor ??
+              randomBgColors[index], // context.colorScheme.secondary,
+          borderRadius: BorderRadius.circular(kBorderRadius),
+        ),
+        child: DelayedTooltip(
+          message: (tile.description ?? '').toUppercaseFirstLetterEach,
+          child: context.isMiniMobile
+              ? viewCard
+              : _buildGridTile(tile, context, viewCard),
+        ),
       ),
-      child: DelayedTooltip(
-        message: (tile.description ?? '').toUppercaseFirstLetterEach,
-        child: context.isMiniMobile
-            ? viewCard
-            : _buildGridTile(tile, context, viewCard),
-      ),
-    ).addNeumorphism();
+    ); // .fluidGlassMorphism(addBorder: false);
   }
 
   GridTile _buildGridTile(DashboardTile tile, BuildContext context, viewCard) {
@@ -134,10 +200,19 @@ class _TileCardState extends State<TileCard> {
       children: [
         Expanded(
           child: TextButton.icon(
-            onPressed:
+            onPressed: null,
+
+            /*onPressed:
                 widget.onTap ??
-                () {
+                () async {
                   TooltipController.enabled = false;
+                  // Check if the WorkspaceRole is AgentFranchise and tile action is liveChatSupport
+                  final shouldStop = await checkLiveChatSupportAccess(
+                    context,
+                    tile.action,
+                  );
+                  if (shouldStop) return;
+
                   Future.delayed(Duration.zero, () {
                     if (context.mounted) {
                       tile.param.entries.isEmpty
@@ -149,27 +224,48 @@ class _TileCardState extends State<TileCard> {
                             );
                     }
                   });
-                },
+                },*/
             icon: Expanded(
-              child:
-                  Icon(
-                    tile.icon,
-                    color: kLightColor,
-                    size: context.screenWidth * 0.1,
-                    semanticLabel: title,
-                  ).addNeumorphism(
-                    topShadowColor: kGrayBlueColor,
-                    offset: const Offset(1, 1),
-                  ),
+              child: Icon(
+                tile.icon,
+                color: kLightBlueColor,
+                size: context.screenWidth * 0.1,
+                semanticLabel: title,
+              ),
             ),
-
             label: context.isMobile
                 ? const SizedBox.shrink()
                 : _buildListTile(title, context, subTitle),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: Size.zero,
+              alignment: Alignment.center,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
           ),
         ),
       ],
     );
+  }
+
+  Future<bool> checkLiveChatSupportAccess(
+    BuildContext context,
+    String route,
+  ) async {
+    final role = context.workspace?.role;
+
+    if (route == RouteNames.liveChatSupport &&
+        role != WorkspaceRole.subscriber) {
+      await context.confirmAction(
+        Text('Please use Agent Support/Chat for assistance.'),
+        title: "Live Chat Support",
+        onAccept: "Ok",
+        onReject: "Cancel",
+      );
+      return true; // prompt was shown; further action should stop
+    }
+
+    return false; // no prompt; proceed normally
   }
 
   ListTile _buildListTile(String title, BuildContext context, String subTitle) {
@@ -179,7 +275,7 @@ class _TileCardState extends State<TileCard> {
         title.toUppercaseAllLetter,
         textAlign: TextAlign.center,
         style: context.ofTheme.textTheme.titleMedium?.copyWith(
-          color: kLightColor,
+          color: kLightBlueColor,
           overflow: TextOverflow.ellipsis,
           fontWeight: FontWeight.bold,
         ),
@@ -187,7 +283,7 @@ class _TileCardState extends State<TileCard> {
       ),
       subtitleTextStyle: context.ofTheme.textTheme.titleSmall?.copyWith(
         overflow: TextOverflow.ellipsis,
-        color: kLightColor,
+        color: kLightBlueColor,
       ),
       subtitle: subTitle.isEmpty
           ? null
@@ -199,225 +295,29 @@ class _TileCardState extends State<TileCard> {
     );
   }
 
-  GestureDetector _buildLogoCard(BuildContext context, DashboardTile tile) {
-    return GestureDetector(
-      onTap: () {
-        TooltipController.enabled = false;
-        Future.delayed(Duration.zero, () {
-          if (context.mounted) {
-            context.goNamed(tile.action);
-          }
-        });
-      },
-      child: Wrap(
-        runAlignment: WrapAlignment.center,
-        alignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Image.asset(
-            appLogo,
-            fit: BoxFit.contain,
-            width: maxCrossAxisExtent * 0.3,
-          ),
-          if (!context.isMobile) ...[
-            const SizedBox(width: 10),
-            Text(
-              tile.label.toUppercaseAllLetter,
-              textAlign: TextAlign.center,
-              style: context.ofTheme.textTheme.titleMedium?.copyWith(
-                color: kLightColor,
-              ),
-              textScaler: TextScaler.linear(context.textScaleFactor),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-/*
-class _TileCardState extends State<TileCard> {
-  late double maxCrossAxisExtent;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _updateMaxCrossAxisExtent();
-  }
-
-  void _updateMaxCrossAxisExtent() {
-    // context.isMobile ? screenW :
-    var screenW = context.screenWidth;
-    maxCrossAxisExtent = (context.isPortraitMode ? screenW / 2 : screenW / 3);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    double pad = 20;
-
-    return widget.tiles.length > 1
-        ? Row(
-      mainAxisSize: MainAxisSize.min,
+  _buildLogoCard(BuildContext context, DashboardTile tile) {
+    return Wrap(
+      runAlignment: WrapAlignment.center,
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        SideNav(tiles: widget.tiles),
-        Expanded(child: _buildBody(context, pad)),
-      ],
-    )
-        : _buildBody(context, pad);
-  }
-
-  GridView _buildBody(BuildContext context, double pad) {
-    return GridView.builder(
-      primary: false,
-      itemCount: widget.tiles.length,
-      physics: const RangeMaintainingScrollPhysics(),
-      padding: EdgeInsets.all(pad),
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: maxCrossAxisExtent,
-        // mainAxisExtent: maxCrossAxisExtent,
-        // Spacing between rows
-        mainAxisSpacing: 20,
-        // Spacing between columns
-        crossAxisSpacing: 20,
-        // Ratio between the width and height of grid items
-        childAspectRatio: 1,
-      ),
-      itemBuilder: (context, index) {
-        final tile = widget.tiles[index];
-        // isLastIndex = index == tile.length - 1;
-        return _buildCard(context, tile: tile);
-      },
-    );
-  }
-
-  _buildCard(BuildContext context, {required DashboardTile tile}) {
-    return AnimatedContainer(
-      // width: context.mediaShortSize / 1.3, Color(0xff4a5d8c)
-      color: widget.bgColor ?? context.colorScheme.secondary,
-      padding: const EdgeInsets.all(20.0),
-      duration: kAnimateDuration,
-      child: Tooltip(
-        message: (tile.description ?? '').toUppercaseFirstLetterEach,
-        child: GridTile(
-          header: Text(
-            tile.label.toUppercaseAllLetter,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: kLightColor),
-          ),
-          footer: context.isMobile
-              ? null
-              : Text(
-            (tile.description ?? '').toUppercaseFirstLetterEach,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: kLightColor),
-          ),
-          child: tile.label.contains('logo')
-              ? _buildLogoCard(context, tile)
-              : _buildIconCard(tile, context),
+        Image.asset(
+          appLogo,
+          fit: BoxFit.contain,
+          width: maxCrossAxisExtent * 0.3,
         ),
-      ),
-    ).addNeumorphism();
-  }
-
-  _buildIconCard(DashboardTile tile, BuildContext context) {
-    var title =
-    tile.label.contains(' - ') ? tile.label.split(' - ').first : tile.label;
-    var subTitle = tile.label.contains(' - ') ? tile.label.split(' - ')[1] : '';
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 16.0),
-      child: TextButton.icon(
-        onPressed: widget.onTap ??
-                () {
-              tile.param.entries.isEmpty
-                  ? context.goNamed(tile.action)
-                  : context.goNamed(
-                tile.action,
-                extra: tile.param,
-                pathParameters: tile.param,
-              );
-            },
-        icon: Expanded(
-          child: Icon(
-            tile.icon,
-            color: kLightColor,
-            size: context.textScaleFactor * 50,
-          ).addNeumorphism(
-            topShadowColor: kGrayBlueColor,
-            offset: const Offset(1, 1),
-          ),
-        ),
-        label: ListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            title.toUppercaseAllLetter,
-            textAlign: TextAlign.center,
-            style: context.ofTheme.textTheme.titleLarge?.copyWith(
-              color: kLightColor,
-              overflow: TextOverflow.ellipsis,
-              fontWeight: FontWeight.bold,
-            ),
-            textScaler: TextScaler.linear(context.textScaleFactor),
-          ),
-          subtitle: subTitle.isEmpty
-              ? null
-              : Text(
-            subTitle.toUppercaseAllLetter,
-            textAlign: TextAlign.center,
-            style: context.ofTheme.textTheme.titleMedium?.copyWith(
-              color: kLightColor,
-              overflow: TextOverflow.ellipsis,
-            ),
-            textScaler: TextScaler.linear(context.textScaleFactor),
-          ),
-        ),
-      ),
-    );
-  }
-
-  GestureDetector _buildLogoCard(BuildContext context, DashboardTile tile) {
-    return GestureDetector(
-      onTap: () => context.goNamed(tile.action),
-      child: Wrap(
-        runAlignment: WrapAlignment.center,
-        alignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Image.asset(
-            appLogo,
-            fit: BoxFit.contain,
-            width: maxCrossAxisExtent * 0.3,
-          ),
+        if (!context.isMobile) ...[
           const SizedBox(width: 10),
           Text(
             tile.label.toUppercaseAllLetter,
             textAlign: TextAlign.center,
-            style: context.ofTheme.textTheme.titleLarge
-                ?.copyWith(color: kLightColor),
+            style: context.ofTheme.textTheme.titleMedium?.copyWith(
+              color: kLightColor,
+            ),
             textScaler: TextScaler.linear(context.textScaleFactor),
           ),
         ],
-      ),
+      ],
     );
   }
 }
-
-
-    return isAdaptive
-        ? Align(
-            alignment: Alignment.center,
-            child: AdaptiveLayout(
-              mainAxisSize: MainAxisSize.min,
-              children: tiles
-                  .map<Widget>((tile) => _buildBody(context, tile: tile))
-                  .toList(),
-            ),
-          )
-        : context.columnBuilder(
-            mainAxisSize: MainAxisSize.min,
-            itemCount: tiles.length,
-            itemBuilder: (_, index) => _buildBody(context, tile: tiles[index]),
-          );*/

@@ -13,7 +13,7 @@ const errorPrefix = 'Assign';
 const _nChar = '⏺';
 const appName = 'ASSIGN.WORK';
 const appSubName =
-    'P.O.S $_nChar Inventory $_nChar Customer $_nChar Warehouse $_nChar Reports $_nChar Multi-Location';
+    'A.I $_nChar P.O.S $_nChar Inventory $_nChar C.R.M $_nChar Warehouse $_nChar Reports $_nChar Cloud $_nChar Multi-Location';
 const ghanaCedis = '¢';
 
 /// APP LOGO
@@ -26,6 +26,13 @@ const appLogoWithBG = '$assetPath/logo_bg.png';
 const printFooterBg = '$assetPrint/invoice.svg';
 const densePrintLayout = '$assetPrint/dense_print_layout.png';
 const loosePrintLayout = '$assetPrint/loose_print_layout.png';
+
+/// OnBoarding bg-Images
+const onBoardingBg1 = '$assetPath/erp_software.png';
+const onBoardingBg2 = '$assetPath/all-devices-support.png';
+const onBoardingBg3 = '$assetPath/inventory_ims.png';
+const onBoardingBg4 = '$assetPath/p_o_s_system.png';
+const onBoardingBg5 = '$assetPath/c_r_m_system.png';
 
 /// DESIGN BY: ASSIGN-DEVELOPER
 const appDeveloper = 'assignDeveloper';
@@ -42,14 +49,15 @@ const inventoryAppTitle = 'inventory - ims';
 const warehouseAppTitle = 'warehouse - wms';
 const customerAppTitle = 'customer - crm';
 const setupAppTitle = 'setup';
-const userManualAppTitle = 'user - manual';
+const storeSwitcherAppTitle = 'store - switch';
+const userGuideAppTitle = 'user - guide';
 
 /// MANAGEMENT SUB-SCREENS TITLES
 const liveSupportScreenTitle = 'live support';
-const userManualScreenTitle = 'orders Management';
 const allOrderScreenTitle = 'orders Management';
 const stocksScreenTitle = 'product management';
 const clienteleScreenTitle = 'clientele';
+const allWorkspacesScreenTitle = 'System Wide: All Workspaces';
 const troubleshootScreenTitle = 'troubleshoot';
 const salesOrderScreenTitle = ' orders (so)';
 const purchaseOrderScreenTitle = 'purchase order (po)';
@@ -65,7 +73,9 @@ const posOrdersScreenTitle = 'p.o.s - orders';
 const guideToScreenTitle = 'Guide to...';
 
 const kAppBarHeight = 80.0;
-const wAnimateDuration = Duration(seconds: 2);
+const wAnimateDuration = Duration(seconds: 3);
+const kFAnimateDuration = Duration(seconds: 5);
+const kTenAnimateDuration = Duration(seconds: 10);
 const kAnimateDuration = Duration(milliseconds: 300);
 
 //RegExp

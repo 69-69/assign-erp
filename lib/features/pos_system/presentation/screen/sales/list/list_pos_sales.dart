@@ -1,7 +1,8 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/adaptive_layout.dart';
-import 'package:assign_erp/core/util/async_progress_dialog.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/widgets/adaptive_layout.dart';
+import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/dynamic_table.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
@@ -40,7 +41,7 @@ class _ListPOSSalesState extends State<ListPOSSales> {
       builder: (context, state) {
         return switch (state) {
           LoadingPOS<POSSale>() => context.loader,
-          POSLoaded<POSSale>(data: var results) =>
+          POSsLoaded<POSSale>(data: var results) =>
             results.isEmpty
                 ? context.buildAddButton(
                     'Add Sales',
@@ -104,7 +105,7 @@ class _ListPOSSalesState extends State<ListPOSSales> {
           count: sales.length,
           onPressed: () {
             /// Refresh sales data
-            context.read<POSSaleBloc>().add(RefreshPOS<POSSale>());
+            context.read<POSSaleBloc>().add(RefreshPOSs<POSSale>());
           },
         ),
         // final orderBloc = context.read<OrdersBloc>();
@@ -187,7 +188,7 @@ class _ListPOSSalesState extends State<ListPOSSales> {
   }
 
   Future<dynamic> _printout(List<POSSale> sales, List<String> row) =>
-      Future.delayed(const Duration(seconds: 1), () async {
+      Future.delayed(wAnimateDuration, () async {
         // Simulate loading supplier and company info
         final getSales = POSSale.findSaleById(
           sales,

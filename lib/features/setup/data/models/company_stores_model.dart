@@ -1,8 +1,8 @@
-import 'package:equatable/equatable.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:equatable/equatable.dart';
 
-var _today = DateTime.now(); /*.millisecondsSinceEpoch.toString()*/
+var _today = DateTime.now();
 
 class CompanyStores extends Equatable {
   final String id;
@@ -27,8 +27,8 @@ class CompanyStores extends Equatable {
     DateTime? createdAt,
     this.updatedBy = '',
     DateTime? updatedAt,
-  })  : createdAt = createdAt ?? _today,
-        updatedAt = updatedAt ?? _today; // Set default value
+  }) : createdAt = createdAt ?? _today,
+       updatedAt = updatedAt ?? _today; // Set default value
 
   /// fromFirestore / fromJson Function [StoreLocation.fromMap]
   factory CompanyStores.fromMap(Map<String, dynamic> data, String documentId) {
@@ -48,17 +48,17 @@ class CompanyStores extends Equatable {
 
   // map template
   Map<String, dynamic> _mapTemp() => {
-      'id': id,
-      'name': name,
-      'phone': phone,
-      'location': location,
-      'storeNumber': storeNumber,
-      'remarks': remarks,
-      'createdBy': createdBy,
-      'createdAt': createdAt,
-      'updatedBy': updatedBy,
-      'updatedAt': updatedAt,
-    };
+    'id': id,
+    'name': name,
+    'phone': phone,
+    'location': location,
+    'storeNumber': storeNumber,
+    'remarks': remarks,
+    'createdBy': createdBy,
+    'createdAt': createdAt,
+    'updatedBy': updatedBy,
+    'updatedAt': updatedAt,
+  };
 
   /// Convert Model to toFirestore / toJson Function [toMap]
   Map<String, dynamic> toMap() {
@@ -108,8 +108,9 @@ class CompanyStores extends Equatable {
 
   /// [findStoresById]
   static Iterable<CompanyStores> findStoresById(
-          List<CompanyStores> stores, String id) =>
-      stores.where((d) => d.id == id);
+    List<CompanyStores> stores,
+    String id,
+  ) => stores.where((d) => d.id == id);
 
   /// copyWith method
   CompanyStores copyWith({
@@ -140,42 +141,42 @@ class CompanyStores extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        phone,
-        location,
-        storeNumber,
-        remarks,
-        createdBy,
-        createdAt,
-        updatedBy,
-        updatedAt,
-      ];
+    id,
+    name,
+    phone,
+    location,
+    storeNumber,
+    remarks,
+    createdBy,
+    createdAt,
+    updatedBy,
+    updatedAt,
+  ];
 
   /// ToList for StoreLocation [toListL]
   List<String> itemAsList() => [
-        id,
-        storeNumber,
-        name.toUppercaseFirstLetterEach,
-        phone,
-        location.toUppercaseFirstLetterEach,
-        (remarks ?? 'none').toUppercaseFirstLetterEach,
-        createdBy.toUppercaseFirstLetterEach,
-        getCreatedAt,
-        updatedBy.toUppercaseFirstLetterEach,
-        getUpdatedAt,
-      ];
+    id,
+    storeNumber,
+    name.toUppercaseFirstLetterEach,
+    phone,
+    location.toUppercaseFirstLetterEach,
+    (remarks ?? 'none').toUppercaseFirstLetterEach,
+    createdBy.toUppercaseFirstLetterEach,
+    getCreatedAt,
+    updatedBy.toUppercaseFirstLetterEach,
+    getUpdatedAt,
+  ];
 
   static List<String> get dataTableHeader => const [
-        'ID',
-        'Store Number',
-        'Name',
-        'Phone',
-        'Address / Location',
-        'Remarks',
-        'Created By',
-        'Created At',
-        'Updated By',
-        'Updated At',
-      ];
+    'ID',
+    'Store Number',
+    'Name',
+    'Phone',
+    'Address / Location',
+    'Remarks',
+    'Created By',
+    'Created At',
+    'Updated By',
+    'Updated At',
+  ];
 }

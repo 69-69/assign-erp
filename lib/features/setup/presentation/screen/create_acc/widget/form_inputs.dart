@@ -1,9 +1,9 @@
 import 'package:assign_erp/core/constants/account_status.dart';
-import 'package:assign_erp/core/util/adaptive_layout.dart';
+import 'package:assign_erp/core/widgets/adaptive_layout.dart';
 import 'package:assign_erp/core/widgets/custom_dropdown_field.dart';
 import 'package:assign_erp/core/widgets/custom_text_field.dart';
 import 'package:assign_erp/features/setup/data/models/employee_model.dart';
-import 'package:assign_erp/features/setup/presentation/screen/company_info/widget/search_stores.dart';
+import 'package:assign_erp/features/setup/presentation/screen/company/widget/search_stores.dart';
 import 'package:flutter/material.dart';
 
 /// FullName And Mobile number TextField [NameAndMobile]
@@ -117,7 +117,7 @@ class EmployeeRoleAndStatus extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         CustomDropdown(
-          key: key,
+          key: Key('key-emp-role'),
           items: employeeRolesToList(),
           labelText: 'employee role',
           serverValue: serverRole,

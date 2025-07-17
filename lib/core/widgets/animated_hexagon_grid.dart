@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:assign_erp/core/constants/app_colors.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:flutter/material.dart';
 
@@ -25,7 +26,7 @@ class _AnimatedHexagonGridState extends State<AnimatedHexagonGrid>
     super.initState();
     // _startTimer();
     _controller = AnimationController(
-      duration: const Duration(seconds: 10),
+      duration: kTenAnimateDuration,
       vsync: this,
     )..repeat(reverse: true);
   }
@@ -44,12 +45,7 @@ class _AnimatedHexagonGridState extends State<AnimatedHexagonGrid>
 
     List<Widget> hexagons = _buildList(spacing, hexSize);
 
-    return Stack(
-      children: [
-        ...hexagons,
-        widget.child,
-      ],
-    );
+    return Stack(children: [...hexagons, widget.child]);
   }
 
   List<Widget> _buildList(double spacing, double hexSize) {
@@ -57,8 +53,9 @@ class _AnimatedHexagonGridState extends State<AnimatedHexagonGrid>
 
     for (int row = 0; row < 10; row++) {
       for (int col = 0; col < 10; col++) {
-        double offsetX =
-            (row % 2 == 0 ? col * spacing : col * spacing + spacing / 2);
+        double offsetX = (row % 2 == 0
+            ? col * spacing
+            : col * spacing + spacing / 2);
         double offsetY = row * (hexSize * 0.75);
 
         hexagons.add(
@@ -74,8 +71,9 @@ class _AnimatedHexagonGridState extends State<AnimatedHexagonGrid>
                 ),
                 child: Hexagon(
                   size: hexSize,
-                  color: (col.isEven ? kWarningColor : kOrangeColor)
-                      .withAlpha((0.9 * 255).toInt()),
+                  color: (col.isEven ? kWarningColor : kOrangeColor).withAlpha(
+                    (0.9 * 255).toInt(),
+                  ),
                 ),
               );
             },
@@ -95,10 +93,7 @@ class Hexagon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      size: Size(size, size),
-      painter: HexagonPainter(color),
-    );
+    return CustomPaint(size: Size(size, size), painter: HexagonPainter(color));
   }
 }
 

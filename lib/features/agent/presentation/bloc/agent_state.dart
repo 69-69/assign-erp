@@ -31,6 +31,16 @@ class ClientLoaded<T> extends AgentState<T> {
   List<Object?> get props => [data];
 }
 
+// Agent loaded
+class AgentLoaded<T> extends AgentState<T> {
+  final T data;
+
+  const AgentLoaded(this.data);
+
+  @override
+  List<Object?> get props => [data];
+}
+
 class ClientUpdated<T> extends AgentState<T> {
   final String? message;
 

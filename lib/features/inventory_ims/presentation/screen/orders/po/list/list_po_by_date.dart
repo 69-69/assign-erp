@@ -1,7 +1,8 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/adaptive_layout.dart';
-import 'package:assign_erp/core/util/async_progress_dialog.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/widgets/adaptive_layout.dart';
+import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/dynamic_table.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
@@ -37,8 +38,8 @@ class _ListPOByDateState extends State<ListPOByDate> {
     return BlocBuilder<PurchaseOrderBloc, InventoryState<PurchaseOrder>>(
       builder: (context, state) {
         return switch (state) {
-          LoadingInventory<PurchaseOrder>() => context.loader,
-          InventoryLoaded<PurchaseOrder>(data: var results) =>
+          LoadingInventories<PurchaseOrder>() => context.loader,
+          InventoriesLoaded<PurchaseOrder>(data: var results) =>
             results.isEmpty
                 ? context.buildAddButton(
                     'Create Purchase Order (PO)',
@@ -105,7 +106,7 @@ class _ListPOByDateState extends State<ListPOByDate> {
           onPressed: () {
             // Refresh Purchase Orders Data
             context.read<PurchaseOrderBloc>().add(
-              RefreshInventory<PurchaseOrder>(),
+              RefreshInventories<PurchaseOrder>(),
             );
           },
         ),
@@ -184,7 +185,7 @@ class _ListPOByDateState extends State<ListPOByDate> {
   }
 
   Future<dynamic> _printout(List<PurchaseOrder> po, List<String> row) =>
-      Future.delayed(const Duration(seconds: 1), () async {
+      Future.delayed(wAnimateDuration, () async {
         // Simulate loading supplier and company info
         final orders = PurchaseOrder.findPurchaseOrderById(
           po,

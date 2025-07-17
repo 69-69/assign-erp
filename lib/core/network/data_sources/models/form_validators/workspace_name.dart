@@ -14,16 +14,18 @@ class WorkspaceName extends FormzInput<String, WorkspaceNameValidationError> {
   }
 }
 
-enum CompanyCategoryValidationError { invalid }
+enum WorkspaceCategoryValidationError { invalid }
 
-class CompanyCategory
-    extends FormzInput<String, CompanyCategoryValidationError> {
-  const CompanyCategory.pure() : super.pure('');
+class WorkspaceCategory
+    extends FormzInput<String, WorkspaceCategoryValidationError> {
+  const WorkspaceCategory.pure() : super.pure('');
 
-  const CompanyCategory.dirty([super.value = '']) : super.dirty();
+  const WorkspaceCategory.dirty([super.value = '']) : super.dirty();
 
   @override
-  CompanyCategoryValidationError? validator(String? value) {
-    return value.isNullOrEmpty ? CompanyCategoryValidationError.invalid : null;
+  WorkspaceCategoryValidationError? validator(String? value) {
+    return value.isNullOrEmpty
+        ? WorkspaceCategoryValidationError.invalid
+        : null;
   }
 }

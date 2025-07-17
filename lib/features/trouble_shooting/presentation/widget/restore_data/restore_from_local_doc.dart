@@ -1,11 +1,12 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/network/data_sources/local/backup_filenames_cache.dart';
 import 'package:assign_erp/core/result/result.dart';
-import 'package:assign_erp/core/util/async_progress_dialog.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_dropdown_field.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/data_backup_manager.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +48,7 @@ class _RestoreFromLocalDocState extends State<RestoreFromLocalDoc> {
   }
 
   CustomDropdown _getLocalBackupFilenames(BuildContext context) {
-    final items = BackupFilenameCache().getFilenamesString();
+    final items = BackupFilenameCache().getFilenames();
     return CustomDropdown(
       items: items,
       labelText: 'List of Local Backup Files',
@@ -80,7 +81,7 @@ class _RestoreFromLocalDocState extends State<RestoreFromLocalDoc> {
 
   /// Restore from internal directories/folders (e.g., app data)
   Future<dynamic> _restoreFromLocalDoc() =>
-      Future.delayed(const Duration(seconds: 3), () async {
+      Future.delayed(wAnimateDuration, () async {
         try {
           final restoreResult = await DataBackupManager.startRestore(
             isLocal: true,

@@ -3,7 +3,7 @@ part of 'sign_in_bloc.dart';
 class SignInState extends Equatable {
   const SignInState({
     this.email = const Email.pure(),
-    this.companyCategory = const CompanyCategory.pure(),
+    this.workspaceCategory = const WorkspaceCategory.pure(),
     this.workspaceName = const WorkspaceName.pure(),
     this.clientName = const Name.pure(),
     this.mobileNumber = const MobileNumber.pure(),
@@ -14,7 +14,7 @@ class SignInState extends Equatable {
   });
 
   final Email email;
-  final CompanyCategory companyCategory;
+  final WorkspaceCategory workspaceCategory;
   final WorkspaceName workspaceName;
   final Name clientName;
   final MobileNumber mobileNumber;
@@ -26,7 +26,7 @@ class SignInState extends Equatable {
   // Creates a copy of the current state with possible modifications
   SignInState copyWith({
     FormzSubmissionStatus? status,
-    CompanyCategory? companyCategory,
+    WorkspaceCategory? workspaceCategory,
     WorkspaceName? workspaceName,
     Email? email,
     Name? clientName,
@@ -37,7 +37,7 @@ class SignInState extends Equatable {
   }) {
     return SignInState(
       status: status ?? this.status,
-      companyCategory: companyCategory ?? this.companyCategory,
+      workspaceCategory: workspaceCategory ?? this.workspaceCategory,
       workspaceName: workspaceName ?? this.workspaceName,
       clientName: clientName ?? this.clientName,
       email: email ?? this.email,
@@ -50,7 +50,7 @@ class SignInState extends Equatable {
 
   @override
   List<Object?> get props => [
-    companyCategory,
+    workspaceCategory,
     workspaceName,
     email,
     clientName,

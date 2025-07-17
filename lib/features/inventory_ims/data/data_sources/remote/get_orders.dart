@@ -6,19 +6,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class GetOrders {
   // static final ordersBloc = SalesOrderBloc(firestore: FirebaseFirestore.instance);
 
-  static Future<InventoryLoaded<Orders>> _dataLoadedState() async {
+  static Future<InventoriesLoaded<Orders>> _dataLoadedState() async {
     final ordersBloc = OrderBloc(firestore: FirebaseFirestore.instance);
 
     return await ordersBloc.stream.firstWhere(
-      (state) => state is InventoryLoaded<Orders>,
-    ) as InventoryLoaded<Orders>;
+          (state) => state is InventoriesLoaded<Orders>,
+        )
+        as InventoriesLoaded<Orders>;
   }
 
   static Future<List<Orders>> load() async {
     final ordersBloc = OrderBloc(firestore: FirebaseFirestore.instance);
 
     // Load all data initially to pass to the search delegate
-    ordersBloc.add(GetInventory<Orders>());
+    ordersBloc.add(GetInventories<Orders>());
 
     // Ensure to wait for the data to be loaded
     final allData = await _dataLoadedState();
@@ -32,12 +33,14 @@ class GetOrders {
     final ordersBloc = OrderBloc(firestore: FirebaseFirestore.instance);
 
     // Load all data initially to pass to the search delegate
-    ordersBloc.add(SearchInventory<Orders>(
-      field: 'orderNumber',
-      optField: 'customerId',
-      auxField: 'productName',
-      query: term,
-    ));
+    ordersBloc.add(
+      SearchInventory<Orders>(
+        field: 'orderNumber',
+        optField: 'customerId',
+        auxField: 'productName',
+        query: term,
+      ),
+    );
 
     // Ensure to wait for the data to be loaded
     final allData = await _dataLoadedState();
@@ -51,10 +54,9 @@ class GetOrders {
     final ordersBloc = OrderBloc(firestore: FirebaseFirestore.instance);
 
     // Load all data initially to pass to the search delegate
-    ordersBloc.add(GetAllInventoryWithSameId<Orders>(
-      field: 'orderNumber',
-      documentId: term,
-    ));
+    ordersBloc.add(
+      GetInventoriesWithSameId<Orders>(field: 'orderNumber', documentId: term),
+    );
 
     // Ensure to wait for the data to be loaded
     final allData = await _dataLoadedState();

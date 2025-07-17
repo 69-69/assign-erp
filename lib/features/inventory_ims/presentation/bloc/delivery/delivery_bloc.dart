@@ -1,21 +1,21 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:assign_erp/core/constants/app_db_collect.dart';
-import 'package:assign_erp/features/inventory_ims/data/models/sale_model.dart';
-import 'package:assign_erp/features/inventory_ims/data/models/product_model.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/delivery_model.dart';
+import 'package:assign_erp/features/inventory_ims/data/models/product_model.dart';
+import 'package:assign_erp/features/inventory_ims/data/models/sale_model.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/bloc/inventory_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DeliveryBloc extends InventoryBloc<Delivery> {
   final FirebaseFirestore _firestore;
 
   DeliveryBloc({required super.firestore})
-      : _firestore = firestore,
-        super(
-          collectionPath: deliveryDBCollectionPath,
-          fromFirestore: (data, id) => Delivery.fromMap(data, id),
-          toFirestore: (delivery) => delivery.toMap(),
-          toCache: (delivery) => delivery.toCache(),
-        );
+    : _firestore = firestore,
+      super(
+        collectionPath: deliveryDBCollectionPath,
+        fromFirestore: (data, id) => Delivery.fromMap(data, id),
+        toFirestore: (delivery) => delivery.toMap(),
+        toCache: (delivery) => delivery.toCache(),
+      );
 
   // Process Delivery Status and Update Order
   Future<void> isDelivered(String orderNumber) async {
@@ -23,7 +23,7 @@ class DeliveryBloc extends InventoryBloc<Delivery> {
     _updateOrderAndProductAndRecordSales(orderNumber);
 
     // Emits an event to update internal state or trigger UI refresh with updated delivery data
-    add(GetInventory<Delivery>());
+    add(GetInventories<Delivery>());
   }
 
   /// If the delivery status is changed to "delivered",
@@ -46,13 +46,21 @@ class DeliveryBloc extends InventoryBloc<Delivery> {
           final orderToMap = docSnapshot.data();
 
           // Update the order status to 'completed'
-          final updateOrderStatusFuture = orderColRef.doc(docId).update({'status': 'completed'});
+          final updateOrderStatusFuture = orderColRef.doc(docId).update({
+            'status': 'completed',
+          });
 
           // Update Product Stock Quantity and record sales
-          final updateProductQtyAndRecordSalesFuture = _updateProductQtyAndRecordSales(orderToMap); /*querySnapshot.size*/
+          final updateProductQtyAndRecordSalesFuture =
+              _updateProductQtyAndRecordSales(
+                orderToMap,
+              ); /*querySnapshot.size*/
 
           // Wait for both operations to complete
-          await Future.wait([updateOrderStatusFuture, updateProductQtyAndRecordSalesFuture]);
+          await Future.wait([
+            updateOrderStatusFuture,
+            updateProductQtyAndRecordSalesFuture,
+          ]);
         }).toList();
 
         // Await completion of all futures
@@ -65,12 +73,16 @@ class DeliveryBloc extends InventoryBloc<Delivery> {
   }
 
   // Function to update the product quantity and trigger record new sales
-  Future<void> _updateProductQtyAndRecordSales(Map<String, dynamic> order) async {
+  Future<void> _updateProductQtyAndRecordSales(
+    Map<String, dynamic> order,
+  ) async {
     try {
       int orderQuantity = order['quantity'];
 
       // Construct a reference to the document of the product in Firestore
-      final docRef = _firestore.collection(productsDBCollectionPath).doc(order['productId']);
+      final docRef = _firestore
+          .collection(productsDBCollectionPath)
+          .doc(order['productId']);
 
       // Retrieve the current data of the product document from Firestore
       final docSnapshot = await docRef.get();
@@ -110,7 +122,10 @@ class DeliveryBloc extends InventoryBloc<Delivery> {
     }
   }
 
-  Future<void> _addNewSales(Map<String, dynamic> order, double costPrice) async {
+  Future<void> _addNewSales(
+    Map<String, dynamic> order,
+    double costPrice,
+  ) async {
     try {
       // Create a new Sale object with the given data
       final fromSale = Sale.fromMap(order, '');
@@ -144,8 +159,6 @@ class DeliveryBloc extends InventoryBloc<Delivery> {
       // print('Error adding or updating sale: $e');
     }
   }
-
-
 
   /*
   Future<void> _addNewSales(Map<String, dynamic> data, double costPrice) async {

@@ -20,19 +20,6 @@ class LoadChatMessagesById<T> extends LiveChatEvent<T> {
   List<Object?> get props => [workspaceId, chatId];
 }
 
-/// Load all chat summaries for a workspace
-class LoadChatOverviews<T> extends LiveChatEvent<T> {
-  final String workspaceId;
-
-  const LoadChatOverviews({required this.workspaceId});
-
-  @override
-  List<Object?> get props => [workspaceId];
-}
-
-/// Refresh the current list of chats (used e.g., for pull-to-refresh)
-class RefreshChatOverviews<T> extends LiveChatEvent<T> {}
-
 class AddChat<T> extends LiveChatEvent<T> {
   final String workspaceId;
 

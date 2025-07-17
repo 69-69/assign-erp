@@ -1,11 +1,11 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/custom_bottom_sheet.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/util/top_header_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
+import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/setup/data/models/category_model.dart';
 import 'package:assign_erp/features/setup/presentation/bloc/product_config/category_bloc.dart';
@@ -141,7 +141,7 @@ class _AddCategoryFormBodyState extends State<_AddCategoryFormBody> {
     );
   }
 
-  // Preview Categories add to list
+  // Horizontal scrollable row of chips representing the List of batch of Categories
   Widget _buildCategoryPreviewChips() {
     return CustomScrollBar(
       controller: _scrollController,

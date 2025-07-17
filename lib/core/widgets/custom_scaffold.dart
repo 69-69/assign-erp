@@ -2,16 +2,21 @@ import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
+import 'package:assign_erp/core/widgets/build_breadcrumbs.dart';
+import 'package:assign_erp/core/widgets/profile_menu_dropdown.dart';
+import 'package:assign_erp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CustomScaffold extends StatefulWidget {
+  final PreferredSizeWidget? appBar;
   final bool noAppBar;
   final Widget body;
   final Widget? drawer;
   final Color? bgColor;
   final dynamic title;
   final String? subTitle;
+  final bool isGradientBg;
   final Widget? backButton;
   final List<Widget>? actions;
   final Widget? bottomNavigationBar;
@@ -27,10 +32,12 @@ class CustomScaffold extends StatefulWidget {
     this.bgColor,
     this.drawer,
     this.backButton,
-    this.noAppBar = false,
+    this.appBar,
     this.bottomNavigationBar,
     this.floatingActionButton,
     this.floatingActionBtnLocation,
+    this.noAppBar = false,
+    this.isGradientBg = false,
   });
 
   @override
@@ -38,33 +45,73 @@ class CustomScaffold extends StatefulWidget {
 }
 
 class _CustomScaffoldState extends State<CustomScaffold> {
-  bool get _isLargeScreen => context.isLargeScreen;
+  Color get _bgColor =>
+      widget.bgColor ??
+      (widget.isGradientBg
+          ? kLightBlueColor
+          : context.ofTheme.scaffoldBackgroundColor);
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.watch<AuthBloc>().state;
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: widget.bgColor,
-      appBar: widget.noAppBar ? null : _buildAppBar(context),
-      body: SafeArea(child: widget.body),
-      bottomNavigationBar: widget.bottomNavigationBar,
+      backgroundColor: _bgColor,
+      appBar: widget.noAppBar
+          ? null
+          : (widget.appBar ?? _buildAppBar(context, authState)),
+      body: _buildBody(),
+      bottomNavigationBar: widget.bottomNavigationBar ?? BuildBreadcrumbs(),
       floatingActionButtonLocation: widget.floatingActionBtnLocation,
       floatingActionButton: widget.floatingActionButton,
       drawer: widget.drawer,
     );
   }
 
-  AppBar _buildAppBar(BuildContext context) {
+  Widget _buildBody() {
+    final uiBody = SafeArea(child: widget.body);
+
+    return widget.isGradientBg
+        ? Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  /*kPrimaryColor,
+                    kPrimaryLightColor,
+                    kLightBlueColor,*/
+                  kPrimaryColor,
+                  kLightBlueColor,
+                  kLightBlueColor,
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: uiBody,
+          )
+        : uiBody;
+  }
+
+  AppBar _buildAppBar(BuildContext context, AuthState authState) {
+    bool canGoBack = Navigator.of(context).canPop();
+
     return AppBar(
-      leading: _buildLeading(context),
-      leadingWidth: context.isMobile ? 65 : 180,
+      leading: canGoBack ? _buildLeading(context) : null,
+      automaticallyImplyLeading: canGoBack,
       toolbarHeight: kAppBarHeight,
       centerTitle: true,
       elevation: 20,
       scrolledUnderElevation: 20,
-      // backgroundColor: context.primaryColor,
       title: widget.title is Widget ? widget.title : _buildTitle(context),
-      actions: widget.actions,
+      actions:
+          widget.actions ??
+          [
+            ProfileMenuDropdown(
+              workspace: authState.workspace,
+              employee: authState.employee,
+            ),
+          ],
     );
   }
 
@@ -75,56 +122,8 @@ class _CustomScaffoldState extends State<CustomScaffold> {
     return Container(
       color: kTransparentColor,
       alignment: Alignment.center,
-      margin: _isLargeScreen
-          ? const EdgeInsets.fromLTRB(10, 20, 0, 20)
-          : const EdgeInsets.only(left: 10),
-      child: _buildDesktopLeadingContent(context),
-    );
-  }
-
-  Widget _buildDesktopLeadingContent(BuildContext context) {
-    return Wrap(
-      direction: Axis.vertical,
-      spacing: 10,
-      children: [
-        const BackButton(color: kLightColor),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.0),
-          child: const CircleAvatar(
-            backgroundColor: kLightBlueColor,
-            child: Icon(Icons.person, color: kPrimaryColor),
-          ),
-        ),
-        if (_isLargeScreen) ...[_buildUserDetails(context)],
-      ],
-    );
-  }
-
-  Widget _buildUserDetails(BuildContext context) {
-    final employee = context.employee;
-    final clientName = employee?.fullName.toUppercaseFirstLetter ?? '';
-    final roleName = employee?.role.name.toUppercaseFirstLetter ?? '';
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Text(
-          clientName,
-          style: context.ofTheme.textTheme.bodyMedium?.copyWith(
-            color: kLightBlueColor,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Expanded(
-          child: Text(
-            roleName,
-            style: context.ofTheme.textTheme.labelSmall?.copyWith(
-              color: kLightBlueColor,
-            ),
-          ),
-        ),
-      ],
+      margin: const EdgeInsets.fromLTRB(10, 20, 0, 20),
+      child: const BackButton(color: kLightColor),
     );
   }
 

@@ -9,14 +9,14 @@ sealed class InventoryEvent<T> extends Equatable {
   List<Object?> get props => [];
 }
 
-class GetInventory<T> extends InventoryEvent<T> {}
+class GetInventories<T> extends InventoryEvent<T> {}
 
-class RefreshInventory<T> extends InventoryEvent<T> {}
+class RefreshInventories<T> extends InventoryEvent<T> {}
 
-class GetMultiInventoryByIDs<T> extends InventoryEvent<T> {
+class GetInventoriesByIds<T> extends InventoryEvent<T> {
   final List<String> documentIDs;
 
-  const GetMultiInventoryByIDs({required this.documentIDs});
+  const GetInventoriesByIds({required this.documentIDs});
 
   @override
   List<Object?> get props => [documentIDs];
@@ -32,11 +32,11 @@ class GetInventoryById<T> extends InventoryEvent<T> {
   List<Object?> get props => [documentId, field];
 }
 
-class GetAllInventoryWithSameId<T> extends InventoryEvent<T> {
+class GetInventoriesWithSameId<T> extends InventoryEvent<T> {
   final Object? field;
   final String documentId;
 
-  const GetAllInventoryWithSameId({required this.documentId, this.field});
+  const GetInventoriesWithSameId({required this.documentId, this.field});
 
   @override
   List<Object?> get props => [documentId, field];
@@ -55,8 +55,12 @@ class SearchInventory<T> extends InventoryEvent<T> {
   /// Third_Field_Name[auxField]
   final Object? auxField;
 
-  const SearchInventory(
-      {this.field, this.optField, this.auxField, required this.query});
+  const SearchInventory({
+    this.field,
+    this.optField,
+    this.auxField,
+    required this.query,
+  });
 
   @override
   List<Object?> get props => [field, optField, auxField, query];

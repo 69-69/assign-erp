@@ -23,13 +23,10 @@ class _ProductScreenState extends State<ProductScreen> {
 
   // bool isScanCompleted = false;
   ProductBloc _initializeProductBloc(BuildContext context) {
-    final productBloc = ProductBloc(
-      firestore: FirebaseFirestore.instance,
-    );
-    productBloc.add(GetInventory<Product>());
+    final productBloc = ProductBloc(firestore: FirebaseFirestore.instance);
+    productBloc.add(GetInventories<Product>());
     return productBloc;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -39,14 +36,14 @@ class _ProductScreenState extends State<ProductScreen> {
         title: stocksScreenTitle.toUpperCase(),
         body: _buildBody(),
         floatingActionButton: context.buildFloatingBtn(
-          'Place Stock',
+          'Create Stock',
           onPressed: () => context.openAddProduct(),
         ),
       ),
     );
   }
 
-   _buildBody() {
+  _buildBody() {
     return const CustomTab(
       length: 4,
       tabs: [
@@ -59,12 +56,16 @@ class _ProductScreenState extends State<ProductScreen> {
         ListProducts(),
         ListExpired(),
         ListStockLevel(),
-        Center(child: Text('Replace Out-Stock with "(Sales): Update Historical sales data for forecasting"')),
+        Center(
+          child: Text(
+            'Replace Out-Stock with "(Sales): Update Historical sales data for forecasting"',
+          ),
+        ),
       ],
     );
   }
 
-/*BarcodeScanner _buildBarcodeScanner() {
+  /*BarcodeScanner _buildBarcodeScanner() {
     return BarcodeScanner(
       childWidget: (void Function()? scanFunction, List<Barcode> barcodes) {
         WidgetsBinding.instance.addPostFrameCallback((_) async {

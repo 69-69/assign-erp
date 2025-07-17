@@ -9,14 +9,14 @@ sealed class CustomerEvent<T> extends Equatable {
   List<Object?> get props => [];
 }
 
-class GetCustomer<T> extends CustomerEvent<T> {}
+class GetCustomers<T> extends CustomerEvent<T> {}
 
 class RefreshCustomers<T> extends CustomerEvent<T> {}
 
-class GetMultiCustomerByIDs<T> extends CustomerEvent<T> {
+class GetCustomersByIds<T> extends CustomerEvent<T> {
   final List<String> documentIDs;
 
-  const GetMultiCustomerByIDs({required this.documentIDs});
+  const GetCustomersByIds({required this.documentIDs});
 
   @override
   List<Object?> get props => [documentIDs];

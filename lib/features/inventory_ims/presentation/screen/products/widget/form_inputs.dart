@@ -1,5 +1,5 @@
-import 'package:assign_erp/core/util/adaptive_layout.dart';
 import 'package:assign_erp/core/util/date_time_picker.dart';
+import 'package:assign_erp/core/widgets/adaptive_layout.dart';
 import 'package:assign_erp/core/widgets/custom_text_field.dart';
 import 'package:assign_erp/features/setup/presentation/screen/product_config/widget/search_category.dart';
 import 'package:assign_erp/features/setup/presentation/screen/product_config/widget/search_suppliers.dart';
@@ -328,7 +328,7 @@ class BatchIdTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomTextField(
-      labelText: 'Batch ID',
+      labelText: 'Batch ID - Optional',
       controller: controller,
       onChanged: onChanged,
       keyboardType: TextInputType.text,
@@ -347,7 +347,7 @@ class SKUTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomTextField(
-      labelText: 'SKU',
+      labelText: 'SKU - Optional',
       controller: controller,
       onChanged: onChanged,
       keyboardType: TextInputType.text,

@@ -1,7 +1,7 @@
-import 'package:equatable/equatable.dart';
-import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/util/format_date_utl.dart';
+import 'package:assign_erp/core/util/str_util.dart';
+import 'package:equatable/equatable.dart';
 
 var _today = DateTime.now(); /*.millisecondsSinceEpoch.toString()*/
 
@@ -60,9 +60,9 @@ class PurchaseOrder extends Equatable {
     DateTime? createdAt,
     this.updatedBy = '',
     DateTime? updatedAt,
-  })  : deliveryDate = deliveryDate ?? _today,
-        createdAt = createdAt ?? _today,
-        updatedAt = updatedAt ?? _today; // Set default value
+  }) : deliveryDate = deliveryDate ?? _today,
+       createdAt = createdAt ?? _today,
+       updatedAt = updatedAt ?? _today; // Set default value
 
   /// fromFirestore / fromJson Function [PurchaseOrder.fromMap]
   factory PurchaseOrder.fromMap(Map<String, dynamic> data, String documentId) {
@@ -93,28 +93,28 @@ class PurchaseOrder extends Equatable {
 
   // map template
   Map<String, dynamic> _mapTemp() => {
-        'id': id,
-        'storeNumber': storeNumber,
-        'poNumber': poNumber,
-        'supplierId': supplierId,
-        'productName': productName,
-        'unitPrice': unitPrice,
-        'quantity': quantity,
-        'status': status,
-        'orderType': orderType,
-        'paymentTerms': paymentTerms,
-        'remarks': remarks,
-        'subTotal': subTotal,
-        'approvedBy': approvedBy,
-        'taxPercent': taxPercent,
-        'discountPercent': discountPercent,
-        'totalAmount': totalAmount,
-        'deliveryDate': deliveryDate,
-        'createdBy': createdBy,
-        'createdAt': createdAt,
-        'updatedBy': updatedBy,
-        'updatedAt': updatedAt,
-      };
+    'id': id,
+    'storeNumber': storeNumber,
+    'poNumber': poNumber,
+    'supplierId': supplierId,
+    'productName': productName,
+    'unitPrice': unitPrice,
+    'quantity': quantity,
+    'status': status,
+    'orderType': orderType,
+    'paymentTerms': paymentTerms,
+    'remarks': remarks,
+    'subTotal': subTotal,
+    'approvedBy': approvedBy,
+    'taxPercent': taxPercent,
+    'discountPercent': discountPercent,
+    'totalAmount': totalAmount,
+    'deliveryDate': deliveryDate,
+    'createdBy': createdBy,
+    'createdAt': createdAt,
+    'updatedBy': updatedBy,
+    'updatedAt': updatedAt,
+  };
 
   /// Convert Model to toFirestore / toJson Function [toMap]
   Map<String, dynamic> toMap() {
@@ -145,7 +145,7 @@ class PurchaseOrder extends Equatable {
 
   double get discountAmt => (discountPercent / 100) * subTotal;
 
-  double get taxAmt =>  (taxPercent / 100) * netPrice;
+  double get taxAmt => (taxPercent / 100) * netPrice;
 
   /// approved POs [isApproved]
   bool get isApproved => status == 'approved' && approvedBy.isNotEmpty;
@@ -171,7 +171,7 @@ class PurchaseOrder extends Equatable {
   /// Filter
   bool filterByAny(String filter) =>
       poNumber.contains(filter) ||
-          storeNumber.contains(filter) ||
+      storeNumber.contains(filter) ||
       productName.contains(filter) ||
       status.contains(filter) ||
       supplierId.contains(filter) ||
@@ -179,16 +179,20 @@ class PurchaseOrder extends Equatable {
 
   /// [findPurchaseOrderById]
   static Iterable<PurchaseOrder> findPurchaseOrderById(
-          List<PurchaseOrder> po, String poId) =>
-      po.where((order) => order.id == poId);
+    List<PurchaseOrder> po,
+    String poId,
+  ) => po.where((order) => order.id == poId);
 
   /// [filterPurchaseOrderByDate]
-  static List<PurchaseOrder> filterPurchaseOrderByDate(List<PurchaseOrder> po,
-          {bool isSameDay = true}) =>
-      po
-          .where((order) =>
-              !order.isApproved && (isSameDay ? order.isToday : !order.isToday))
-          .toList();
+  static List<PurchaseOrder> filterPurchaseOrderByDate(
+    List<PurchaseOrder> po, {
+    bool isSameDay = true,
+  }) => po
+      .where(
+        (order) =>
+            !order.isApproved && (isSameDay ? order.isToday : !order.isToday),
+      )
+      .toList();
 
   /// [filterApprovedPOs]
   static List<PurchaseOrder> filterApprovedPOs(List<PurchaseOrder> po) =>
@@ -249,28 +253,28 @@ class PurchaseOrder extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
+    id,
     storeNumber,
-        poNumber,
-        supplierId,
-        status,
-        productName,
-        quantity,
-        orderType,
-        unitPrice,
-        paymentTerms,
-        remarks,
-        subTotal,
-        deliveryDate ?? '',
-        taxPercent,
-        discountPercent,
-        totalAmount,
-        approvedBy,
-        createdBy,
-        createdAt,
-        updatedBy,
-        updatedAt,
-      ];
+    poNumber,
+    supplierId,
+    status,
+    productName,
+    quantity,
+    orderType,
+    unitPrice,
+    paymentTerms,
+    remarks,
+    subTotal,
+    deliveryDate ?? '',
+    taxPercent,
+    discountPercent,
+    totalAmount,
+    approvedBy,
+    createdBy,
+    createdAt,
+    updatedBy,
+    updatedAt,
+  ];
 
   /// ToList for PurchaseOrder [itemAsList]
   List<String> itemAsList({int? start, int? end}) {
@@ -306,25 +310,25 @@ class PurchaseOrder extends Equatable {
   }
 
   static List<String> get dataTableHeader => const [
-        'ID',
-        'Store Number',
-        'PO Number',
-        'Supplier ID',
-        'Order Type',
-        'Status',
-        'Payment Terms',
-        'Product Name',
-        'Unit Price',
-        'Quantity',
-        'SubTotal',
-        'Discount',
-        'Tax',
-        'Total Amount',
-        'Delivery',
-        'Approved By',
-        'Created By',
-        'Created At',
-        'Updated By',
-        'Updated At',
-      ];
+    'ID',
+    'Store Number',
+    'PO Number',
+    'Supplier ID',
+    'Order Type',
+    'Status',
+    'Payment Terms',
+    'Product Name',
+    'Unit Price',
+    'Quantity',
+    'SubTotal',
+    'Discount',
+    'Tax',
+    'Total Amount',
+    'Delivery',
+    'Approved By',
+    'Created By',
+    'Created At',
+    'Updated By',
+    'Updated At',
+  ];
 }

@@ -11,19 +11,19 @@ sealed class POSState<T> extends Equatable {
 
 class LoadingPOS<T> extends POSState<T> {}
 
-class POSLoaded<T> extends POSState<T> {
+class POSsLoaded<T> extends POSState<T> {
   final List<T> data;
 
-  const POSLoaded(this.data);
+  const POSsLoaded(this.data);
 
   @override
   List<Object?> get props => [data];
 }
 
-class SinglePOSLoaded<T> extends POSState<T> {
+class POSLoaded<T> extends POSState<T> {
   final T data;
 
-  const SinglePOSLoaded(this.data);
+  const POSLoaded(this.data);
 
   @override
   List<Object?> get props => [data];

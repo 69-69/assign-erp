@@ -310,9 +310,6 @@ class FirestoreBloc<T> extends Bloc<FirestoreEvent, FirestoreState<T>> {
 
       await _dataRepository.updateData(event.documentId, data);
 
-      // Trigger LoadDataEvent to reload the data
-      // add(LoadDataEvent<T>());
-
       // Update State: Notify that data updated
       emit(DataUpdated<T>(message: 'data updated successfully'));
     } catch (e) {
@@ -359,7 +356,7 @@ class FirestoreBloc<T> extends Bloc<FirestoreEvent, FirestoreState<T>> {
 
   void _onDataLoadError(_DataLoadError event, Emitter<FirestoreState<T>> emit) {
     final errorLogCache = ErrorLogCache();
-    errorLogCache.cacheError(error: event.error, fileName: 'firestore_bloc');
+    errorLogCache.setError(error: event.error, fileName: 'firestore_bloc');
     emit(DataError<T>(event.error));
   }
 

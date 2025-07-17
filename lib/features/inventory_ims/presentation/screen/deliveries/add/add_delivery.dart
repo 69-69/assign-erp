@@ -1,12 +1,13 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/async_progress_dialog.dart';
-import 'package:assign_erp/core/util/custom_bottom_sheet.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/size_config.dart';
-import 'package:assign_erp/core/util/top_header_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
 import 'package:assign_erp/core/widgets/barcode_scanner.dart';
+import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
+import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/customer_crm/data/data_sources/remote/get_customers.dart';
 import 'package:assign_erp/features/inventory_ims/data/data_sources/remote/get_orders.dart';
@@ -174,16 +175,15 @@ class _AddDeliveryBodyState extends State<_AddDeliveryBody> {
     }
   }
 
-  Future<dynamic> _printout() =>
-      Future.delayed(const Duration(seconds: 3), () async {
-        // Simulate loading supplier and company info
-        final orders = await GetOrders.getWithSameId(_selectedOrderNumber);
-        final cus = await GetCustomers.byCustomerId(orders.first.customerId);
-        if (orders.isNotEmpty && cus.isNotEmpty) {
-          PrintOrderInvoice(
-            orders: orders,
-            customer: cus,
-          ).onPrintIn(title: 'delivery note');
-        }
-      });
+  Future<dynamic> _printout() => Future.delayed(wAnimateDuration, () async {
+    // Simulate loading supplier and company info
+    final orders = await GetOrders.getWithSameId(_selectedOrderNumber);
+    final cus = await GetAllCustomers.byCustomerId(orders.first.customerId);
+    if (orders.isNotEmpty && cus.isNotEmpty) {
+      PrintOrderInvoice(
+        orders: orders,
+        customer: cus,
+      ).onPrintIn(title: 'delivery note');
+    }
+  });
 }

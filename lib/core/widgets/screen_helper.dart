@@ -1,9 +1,10 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/adaptive_layout.dart';
-import 'package:assign_erp/core/util/async_progress_dialog.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/core/widgets/adaptive_layout.dart';
+import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:flutter/material.dart';
 
@@ -69,6 +70,17 @@ extension ScreenHelper on BuildContext {
       confirmMessage: 'Refresh App',
       onConfirmed: onPressed,
       padding: const EdgeInsets.all(1),
+      size: 18,
+    );
+  }
+
+  /// Icon button for Authorized Device IDs [resetAuthorizedDevicesIdsButton]
+  resetAuthorizedDevicesIdsButton({VoidCallback? onPressed}) {
+    return actionIconButton(
+      icon: Icons.reset_tv,
+      confirmMessage: 'Reset Authorized Device IDs',
+      onConfirmed: onPressed,
+      padding: EdgeInsets.all(15),
       size: 18,
     );
   }
@@ -308,10 +320,7 @@ class _RefreshButtonState extends State<RefreshButton>
   }
 
   void _initIconAnimation() {
-    controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 200),
-    );
+    controller = AnimationController(vsync: this, duration: kAnimateDuration);
     rotateAnimation = Tween<double>(begin: 0.0, end: 360.0).animate(controller);
   }
 
@@ -333,10 +342,7 @@ class _RefreshButtonState extends State<RefreshButton>
           '${widget.tooltip.replaceAll('Refresh', 'Refreshing')}...',
         );
         // delay & run callback function(refresh data)
-        await Future.delayed(
-          const Duration(seconds: 2),
-          () => widget.callback?.call(),
-        );
+        await Future.delayed(wAnimateDuration, () => widget.callback?.call());
         controller.stop();
         controller.reset();
         if (context.mounted) {
@@ -401,6 +407,7 @@ class GenericCard extends StatelessWidget {
 
   _buildBody(BuildContext context) {
     var textStyle = context.ofTheme.textTheme.titleLarge;
+
     return Column(
       children: [
         Text(

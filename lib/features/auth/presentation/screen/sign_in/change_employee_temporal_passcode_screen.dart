@@ -2,14 +2,13 @@ import 'dart:io';
 
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
-import 'package:assign_erp/core/util/adaptive_layout.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
 import 'package:assign_erp/core/util/size_config.dart';
+import 'package:assign_erp/core/widgets/adaptive_layout.dart';
 import 'package:assign_erp/core/widgets/animated_hexagon_grid.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
-import 'package:assign_erp/features/auth/domain/repository/auth_repository.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/index.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/auth/presentation/screen/widget/form_inputs.dart';
@@ -74,6 +73,8 @@ class _ChangeEmployeeTemporalPasscodeScreenState
   Widget build(BuildContext context) {
     _canAccessInitialSetup();
 
+    return _buildBody(context);
+    /*MINE-STEVE
     return BlocProvider(
       create: (context) {
         return SignInBloc(
@@ -81,7 +82,7 @@ class _ChangeEmployeeTemporalPasscodeScreenState
         );
       },
       child: _buildBody(context),
-    );
+    );*/
   }
 
   BlocListener<SignInBloc, SignInState> _buildBody(BuildContext context) {
@@ -106,13 +107,11 @@ class _ChangeEmployeeTemporalPasscodeScreenState
           ),
         ),
         actions: [
-          context.signOutIconButton(
-            onPressed: () {
-              _handleSignOut(context);
-              RefreshEntireApp.restartApp(context);
-            },
+          context.reloadAppIconButton(
+            onPressed: () => RefreshEntireApp.restartApp(context),
           ),
         ],
+        bottomNavigationBar: const SizedBox.shrink(),
       ),
     );
   }
@@ -216,8 +215,9 @@ class _ChangeEmployeeTemporalPasscodeScreenState
                   'Need Help?',
                   softWrap: false,
                   style: context.ofTheme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                     overflow: TextOverflow.ellipsis,
+                    color: context.primaryColor,
                   ),
                 ),
               ),

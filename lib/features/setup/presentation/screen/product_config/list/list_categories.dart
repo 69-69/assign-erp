@@ -23,7 +23,7 @@ class _ListCategoriesState extends State<ListCategories> {
     return BlocProvider<CategoryBloc>(
       create: (context) =>
           CategoryBloc(firestore: FirebaseFirestore.instance)
-            ..add(GetSetup<Category>()),
+            ..add(GetSetups<Category>()),
       child: CustomScaffold(
         noAppBar: true,
         body: _buildBody(),
@@ -31,6 +31,7 @@ class _ListCategoriesState extends State<ListCategories> {
           'Add Product Category',
           onPressed: () => context.openAddCategory(),
         ),
+        bottomNavigationBar: const SizedBox.shrink(),
       ),
     );
   }
@@ -40,7 +41,7 @@ class _ListCategoriesState extends State<ListCategories> {
       builder: (context, state) {
         return switch (state) {
           LoadingSetup<Category>() => context.loader,
-          SetupLoaded<Category>(data: var results) =>
+          SetupsLoaded<Category>(data: var results) =>
             results.isEmpty
                 ? context.buildAddButton(
                     'Add Product Categories',
@@ -73,7 +74,7 @@ class _ListCategoriesState extends State<ListCategories> {
       count: sales.length,
       onPressed: () {
         // Refresh Product-Categories Data
-        context.read<CategoryBloc>().add(RefreshSetup<Category>());
+        context.read<CategoryBloc>().add(RefreshSetups<Category>());
       },
     );
   }

@@ -9,7 +9,7 @@ class MaterialTheme {
   static MaterialScheme lightScheme() {
     return const MaterialScheme(
       brightness: Brightness.light,
-      primary: Color(0xff232b5a),
+      primary: Color(0xff232b5a), // 0xff232b5a
       // 0xff515b92
       surfaceTint: Color(0xff232b5a),
       // 0xff515b92
@@ -300,7 +300,8 @@ class MaterialTheme {
   static MaterialScheme darkScheme() {
     return const MaterialScheme(
       brightness: Brightness.dark,
-      primary: Color(0xffbac3ff),
+      primary: Color(0xff232b5a), // 0xff232b5a
+      // 0xff515b92
       surfaceTint: Color(0xffbac3ff),
       onPrimary: Color(0xff222c61),
       primaryContainer: Color(0xff394379),
@@ -320,7 +321,7 @@ class MaterialTheme {
       onErrorContainer: Color(0xffffdad6),
       background: Color(0xff121318),
       onBackground: Color(0xffe4e1e9),
-      surface: Color(0xff121318), // 0xff303036
+      surface: Color(0xff23242c), // 0xff303036
       onSurface: Color(0xffe4e1e9),
       surfaceVariant: Color(0xff46464f),
       onSurfaceVariant: Color(0xffc7c5d0),
@@ -483,6 +484,7 @@ class MaterialTheme {
       useMaterial3: true,
       brightness: colorScheme.brightness,
       colorScheme: colorScheme,
+      cardColor: colorScheme.surface,
       textTheme: textTheme.apply(
         bodyColor: colorScheme.onSurface,
         displayColor: colorScheme.onSurface,

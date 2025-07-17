@@ -24,7 +24,7 @@ class _ReportScreenState extends State<ReportScreen> {
     return BlocProvider(
       create: (context) =>
           ProductBloc(firestore: FirebaseFirestore.instance)
-            ..add(GetInventory<Product>()),
+            ..add(GetInventories<Product>()),
       child: CustomScrollBar(
         controller: _scrollController,
         child: _buildBody(),
@@ -36,8 +36,8 @@ class _ReportScreenState extends State<ReportScreen> {
     return BlocBuilder<ProductBloc, InventoryState<Product>>(
       builder: (context, state) {
         return switch (state) {
-          LoadingInventory<Product>() => context.loader,
-          InventoryLoaded<Product>(data: var results) =>
+          LoadingInventories<Product>() => context.loader,
+          InventoriesLoaded<Product>(data: var results) =>
             results.isEmpty
                 ? context.buildNoResult()
                 : _buildReportContent(context, results),

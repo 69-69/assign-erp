@@ -1,3 +1,4 @@
+// WORKSPACE ROLE or ACCOUNT TYPE
 enum WorkspaceRole {
   /* Write-only access: is generally provided to Agents and Developers for setting up the system..*/
   initialSetup,

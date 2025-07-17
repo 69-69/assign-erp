@@ -11,19 +11,19 @@ sealed class SetupState<T> extends Equatable {
 
 class LoadingSetup<T> extends SetupState<T> {}
 
-class SetupLoaded<T> extends SetupState<T> {
+class SetupsLoaded<T> extends SetupState<T> {
   final List<T> data;
 
-  const SetupLoaded(this.data);
+  const SetupsLoaded(this.data);
 
   @override
   List<Object?> get props => [data];
 }
 
-class SingleSetupLoaded<T> extends SetupState<T> {
+class SetupLoaded<T> extends SetupState<T> {
   final T data;
 
-  const SingleSetupLoaded(this.data);
+  const SetupLoaded(this.data);
 
   @override
   List<Object?> get props => [data];

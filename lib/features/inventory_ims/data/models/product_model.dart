@@ -1,7 +1,7 @@
-import 'package:equatable/equatable.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:equatable/equatable.dart';
 
 var _today = DateTime.now(); /*.millisecondsSinceEpoch.toString()*/
 
@@ -73,20 +73,20 @@ class Product extends Equatable {
     DateTime? createdAt,
     this.updatedBy = '',
     DateTime? updatedAt,
-  })  : expiryDate = expiryDate ?? _today,
-        manufactureDate = manufactureDate ?? _today,
-        createdAt = updatedAt ?? _today,
-        updatedAt = updatedAt ?? _today; // Set default value
+  }) : expiryDate = expiryDate ?? _today,
+       manufactureDate = manufactureDate ?? _today,
+       createdAt = updatedAt ?? _today,
+       updatedAt = updatedAt ?? _today; // Set default value
 
   /// fromFirestore / fromJson Function [Product.fromMap]
   factory Product.fromMap(Map<String, dynamic> data, String documentId) {
     final totalQty = _toIntData(data['quantity']);
     final outOfStock = _toIntData(data['outOfStock']);
 
-    ({
-      double inStockPercent,
-      double outOfStockPercent,
-    }) r = _calculateStocks(totalQty: totalQty, outOfStock: outOfStock);
+    ({double inStockPercent, double outOfStockPercent}) r = _calculateStocks(
+      totalQty: totalQty,
+      outOfStock: outOfStock,
+    );
 
     return Product(
       id: documentId,
@@ -125,10 +125,10 @@ class Product extends Equatable {
 
   // map template
   Map<String, dynamic> _mapTemp() {
-    ({
-      double inStockPercent,
-      double outOfStockPercent,
-    }) r = _calculateStocks(totalQty: quantity, outOfStock: outOfStock);
+    ({double inStockPercent, double outOfStockPercent}) r = _calculateStocks(
+      totalQty: quantity,
+      outOfStock: outOfStock,
+    );
 
     return {
       'id': id,
@@ -183,22 +183,23 @@ class Product extends Equatable {
   }
 
   /// Calculate Stocks using Dart Records
-  static ({
-    double inStockPercent,
-    double outOfStockPercent,
-  }) _calculateStocks({required int totalQty, required int outOfStock}) {
+  static ({double inStockPercent, double outOfStockPercent}) _calculateStocks({
+    required int totalQty,
+    required int outOfStock,
+  }) {
     /// In-Stock Formulae: total items - Out-Of-Stock = Results
     var getInStock = totalQty - outOfStock;
 
     /// In-Stock-Percentile Formulae:
     /// (InStock / Total items) x 100 = Results in Percentile
-    String getInStockPercent =
-        ((getInStock / totalQty) * 100).toStringAsFixed(2);
+    String getInStockPercent = ((getInStock / totalQty) * 100).toStringAsFixed(
+      2,
+    );
 
     /// Out-Of-Stock-Percentile (Sold-Out-Percentile) Formulae:
     /// (Out-Of-Stock / Total items) x 100 = Results in Percentage
-    String getOutOfStockPercent =
-        ((outOfStock / totalQty) * 100).toStringAsFixed(2);
+    String getOutOfStockPercent = ((outOfStock / totalQty) * 100)
+        .toStringAsFixed(2);
 
     return (
       inStockPercent: double.parse(getInStockPercent),
@@ -256,20 +257,21 @@ class Product extends Equatable {
   }
 
   static get notFound => Product(
-        name: 'No Data',
-        storeNumber: 'No Data',
-        costPrice: 0.0,
-        sellingPrice: 0.0,
-        inStock: 0,
-        quantity: 0,
-        category: 'No Data',
-        createdBy: 'No Data',
-      );
+    name: 'No Data',
+    storeNumber: 'No Data',
+    costPrice: 0.0,
+    sellingPrice: 0.0,
+    inStock: 0,
+    quantity: 0,
+    category: 'No Data',
+    createdBy: 'No Data',
+  );
 
   /// [findProductById]
   static Iterable<Product> findProductById(
-          List<Product> products, String productId) =>
-      products.where((product) => product.id == productId);
+    List<Product> products,
+    String productId,
+  ) => products.where((product) => product.id == productId);
 
   /// Sort products by quantity in Descending order [sortProductsByStockLevel]
   static List<Product> sortProductsByStockLevel(List<Product> products) {
@@ -285,12 +287,12 @@ class Product extends Equatable {
   static List<Product> findExpiredProduct(List<Product> products) =>
       products.where((product) => product.isExpired).toList();
 
-  static List<Product> filterProductsByStock(List<Product> products,
-          {bool inStock = true}) =>
-      products
-          .where(
-              (product) => inStock ? product.isInStock : product.isOutOfStock)
-          .toList();
+  static List<Product> filterProductsByStock(
+    List<Product> products, {
+    bool inStock = true,
+  }) => products
+      .where((product) => inStock ? product.isInStock : product.isOutOfStock)
+      .toList();
 
   /// Filter
   bool filterByAny(String filter) =>
@@ -369,33 +371,33 @@ class Product extends Equatable {
 
   @override
   List<Object> get props => [
-        id,
-        sku,
-        storeNumber,
-        batchId,
-        supplierId,
-        name,
-        costPrice,
-        sellingPrice,
-        category,
-        quantity,
-        inStock,
-        inStockPercent,
-        outOfStock,
-        outOfStockPercent,
-        barcode,
-        discountPercent,
-        turnoverRate,
-        historicalSales,
-        manufacturer ?? '',
-        remarks ?? '',
-        manufactureDate ?? '',
-        expiryDate ?? '',
-        createdBy,
-        createdAt,
-        updatedBy,
-        updatedAt,
-      ];
+    id,
+    sku,
+    storeNumber,
+    batchId,
+    supplierId,
+    name,
+    costPrice,
+    sellingPrice,
+    category,
+    quantity,
+    inStock,
+    inStockPercent,
+    outOfStock,
+    outOfStockPercent,
+    barcode,
+    discountPercent,
+    turnoverRate,
+    historicalSales,
+    manufacturer ?? '',
+    remarks ?? '',
+    manufactureDate ?? '',
+    expiryDate ?? '',
+    createdBy,
+    createdAt,
+    updatedBy,
+    updatedAt,
+  ];
 
   /// ToList for PRODUCTS [itemAsList]
   List<String> itemAsList({int? start, int? end}) {
@@ -430,24 +432,24 @@ class Product extends Equatable {
   }
 
   static List<String> get dataTableHeader => const [
-        'id',
-        'Store Number',
-        'SKU',
-        'Batch ID',
-        'Supplier ID',
-        'Product',
-        'Category',
-        'Cost Price',
-        'Selling Price',
-        'Discount',
-        'Quantity',
-        'In-Stock',
-        'Sales',
-        'Turnover Rate',
-        'Manufacturer',
-        'Expires On',
-        'Created By',
-        'Updated By',
-        'Updated At',
-      ];
+    'id',
+    'Store Number',
+    'SKU',
+    'Batch ID',
+    'Supplier ID',
+    'Product',
+    'Category',
+    'Cost Price',
+    'Selling Price',
+    'Discount',
+    'Quantity',
+    'In-Stock',
+    'Sales',
+    'Turnover Rate',
+    'Manufacturer',
+    'Expires On',
+    'Created By',
+    'Updated By',
+    'Updated At',
+  ];
 }

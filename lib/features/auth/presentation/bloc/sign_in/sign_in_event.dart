@@ -5,16 +5,6 @@ sealed class SignInEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-// Event to switch between Stores among different stores
-class SwitchStoresRequested extends SignInEvent {
-  final String storeNumber;
-
-  SwitchStoresRequested({required this.storeNumber});
-
-  @override
-  List<Object> get props => [storeNumber];
-}
-
 // Event when the email field changes
 class SignInEmailChanged extends SignInEvent {
   SignInEmailChanged(this.email);
@@ -35,24 +25,24 @@ class SignInMobileChanged extends SignInEvent {
   List<Object> get props => [mobileNumber];
 }
 
-// Event when the CompanyCategory field changes
-class CompanyCategoryChanged extends SignInEvent {
-  final String companyCategory;
+// Event when the Workspace Category field changes
+class WorkspaceCategoryChanged extends SignInEvent {
+  final String workspaceCategory;
 
-  CompanyCategoryChanged(this.companyCategory);
+  WorkspaceCategoryChanged(this.workspaceCategory);
 
   @override
-  List<Object> get props => [companyCategory];
+  List<Object> get props => [workspaceCategory];
 }
 
-// Event when the Company name field changes
+// Event when the Workspace name field changes
 class WorkspaceNameChanged extends SignInEvent {
-  final String companyName;
+  final String workspaceName;
 
-  WorkspaceNameChanged(this.companyName);
+  WorkspaceNameChanged(this.workspaceName);
 
   @override
-  List<Object> get props => [companyName];
+  List<Object> get props => [workspaceName];
 }
 
 // Event when the full name field changes

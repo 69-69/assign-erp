@@ -10,12 +10,10 @@ enum AccountStatus { enabled, disabled }
 * */
 extension AccountStatusExtension on AccountStatus {
   String get label {
-    switch (this) {
-      case AccountStatus.enabled:
-        return 'enable';
-      case AccountStatus.disabled:
-        return 'disable';
-    }
+    return switch (this) {
+      AccountStatus.enabled => 'enable',
+      AccountStatus.disabled => 'disable',
+    };
   }
 }
 
@@ -43,3 +41,6 @@ final _currentYear = DateTime.now().year;
 /// When an employee signs in using [temporalWeakPasscode], they will be prompted
 /// to create a new, permanent passcode or password.
 final temporalWeakPasscode = 'Assign@$_currentYear';
+
+/// 🏬 Default (Main) company store/shop ID for multi-stores locations
+const mainStore = 'main';

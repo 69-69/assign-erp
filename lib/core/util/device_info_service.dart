@@ -11,6 +11,7 @@ PackageInfo packageInfo = await PackageInfo.fromPlatform();*/
 
 class DeviceInfoService {
   static final _unKnown = 'unknown';
+  static final cacheService = DeviceInfoCache();
   static final DeviceInfoService _instance = DeviceInfoService._internal();
 
   // Private constructor to ensure Singleton pattern
@@ -55,14 +56,19 @@ class DeviceInfoService {
         infoMap = _linuxInfo(linux, newId);
       } else {
         newId = fallbackId; // Fallback for unknown platform
-        infoMap = {'Error': 'Unsupported Platform'};
+        infoMap = {'error': 'Unsupported Platform'};
       }
     } catch (e) {
       // Fallback on any exception
       newId = fallbackId;
       debugPrint('Failed to retrieve platform device info: $e');
-      infoMap = {'Error': 'Failed to retrieve device info'};
+      infoMap = {'error': 'Failed to retrieve device info'};
     }
+    // Cache the device info if no error occurred
+    if (!infoMap.containsKey('error')) {
+      cacheService.setDeviceInfo(infoMap);
+    }
+
     // Cache the fetched device info
     _deviceInfoCache = infoMap;
     _deviceId = newId;
@@ -79,7 +85,6 @@ class DeviceInfoService {
       return _deviceInfoCache;
     }
 
-    final cacheService = DeviceInfoCache();
     final cachedId = cacheService.getDeviceInfo();
     if (cachedId != null) return cachedId.toMap();
 
@@ -93,7 +98,6 @@ class DeviceInfoService {
   static Future getDeviceId() async {
     if (_deviceId.isNotEmpty) return _deviceId;
 
-    final cacheService = DeviceInfoCache();
     final cachedId = cacheService.getDeviceInfo();
     if (cachedId != null) return cachedId.deviceId;
 
@@ -109,7 +113,7 @@ class DeviceInfoService {
     required String v,
     required String s,
     required String i,
-  }) => {'Model': m, 'OS Version': v, 'Storage': s, 'Device ID': i};
+  }) => {'model': m, 'osVersion': v, 'storage': s, 'deviceId': i};
 
   static Map<String, String> _linuxInfo(
     LinuxDeviceInfo linux,
@@ -162,10 +166,8 @@ class DeviceInfoService {
   );
 
   /// Clears the cached device ID.
-  static Future<void> resetCache() async {
-    final cacheService = DeviceInfoCache();
-    return await cacheService.clearDeviceInfo();
-  }
+  static Future<void> resetCache() async =>
+      await cacheService.clearDeviceInfo();
 }
 
 /// Retrieves a persistent device ID across sessions/platforms.

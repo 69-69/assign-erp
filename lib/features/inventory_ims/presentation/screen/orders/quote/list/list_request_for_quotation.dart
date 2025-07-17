@@ -1,7 +1,8 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/adaptive_layout.dart';
-import 'package:assign_erp/core/util/async_progress_dialog.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/widgets/adaptive_layout.dart';
+import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/dynamic_table.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
@@ -42,8 +43,8 @@ class _ListRequestForQuotationState extends State<ListRequestForQuotation> {
     >(
       builder: (context, state) {
         return switch (state) {
-          LoadingInventory<RequestForQuotation>() => context.loader,
-          InventoryLoaded<RequestForQuotation>(data: var results) =>
+          LoadingInventories<RequestForQuotation>() => context.loader,
+          InventoriesLoaded<RequestForQuotation>(data: var results) =>
             results.isEmpty
                 ? context.buildAddButton(
                     'Request For Quotation',
@@ -113,7 +114,7 @@ class _ListRequestForQuotationState extends State<ListRequestForQuotation> {
           onPressed: () {
             // Refresh Request For Quotation Data
             context.read<RequestForQuotationBloc>().add(
-              RefreshInventory<RequestForQuotation>(),
+              RefreshInventories<RequestForQuotation>(),
             );
           },
         ),
@@ -193,7 +194,7 @@ class _ListRequestForQuotationState extends State<ListRequestForQuotation> {
   }
 
   Future<dynamic> _printout(List<RequestForQuotation> rfq, List<String> row) =>
-      Future.delayed(const Duration(seconds: 1), () async {
+      Future.delayed(wAnimateDuration, () async {
         // Simulate loading supplier and company info
         final quotes = RequestForQuotation.findRequestForQuotationById(
           rfq,

@@ -1,8 +1,9 @@
 import 'package:assign_erp/core/constants/account_status.dart';
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/async_progress_dialog.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/password_hashing.dart';
+import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/dynamic_table.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_bloc.dart';
@@ -31,7 +32,7 @@ class _ListEmployeesState extends State<ListEmployees> {
       builder: (context, state) {
         return switch (state) {
           LoadingSetup<Employee>() => context.loader,
-          SetupLoaded<Employee>(data: var results) =>
+          SetupsLoaded<Employee>(data: var results) =>
             results.isEmpty
                 ? context.buildAddButton(
                     'Create Employee Account',
@@ -113,7 +114,7 @@ class _ListEmployeesState extends State<ListEmployees> {
     List<String> row,
   ) async {
     // Simulate delayed to complete Password Reset
-    Future.delayed(const Duration(seconds: 6));
+    Future.delayed(kFAnimateDuration);
 
     Employee employee = _findEmployee(row, employees);
 

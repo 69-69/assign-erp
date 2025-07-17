@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:assign_erp/core/constants/account_status.dart';
 import 'package:assign_erp/core/network/data_sources/local/error_logs_cache.dart';
 import 'package:assign_erp/core/network/data_sources/models/workspace_model.dart';
+import 'package:assign_erp/core/util/debug_printify.dart';
 import 'package:assign_erp/features/auth/domain/repository/auth_repository.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_status_enum.dart';
 import 'package:assign_erp/features/setup/data/models/employee_model.dart';
@@ -47,7 +48,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ])
         // Listen to the merged stream and add each event to the Bloc's event stream.
         // This allows the Bloc to process events from both streams.
-        .listen((event) => add(event));
+        .listen((event) {
+          if (!isClosed) {
+            add(event);
+          } else {
+            prettyPrint('Skipped event after close', '$event');
+          }
+        });
   }
 
   Future<void> _onAuthUserChanged(
@@ -109,38 +116,35 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     try {
       switch (event.status) {
-        case AuthStatusEnum.workspaceAuthenticated:
+        case AuthStatus.workspaceAuthenticated:
           await _emitWorkspaceAuthenticatedState(emit);
           break;
 
-        case AuthStatusEnum.unauthenticated:
+        case AuthStatus.unauthenticated:
           emit(const AuthState.unauthenticated());
           break;
 
-        case AuthStatusEnum.authenticated:
+        case AuthStatus.authenticated:
           await _emitAuthenticatedState(emit);
           break;
 
-        case AuthStatusEnum.emailNotVerified:
+        case AuthStatus.emailNotVerified:
           emit(const AuthState.emailNotVerified());
           break;
 
-        case AuthStatusEnum.initial:
+        case AuthStatus.initial:
           emit(const AuthState.authInitial());
           break;
 
-        case AuthStatusEnum.isLoading:
+        case AuthStatus.isLoading:
           emit(const AuthState.isLoading());
           break;
 
-        case AuthStatusEnum.hasError:
+        case AuthStatus.hasError:
           emit(const AuthState.hasError());
           break;
 
-        case AuthStatusEnum.storesSwitched:
-          emit(const AuthState.storesSwitched());
-          break;
-        case AuthStatusEnum.hasTemporalPasscode:
+        case AuthStatus.hasTemporalPasscode:
           emit(const AuthState.hasTemporalPasscode());
       }
     } catch (e /*, stackTrace*/) {
@@ -154,14 +158,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _emitAuthenticatedState(Emitter<AuthState> emit) async {
-    final workspace = await _authRepository.getWorkspace();
-    final employee = await _authRepository.getEmployee();
+    final (Workspace workspace, Employee employee) = await Future.wait([
+      _authRepository.getWorkspace(),
+      _authRepository.getEmployee(),
+    ]).then((a) => (a.first as Workspace, a.last as Employee));
+
     emit(AuthState.authenticated(workspace: workspace, employee: employee));
   }
 
   void _handleError(Emitter<AuthState> emit, String errorMessage) {
     final errorLogCache = ErrorLogCache();
-    errorLogCache.cacheError(error: errorMessage, fileName: 'auth_bloc');
+    errorLogCache.setError(error: errorMessage, fileName: 'auth_bloc');
     emit(AuthState.hasError(error: errorMessage));
     // Optionally, log the stack trace for further debugging
     // print('Error: $errorMessage');
@@ -173,6 +180,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     try {
       await _authRepository.signOut();
+
       emit(const AuthState.unauthenticated());
     } catch (e /*, stackTrace*/) {
       emit(AuthState.hasError(error: 'Error during sign out: $e'));
@@ -182,63 +190,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   @override
-  Future<void> close() {
-    super.close();
-    _subscription.cancel();
-    _authRepository.dispose();
-    return super.close();
+  Future<void> close() async {
+    prettyPrint('Closing AuthBloc', 'AuthBloc is closing');
+    await _subscription.cancel(); // Stop listening to Firebase events
+    _authRepository.dispose(); // clean up repository streams
+    return super.close(); // Properly close the bloc
   }
 }
-
-/* void _onSignUpRequested(SignUpRequested event, Emitter<AuthState> emit) async {
-    try {
-      emit(AuthLoading());
-
-      await authRepository.signUp(
-        email: event.email,
-        password: event.password,
-        fullName: event.fullName,
-        mobileNumber: event.mobileNumber,
-      );
-
-      // emit(AuthAuthenticated(user: user));
-    } catch (error) {
-      emit(AuthError(message: error.toString()));
-    }
-  }
-  void _onSignInRequested(
-      SignInRequested event, Emitter<AuthState> emit) async {
-    try {
-      emit(AuthLoading());
-
-      final user = await authRepository.signIn(
-        email: event.email,
-        password: event.password,
-      );
-
-      if (user != null) {
-        emit(AuthAuthenticated(user: user));
-      }
-    } catch (error) {
-      emit(AuthError(message: error.toString()));
-    }
-  }
-
-  void _onForgotPasswordRequested(
-      ForgotPasswordRequested event, Emitter<AuthState> emit) async {
-    try {
-      emit(AuthLoading());
-
-      await authRepository.forgotPassword(email: event.email);
-
-      emit(AuthPasswordReset());
-    } catch (error) {
-      emit(AuthError(message: error.toString()));
-    }
-  }
-
-  void _onSignOutRequested(
-      SignOutRequested event, Emitter<AuthState> emit) async {
-    await authRepository.signOut();
-    emit(AuthInitial());
-  }*/

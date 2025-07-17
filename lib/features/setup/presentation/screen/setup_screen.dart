@@ -1,6 +1,7 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/size_config.dart';
+import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/custom_tab.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
@@ -46,7 +47,7 @@ class SetupScreen extends StatelessWidget {
       length: 6,
       tabs: _sidetabs,
       children: [
-        const CompanyInfoScreen(),
+        const CompanyScreen(),
         const CreateUserAccScreen(),
         const ProductConfigScreen(),
         const BackUp(),
@@ -54,10 +55,17 @@ class SetupScreen extends StatelessWidget {
         Container(
           alignment: Alignment.center,
           padding: EdgeInsets.symmetric(horizontal: context.screenWidth * 0.1),
-          child: Text(
-            'All set! You have the latest update installed',
-            style: context.ofTheme.textTheme.titleLarge,
-            textScaler: TextScaler.linear(context.textScaleFactor),
+          child: Wrap(
+            runSpacing: 20,
+            alignment: WrapAlignment.center,
+            children: [
+              Text(
+                'All set! You have the latest update installed',
+                style: context.ofTheme.textTheme.titleLarge,
+                textScaler: TextScaler.linear(context.textScaleFactor),
+              ),
+              context.elevatedBtn(onPressed: () {}, label: 'Check for Updates'),
+            ],
           ),
         ),
       ],

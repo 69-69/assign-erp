@@ -98,44 +98,36 @@ extension GetIndexPosition on List {
 }
 
 extension CaseSenitive on String {
+  // Helper function to generate a random number as a string
+  String get generateUID {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    final rand = Random();
+    return List.generate(
+      length,
+      (index) => chars[rand.nextInt(chars.length)],
+    ).join();
+  }
+
   /// Create username from email address
   String get emailToUsername {
-    final random = Random();
-
-    // Helper function to generate a random number as a string
-    String generateRandomNumber(int length) =>
-        List.generate(length, (_) => random.nextInt(10)).join();
-
-    // Replace characters in the email address with random numbers
-    String replaceWithRandom(String input, RegExp pattern, int length) {
-      return input.replaceAllMapped(
-        pattern,
-        (_) => generateRandomNumber(length),
-      );
-    }
-
-    // Replace '@' and '.' characters with random numbers
-    String replacedAt = replaceWithRandom(this, RegExp(r'@'), 3);
-    String replacedDots = replaceWithRandom(
-      replacedAt,
-      RegExp(r'\.(?![^.]*\.)'),
-      2,
-    );
-    String replacedDomainExtension = replaceWithRandom(
-      replacedDots,
-      RegExp(r'\.(?:[a-zA-Z]{2,}|[0-9]+|[a-zA-Z]{2,}\.[a-zA-Z]{2,})$'),
-      3,
-    );
-
-    return replacedDomainExtension;
+    final baseUsername = split(
+      '@',
+    )[0].replaceAll(RegExp(r'[^a-zA-Z0-9]'), ''); // Removes non-alphanumeric
+    final randomSuffix = '5'.generateUID;
+    return '${baseUsername}_$randomSuffix';
   }
 
   /// Convert lowerCamelCase to two separate words
   /// Ex: 'dataType' to 'Data Type' [separateWord]
-  String get separateWord =>
-      replaceAllMapped(RegExp(r'([a-z])([A-Z])'), (match) {
-        return '${match.group(1)} ${match.group(2)}';
-      });
+  String get separateWord {
+    var regex = RegExp(r'([a-z])([A-Z])');
+    if (!regex.hasMatch(this)) return this;
+
+    return replaceAllMapped(
+      regex,
+      (match) => '${match.group(1)} ${match.group(2)}',
+    );
+  }
 
   /// This will put the first letter in UpperCase, will print 'Name'
   /// print(TextTools.toUppercaseFirstLetter(text: 'name'));

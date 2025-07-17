@@ -17,10 +17,10 @@ class RequestForQuotationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<RequestForQuotationBloc>(
-      create: (context) => RequestForQuotationBloc(
-        firestore: FirebaseFirestore.instance,
-      )..add(GetInventory<RequestForQuotation>()),
-      child:  CustomScaffold(
+      create: (context) =>
+          RequestForQuotationBloc(firestore: FirebaseFirestore.instance)
+            ..add(GetInventories<RequestForQuotation>()),
+      child: CustomScaffold(
         title: requestPriceQuoteScreenTitle.toUpperCase(),
         body: _buildBody(),
         floatingActionButton: context.buildFloatingBtn(
@@ -38,14 +38,11 @@ class RequestForQuotationScreen extends StatelessWidget {
       tabs: [
         {
           'label': 'Request For Quotation',
-          'icon': Icons.miscellaneous_services
+          'icon': Icons.miscellaneous_services,
         },
         {'label': 'Awarded RFQ', 'icon': Icons.card_giftcard},
       ],
-      children: [
-        ListRequestForQuotation(),
-        ListAwardedRequestForQuotation(),
-      ],
+      children: [ListRequestForQuotation(), ListAwardedRequestForQuotation()],
     );
   }
 }

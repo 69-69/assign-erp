@@ -1,8 +1,8 @@
-import 'package:equatable/equatable.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:equatable/equatable.dart';
 
-var _today = DateTime.now(); /*.millisecondsSinceEpoch.toString()*/
+var _today = DateTime.now();
 
 class Supplier extends Equatable {
   final String id;
@@ -27,8 +27,8 @@ class Supplier extends Equatable {
     DateTime? createdAt,
     this.updatedBy = '',
     DateTime? updatedAt,
-  })  : createdAt = createdAt ?? _today,
-        updatedAt = updatedAt ?? _today; // Set default value
+  }) : createdAt = createdAt ?? _today,
+       updatedAt = updatedAt ?? _today; // Set default value
 
   /// fromFirestore / fromJson Function [Supplier.fromMap]
   factory Supplier.fromMap(Map<String, dynamic> data, String documentId) {
@@ -48,17 +48,17 @@ class Supplier extends Equatable {
 
   // map template
   Map<String, dynamic> _mapTemp() => {
-      'id': id,
-      'supplierName': supplierName,
-      'phone': phone,
-      'email': email,
-      'address': address,
-      'contactPersonName': contactPersonName,
-      'createdBy': createdBy,
-      'createdAt': createdAt,
-      'updatedBy': updatedBy,
-      'updatedAt': updatedAt,
-    };
+    'id': id,
+    'supplierName': supplierName,
+    'phone': phone,
+    'email': email,
+    'address': address,
+    'contactPersonName': contactPersonName,
+    'createdBy': createdBy,
+    'createdAt': createdAt,
+    'updatedBy': updatedBy,
+    'updatedAt': updatedAt,
+  };
 
   /// Convert Model to toFirestore / toJson Function [toMap]
   Map<String, dynamic> toMap() {
@@ -100,11 +100,11 @@ class Supplier extends Equatable {
   String get itemAsString => supplierName.toUppercaseFirstLetterEach;
 
   static get notFound => Supplier(
-        supplierName: 'No Data',
-        address: 'No Data',
-        contactPersonName: 'No Data',
-        createdBy: 'No Data',
-      );
+    supplierName: 'No Data',
+    address: 'No Data',
+    contactPersonName: 'No Data',
+    createdBy: 'No Data',
+  );
 
   /// Filter Search
   bool filterByAny(String filter) =>
@@ -115,8 +115,9 @@ class Supplier extends Equatable {
 
   /// [findCategoriesById]
   static Iterable<Supplier> findCategoriesById(
-          List<Supplier> suppliers, String id) =>
-      suppliers.where((d) => d.id == id);
+    List<Supplier> suppliers,
+    String id,
+  ) => suppliers.where((d) => d.id == id);
 
   /// copyWith method
   Supplier copyWith({
@@ -147,42 +148,42 @@ class Supplier extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        supplierName,
-        phone,
-        address,
-        contactPersonName,
-        email,
-        createdBy,
-        createdAt,
-        updatedBy,
-        updatedAt,
-      ];
+    id,
+    supplierName,
+    phone,
+    address,
+    contactPersonName,
+    email,
+    createdBy,
+    createdAt,
+    updatedBy,
+    updatedAt,
+  ];
 
   /// ToList for Product-Supplier address [toListL]
   List<String> toListL() => [
-        id,
-        supplierName.toUppercaseFirstLetterEach,
-        contactPersonName.toUppercaseFirstLetterEach,
-        phone,
-        (email ?? 'none').toUppercaseFirstLetterEach,
-        address.toUppercaseFirstLetterEach,
-        createdBy.toUppercaseFirstLetterEach,
-        getCreatedAt,
-        updatedBy.toUppercaseFirstLetterEach,
-        getUpdatedAt,
-      ];
+    id,
+    supplierName.toUppercaseFirstLetterEach,
+    contactPersonName.toUppercaseFirstLetterEach,
+    phone,
+    (email ?? 'none').toUppercaseFirstLetterEach,
+    address.toUppercaseFirstLetterEach,
+    createdBy.toUppercaseFirstLetterEach,
+    getCreatedAt,
+    updatedBy.toUppercaseFirstLetterEach,
+    getUpdatedAt,
+  ];
 
   static List<String> get dataHeader => const [
-        'ID',
-        'Supplier Name',
-        'Contact Person Name',
-        'Phone',
-        'Email',
-        'Address / Location',
-        'Created By',
-        'Created At',
-        'Updated By',
-        'Updated At',
-      ];
+    'ID',
+    'Supplier Name',
+    'Contact Person Name',
+    'Phone',
+    'Email',
+    'Address / Location',
+    'Created By',
+    'Created At',
+    'Updated By',
+    'Updated At',
+  ];
 }

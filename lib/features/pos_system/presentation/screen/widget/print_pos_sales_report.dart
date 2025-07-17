@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
+import 'package:assign_erp/core/network/data_sources/models/print_util_model.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/features/pos_system/data/models/pos_print/print_pos_report_model.dart';
 import 'package:assign_erp/features/pos_system/data/models/pos_sale_model.dart';
-import 'package:assign_erp/core/widgets/print_util_model.dart';
 import 'package:collection/collection.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';

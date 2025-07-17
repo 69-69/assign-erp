@@ -1,10 +1,9 @@
 // Enum for authentication status
-enum AuthStatusEnum {
+enum AuthStatus {
   initial,
   isLoading,
   authenticated,
   unauthenticated,
-  storesSwitched,
   emailNotVerified,
   workspaceAuthenticated,
   hasTemporalPasscode,

@@ -17,7 +17,7 @@ class PosOrdersScreen extends StatelessWidget {
     return BlocProvider<POSOrderBloc>(
       create: (context) =>
           POSOrderBloc(firestore: FirebaseFirestore.instance)
-            ..add(GetPOS<POSOrder>()),
+            ..add(GetPOSs<POSOrder>()),
       child: CustomScaffold(
         title: posOrdersScreenTitle.toUpperCase(),
         body: const ListPOSOrders(),

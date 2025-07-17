@@ -1,17 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:assign_erp/core/constants/app_db_collect.dart';
-import 'package:assign_erp/features/pos_system/presentation/bloc/pos_bloc.dart';
-import 'package:assign_erp/features/pos_system/data/models/pos_sale_model.dart';
-import 'package:assign_erp/features/pos_system/data/models/pos_order_model.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/product_model.dart';
-
+import 'package:assign_erp/features/pos_system/data/models/pos_order_model.dart';
+import 'package:assign_erp/features/pos_system/data/models/pos_sale_model.dart';
+import 'package:assign_erp/features/pos_system/presentation/bloc/pos_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class POSOrderBloc extends POSBloc<POSOrder> {
   final FirebaseFirestore _firestore;
 
   POSOrderBloc({required super.firestore})
-      : _firestore = firestore,
-        super(
+    : _firestore = firestore,
+      super(
         collectionPath: posOrdersDBCollectionPath,
         fromFirestore: (data, id) => POSOrder.fromMap(data, id),
         toFirestore: (so) => so.toMap(),
@@ -20,7 +19,10 @@ class POSOrderBloc extends POSBloc<POSOrder> {
 
   // Records or creates new sales for a given list of orders.
   // Adds each sale to Firestore and updates the state with the new order data.
-  Future<void> createNewSalesForOrder(List<POSOrder> orders, Map<String, double> costPricesMap) async {
+  Future<void> createNewSalesForOrder(
+    List<POSOrder> orders,
+    Map<String, double> costPricesMap,
+  ) async {
     // Prepare a list to hold all the Firestore add operations.
     final List<Future<void>> addOperations = orders.map((order) async {
       // Retrieve the cost price for the product, defaulting to 0.0 if not found.
@@ -33,7 +35,10 @@ class POSOrderBloc extends POSBloc<POSOrder> {
       final double profit = sale.calculateProfit(costPrice);
 
       // Update the Sales object with new status and profit.
-      final POSSale updatedSale = sale.copyWith(status: 'completed', profit: profit);
+      final POSSale updatedSale = sale.copyWith(
+        status: 'completed',
+        profit: profit,
+      );
 
       // Convert the updated Sales object to a Map for Firestore storage.
       final Map<String, dynamic> saleMap = updatedSale.toMap();
@@ -55,14 +60,16 @@ class POSOrderBloc extends POSBloc<POSOrder> {
     await Future.wait(addOperations);
 
     // Dispatch an event to update the state or UI with the new sales data.
-    add(GetPOS<POSOrder>());
+    add(GetPOSs<POSOrder>());
   }
 
   // Function to update the product quantity
   Future<void> _updateProductQty(String productId, int orderQuantity) async {
     try {
       // Construct a reference to the document of the product in Firestore
-      final docRef = _firestore.collection(productsDBCollectionPath).doc(productId);
+      final docRef = _firestore
+          .collection(productsDBCollectionPath)
+          .doc(productId);
 
       // Retrieve the current data of the product document from Firestore
       final docSnapshot = await docRef.get();
@@ -80,7 +87,10 @@ class POSOrderBloc extends POSBloc<POSOrder> {
             final newOutStock = fromProduct.outOfStock + orderQuantity;
 
             // Update product quantity & out of Stock in Firestore-DB
-            await docRef.update({'quantity': newQty, 'outOfStock': newOutStock});
+            await docRef.update({
+              'quantity': newQty,
+              'outOfStock': newOutStock,
+            });
           } else {
             // print('Product quantity is not sufficient for the update.');
           }
@@ -95,5 +105,4 @@ class POSOrderBloc extends POSBloc<POSOrder> {
       // print('Error updating product quantity and recording sales: $e');
     }
   }
-
 }

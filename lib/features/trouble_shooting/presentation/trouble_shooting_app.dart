@@ -21,6 +21,7 @@ class TroubleShootingApp extends StatelessWidget {
         ],
         children: [ErrorLogScreen(), UserDeviceSpecScreen()],
       ),
+
       // floatingActionButton: _buildFloatingActionButton(context),
     );
   }

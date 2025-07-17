@@ -1,9 +1,10 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/column_row_builder.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
 import 'package:assign_erp/core/util/device_info_service.dart';
+import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/core/widgets/column_row_builder.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/data_backup_manager.dart';
 import 'package:assign_erp/core/widgets/file_doc_manager.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
@@ -53,6 +54,8 @@ class _UserDeviceSpecScreenState extends State<UserDeviceSpecScreen> {
         controller: _scrollController,
         child: _buildBody(context),
       ),
+      bottomNavigationBar: const SizedBox(),
+      actions: [],
     );
   }
 
@@ -91,7 +94,7 @@ class _UserDeviceSpecScreenState extends State<UserDeviceSpecScreen> {
 
   _buildDeviceSpecs(BuildContext context) {
     return Container(
-      color: kGrayColor.withAlpha((0.2 * 255).toInt()),
+      color: kGrayColor.toAlpha(0.1 * 255),
       alignment: Alignment.bottomLeft,
       margin: EdgeInsets.zero,
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
@@ -104,7 +107,7 @@ class _UserDeviceSpecScreenState extends State<UserDeviceSpecScreen> {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4.0),
             child: Text(
-              '* ${entry.key}: ${entry.value}',
+              '* ${(entry.key.separateWord).toUppercaseFirstLetterEach}: ${entry.value}',
               textAlign: TextAlign.start,
               style: context.ofTheme.textTheme.bodyLarge,
             ),
@@ -187,7 +190,7 @@ class _UserDeviceSpecScreenState extends State<UserDeviceSpecScreen> {
         );
 
         if (isConfirmed) {
-          await DataBackupManager.deleteCacheData();
+          await DataBackupManager.deleteCache();
           if (context.mounted) {
             RefreshEntireApp.restartApp(context);
           }

@@ -10,12 +10,14 @@ class GetSuppliers {
     final supplierBloc = SupplierBloc(firestore: FirebaseFirestore.instance);
 
     // Load all data initially to pass to the search delegate
-    supplierBloc.add(GetSetup<Supplier>());
+    supplierBloc.add(GetSetups<Supplier>());
 
     // Ensure to wait for the data to be loaded
-    final state = await supplierBloc.stream.firstWhere(
-      (state) => state is SetupLoaded<Supplier>,
-    ) as SetupLoaded<Supplier>;
+    final state =
+        await supplierBloc.stream.firstWhere(
+              (state) => state is SetupsLoaded<Supplier>,
+            )
+            as SetupsLoaded<Supplier>;
 
     return state.data.isEmpty ? [Supplier.notFound] : state.data;
   }
@@ -26,17 +28,21 @@ class GetSuppliers {
     final supplierBloc = SupplierBloc(firestore: FirebaseFirestore.instance);
 
     // Load all data initially to pass to the search delegate
-    supplierBloc.add(SearchSetup<Supplier>(
-      field: 'supplierName',
-      optField: 'phone',
-      auxField: 'contactPersonName',
-      query: term,
-    ));
+    supplierBloc.add(
+      SearchSetup<Supplier>(
+        field: 'supplierName',
+        optField: 'phone',
+        auxField: 'contactPersonName',
+        query: term,
+      ),
+    );
 
     // Ensure to wait for the data to be loaded
-    final state = await supplierBloc.stream.firstWhere(
-      (state) => state is SetupLoaded<Supplier>,
-    ) as SetupLoaded<Supplier>;
+    final state =
+        await supplierBloc.stream.firstWhere(
+              (state) => state is SetupsLoaded<Supplier>,
+            )
+            as SetupsLoaded<Supplier>;
 
     return state.data.isEmpty ? [Supplier.notFound] : state.data;
   }
@@ -44,17 +50,17 @@ class GetSuppliers {
   /// Get by supplierId [bySupplierId]
   static Future<Supplier> bySupplierId(supplierId) async {
     final supplierBloc = SupplierBloc(firestore: FirebaseFirestore.instance);
-// Load all data initially to pass to the search delegate
+    // Load all data initially to pass to the search delegate
     supplierBloc.add(GetSetupById<Supplier>(documentId: supplierId));
 
     // Ensure to wait for the data to be loaded
     final state = await supplierBloc.stream.firstWhere(
-      (state) => state is SetupLoaded<Supplier>,
+      (state) => state is SetupsLoaded<Supplier>,
       orElse: () => Supplier
           .notFound, // Handle case where stream may not emit the expected state
     );
 
-    if (state is SetupLoaded<Supplier>) {
+    if (state is SetupsLoaded<Supplier>) {
       // debugPrint('steve ${state.data}');
       return state.data.isEmpty ? Supplier.notFound : state.data.first;
     } else {

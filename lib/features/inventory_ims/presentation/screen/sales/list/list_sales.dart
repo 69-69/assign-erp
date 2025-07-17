@@ -1,7 +1,8 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/adaptive_layout.dart';
-import 'package:assign_erp/core/util/async_progress_dialog.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/widgets/adaptive_layout.dart';
+import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/dynamic_table.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
@@ -35,7 +36,7 @@ class _ListSalesState extends State<ListSales> {
     return BlocProvider(
       create: (context) =>
           SaleBloc(firestore: FirebaseFirestore.instance)
-            ..add(GetInventory<Sale>()),
+            ..add(GetInventories<Sale>()),
       child: _buildBody(),
     );
   }
@@ -44,8 +45,8 @@ class _ListSalesState extends State<ListSales> {
     return BlocBuilder<SaleBloc, InventoryState<Sale>>(
       builder: (context, state) {
         return switch (state) {
-          LoadingInventory<Sale>() => context.loader,
-          InventoryLoaded<Sale>(data: var results) =>
+          LoadingInventories<Sale>() => context.loader,
+          InventoriesLoaded<Sale>(data: var results) =>
             results.isEmpty
                 ? context.buildAddButton(
                     'Add Sales',
@@ -106,7 +107,7 @@ class _ListSalesState extends State<ListSales> {
           count: sales.length,
           onPressed: () {
             // Refresh Sales Data
-            context.read<SaleBloc>().add(RefreshInventory<Sale>());
+            context.read<SaleBloc>().add(RefreshInventories<Sale>());
           },
         ),
         // final orderBloc = context.read<OrdersBloc>();
@@ -183,7 +184,7 @@ class _ListSalesState extends State<ListSales> {
   }
 
   Future<dynamic> _printout(List<Sale> sales, List<String> row) =>
-      Future.delayed(const Duration(seconds: 1), () async {
+      Future.delayed(wAnimateDuration, () async {
         // Simulate loading supplier and company info
         final getSales = Sale.findSaleById(sales, saleId: row.first).toList();
 

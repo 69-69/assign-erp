@@ -23,7 +23,7 @@ class AuthCacheService {
 
   /// Clear & delete Cache/localStorage [_clearCache]
   Future<void> _clearCache(String key) async {
-    await Future.wait([_dataBox.delete(key), _dataBox.clear()]);
+    await Future.wait([_dataBox.clear(), _dataBox.delete(key)]);
   }
 
   Workspace? getWorkspace() {
@@ -36,16 +36,38 @@ class AuthCacheService {
     return cache != null ? Employee.fromMap(cache.data) : null;
   }
 
-  Future<void> cacheWorkspace(Workspace workspace) async {
-    final cacheData = CacheData.fromCache(workspace.toCache(), _workCacheKey);
+  /// Set Workspace to Cache/localStorage [setWorkspace]
+  Future<void> setWorkspace(Workspace workspace) async {
+    final cacheData = CacheData.fromCache(
+      workspace.toCache(),
+      id: _workCacheKey,
+      scopeId: workspace.id,
+    );
     // Add to Cache/localStorage
     await _addToCache(_workCacheKey, cacheData);
   }
 
-  Future<void> cacheEmployee(Employee employee) async {
-    final cacheData = CacheData.fromCache(employee.toCache(), _empCacheKey);
+  /// Set Employee to Cache/localStorage [setEmployee]
+  Future<void> setEmployee(Employee employee) async {
+    final cacheData = CacheData.fromCache(
+      employee.toCache(),
+      id: _empCacheKey,
+      scopeId: employee.workspaceId,
+    );
     // Add to Cache/localStorage
     await _addToCache(_empCacheKey, cacheData);
+  }
+
+  /// Switch between store Locations [switchStores]
+  Future<bool> switchStores(String storeNumber) async {
+    Employee? employee = getEmployee();
+    if (employee == null) return false;
+
+    final emp = employee.copyWith(storeNumber: storeNumber);
+    await setEmployee(emp);
+    // await _dataBox.flush(); // flush cache to disk
+
+    return true;
   }
 
   Future<void> deleteWorkspace() async => _clearCache(_workCacheKey);

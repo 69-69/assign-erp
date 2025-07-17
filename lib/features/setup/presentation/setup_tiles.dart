@@ -7,7 +7,7 @@ extension SetupTiles on dynamic {
   List<DashboardTile> get setupTiles {
     final tilesData = [
       {
-        'label': 'company - info',
+        'label': 'company',
         'icon': Icons.info_outline,
         'action': RouteNames.companyInfo,
         'param': {'openTab': '0'},
@@ -72,7 +72,7 @@ extension SetupTiles on dynamic {
 /*List<DashboardTile> get setupTiles => [
     // NavLinks(label: 'create - account', icon: Icons.create, action: RouteNames.createUserAccount, param: {'openTab': '0'}),
     _dashboardTile(
-      label: 'company - info',
+      label: 'company',
       icon: Icons.info_outline,
       action: RouteNames.companyInfo,
       param: {'openTab': '0'},

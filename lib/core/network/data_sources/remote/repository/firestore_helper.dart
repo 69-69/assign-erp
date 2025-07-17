@@ -44,7 +44,8 @@ class FirestoreHelper {
   /// Returns a collection reference based on [CollectionType].
   ///
   /// For specialized types (chats, stores, clients), this routes to their respective scoped references.
-  /// Defaults to `CollectionType.workspace`, which builds the path: `/role/workspaceId/collectionPath`
+  /// Defaults to `CollectionType.workspace`,
+  /// which builds the path as: `/workspaceRole/workspaceId/collectionPath`
   CollectionReference<Map<String, dynamic>> getCollectionRef(
     String collectionPath, {
     CollectionType collectionType = CollectionType.workspace,
@@ -67,7 +68,7 @@ class FirestoreHelper {
           ); // Workspace-scoped reference*/
   }
 
-  /// Returns a workspace-scoped collection reference: `/role/workspaceId/collectionPath`
+  /// Returns a workspace-scoped collection reference: `/workspaceRole/workspaceId/collectionPath`
   CollectionReference<Map<String, dynamic>> _getWorkspaceRoleCollectionRef(
     String collectionPath,
   ) {
@@ -83,7 +84,7 @@ class FirestoreHelper {
 
   /// Returns a collection inside a specific store (e.g. products, inventory).
   ///
-  /// Example path: `/role/workspaceId/stores/storeNumber/collectionPath`
+  /// Example path: `/workspaceRole/workspaceId/stores/storeNumber/collectionPath`
   CollectionReference<Map<String, dynamic>> getStoresCollectionRef(
     String collectionPath,
   ) {

@@ -1,4 +1,5 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:flutter/material.dart';
 
@@ -7,6 +8,7 @@ class CustomScrollBar extends StatefulWidget {
   final Axis? scrollDirection;
   final EdgeInsetsGeometry? padding;
   final ScrollController controller;
+  final bool isAlwaysShown;
 
   const CustomScrollBar({
     super.key,
@@ -14,6 +16,7 @@ class CustomScrollBar extends StatefulWidget {
     required this.controller,
     this.scrollDirection,
     this.padding,
+    this.isAlwaysShown = false, // always show the scrollbar
   });
 
   @override
@@ -47,7 +50,7 @@ class _CustomScrollBarState extends State<CustomScrollBar> {
   void _scrollToTop() {
     _scrollController.animateTo(
       0.0,
-      duration: const Duration(milliseconds: 300),
+      duration: kAnimateDuration,
       curve: Curves.easeInOut,
     );
   }
@@ -65,7 +68,7 @@ class _CustomScrollBarState extends State<CustomScrollBar> {
         children: [
           Scrollbar(
             controller: _scrollController,
-            thumbVisibility: true,
+            thumbVisibility: widget.isAlwaysShown,
             child: SingleChildScrollView(
               controller: _scrollController,
               scrollDirection: scrollDir,
@@ -83,7 +86,7 @@ class _CustomScrollBarState extends State<CustomScrollBar> {
               bottom: 20,
               right: 20,
               child: FloatingActionButton.small(
-                backgroundColor: Colors.red[700],
+                backgroundColor: kDangerColor,
                 onPressed: _scrollToTop,
                 tooltip: toolTip,
                 child: Icon(icon, color: kLightColor),

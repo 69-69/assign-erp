@@ -25,24 +25,11 @@ class _LicenseRenewalState extends State<LicenseRenewal> {
   void initState() {
     super.initState();
     _getAgent();
-    _getAgentClients();
   }
 
   _getAgent() async {
     final info = (await GetAgent.byAgentId(context.workspace!.agentID));
     setState(() => myAgent = info);
-  }
-
-  _getAgentClients() async {
-    final cl = await GetAgent.byClientsAgentId();
-
-    // Debug print AFTER data is available
-    debugPrint('Loaded Agent Clients:');
-    for (var c in cl) {
-      debugPrint('→ ${c.clientWorkspace?.clientName} (${c.clientWorkspaceId})');
-    }
-
-    setState(() => clients = cl);
   }
 
   @override
@@ -57,6 +44,7 @@ class _LicenseRenewalState extends State<LicenseRenewal> {
                 style: context.ofTheme.textTheme.titleLarge,
               ),
             ),
+      bottomNavigationBar: const SizedBox.shrink(),
     );
   }
 

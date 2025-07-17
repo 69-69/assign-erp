@@ -47,8 +47,8 @@ class POSSale extends Equatable {
     this.updatedBy = '',
     DateTime? createdAt,
     DateTime? updatedAt,
-  })  : createdAt = createdAt ?? _today,
-        updatedAt = updatedAt ?? _today; // Set default value
+  }) : createdAt = createdAt ?? _today,
+       updatedAt = updatedAt ?? _today; // Set default value
 
   factory POSSale.fromMap(Map<String, dynamic> map, String documentId) {
     var rev = calculateRevenue(map);
@@ -79,26 +79,26 @@ class POSSale extends Equatable {
 
   // map template
   Map<String, dynamic> _mapTemp() => {
-        'id': id,
-        'storeNumber': storeNumber,
-        'orderNumber': orderNumber,
-        'receiptNumber': receiptNumber,
-        'customerId': customerId,
-        'productId': productId,
-        'unitPrice': unitPrice,
-        'quantity': quantity,
-        'totalAmount': totalAmount,
-        'status': status,
-        'paymentMethod': paymentMethod,
-        'taxPercent': taxPercent,
-        'discountPercent': discountPercent,
-        'revenue': revenue,
-        'profit': profit,
-        'createdBy': createdBy,
-        'createdAt': createdAt,
-        'updatedBy': updatedBy,
-        'updatedAt': updatedAt,
-      };
+    'id': id,
+    'storeNumber': storeNumber,
+    'orderNumber': orderNumber,
+    'receiptNumber': receiptNumber,
+    'customerId': customerId,
+    'productId': productId,
+    'unitPrice': unitPrice,
+    'quantity': quantity,
+    'totalAmount': totalAmount,
+    'status': status,
+    'paymentMethod': paymentMethod,
+    'taxPercent': taxPercent,
+    'discountPercent': discountPercent,
+    'revenue': revenue,
+    'profit': profit,
+    'createdBy': createdBy,
+    'createdAt': createdAt,
+    'updatedBy': updatedBy,
+    'updatedAt': updatedAt,
+  };
 
   /// Convert Model to toFirestore / toJson Function [toMap]
   Map<String, dynamic> toMap() {
@@ -150,13 +150,10 @@ class POSSale extends Equatable {
   }
 
   static double calculateRevenue(Map<String, dynamic> d) => switch (d) {
-        {
-          'totalAmount': double totalAmount,
-          'unitPrice': double unitPrice,
-        } =>
-          totalAmount * unitPrice,
-        _ => 0.0
-      };
+    {'totalAmount': double totalAmount, 'unitPrice': double unitPrice} =>
+      totalAmount * unitPrice,
+    _ => 0.0,
+  };
 
   /// Calculate Profit [calculateProfit]
   /// Profit = Revenue − Cost or Profit = (unitPrice - costPrice) * quantity
@@ -164,13 +161,16 @@ class POSSale extends Equatable {
       costPrice == 0.0 ? 0.0 : (unitPrice - costPrice) * quantity.toDouble();
 
   /// Find a Specific sale by id [findSaleById]
-  static Iterable<POSSale> findSaleById(List<POSSale> sales,
-          {required String saleId}) =>
-      sales.where((sale) => sale.id == saleId);
+  static Iterable<POSSale> findSaleById(
+    List<POSSale> sales, {
+    required String saleId,
+  }) => sales.where((sale) => sale.id == saleId);
 
   /// Filter sales [filterSalesByDate]
-  static List<POSSale> filterSalesByDate(List<POSSale> sales,
-          {bool isSameDay = true}) =>
+  static List<POSSale> filterSalesByDate(
+    List<POSSale> sales, {
+    bool isSameDay = true,
+  }) =>
       sales.where((sale) => isSameDay ? sale.isToday : !sale.isToday).toList();
 
   /// Check if any required fields are missing or empty
@@ -185,7 +185,7 @@ class POSSale extends Equatable {
       paymentMethod,
       status,
       status,
-      createdBy
+      createdBy,
     ].every((field) => field.isNotEmpty);
 
     // Check for numerical fields
@@ -243,71 +243,71 @@ class POSSale extends Equatable {
 
   @override
   List<Object> get props => [
-        id,
-        storeNumber,
-        orderNumber,
-        receiptNumber,
-        customerId,
-        productId,
-        unitPrice,
-        quantity,
-        totalAmount,
-        status,
-        paymentMethod,
-        taxPercent,
-        discountPercent,
-        revenue,
-        profit,
-        createdBy,
-        createdAt,
-        updatedBy,
-        updatedAt,
-      ];
+    id,
+    storeNumber,
+    orderNumber,
+    receiptNumber,
+    customerId,
+    productId,
+    unitPrice,
+    quantity,
+    totalAmount,
+    status,
+    paymentMethod,
+    taxPercent,
+    discountPercent,
+    revenue,
+    profit,
+    createdBy,
+    createdAt,
+    updatedBy,
+    updatedAt,
+  ];
 
   /// ToList for SALES [itemAsList]
   List<String> itemAsList() => [
-        id,
-        storeNumber,
-        productId.toUppercaseAllLetter,
-        orderNumber,
-        receiptNumber,
-        customerId,
-        status.toUppercaseFirstLetterEach,
-        '$ghanaCedis${unitPrice.toCurrency}',
-        '$quantity',
-        '$ghanaCedis${subTotal.toCurrency}',
-        '$discountPercent% = $ghanaCedis${discountAmount.toCurrency}',
-        '$taxPercent% = $ghanaCedis${taxAmount.toCurrency}',
-        '$ghanaCedis${totalAmount.toCurrency}',
-        paymentMethod.toUppercaseFirstLetterEach,
-        '$ghanaCedis${getRevenue.toCurrency}',
-        '$ghanaCedis${profit.toCurrency}',
-        createdBy.toUppercaseFirstLetterEach,
-        getCreatedAt,
-        updatedBy.toUppercaseFirstLetterEach,
-        getUpdatedAt,
-      ];
+    id,
+    storeNumber,
+    productId.toUppercaseAllLetter,
+    orderNumber,
+    receiptNumber,
+    customerId,
+    status.toUppercaseFirstLetterEach,
+    '$ghanaCedis${unitPrice.toCurrency}',
+    '$quantity',
+    '$ghanaCedis${subTotal.toCurrency}',
+    '$discountPercent% = $ghanaCedis${discountAmount.toCurrency}',
+    '$taxPercent% = $ghanaCedis${taxAmount.toCurrency}',
+    '$ghanaCedis${totalAmount.toCurrency}',
+    paymentMethod.toUppercaseFirstLetterEach,
+    '$ghanaCedis${getRevenue.toCurrency}',
+    '$ghanaCedis${profit.toCurrency}',
+    createdBy.toUppercaseFirstLetterEach,
+    getCreatedAt,
+    updatedBy.toUppercaseFirstLetterEach,
+    getUpdatedAt,
+  ];
 
   static List<String> get dataTableHeader => const [
-        'ID',
-        'Store Number',
-        'Product ID',
-        'Order Number',
-        'Receipt Number',
-        'Customer ID',
-        'Status',
-        'Unit Price',
-        'Quantity',
-        'Sub Total',
-        'Discount',
-        'Tax',
-        'Total Amount',
-        'Payment Method',
-        'Revenue',
-        'Gross Profit',
-        'Created By',
-        'Created At',
-        'Updated By',
-        'Updated At',
-      ];
+    'ID',
+    'Store Number',
+    'Product ID',
+    'Order Number',
+    'Receipt Number',
+    'Customer ID',
+    'Status',
+    'Unit Price',
+    'Quantity',
+    'Sub Total',
+    'Discount',
+    'Tax',
+    'Total Amount',
+    'Payment Method',
+    'Revenue',
+    'Gross Profit',
+    'Created By',
+    'Created At',
+    'Updated By',
+    'Updated At',
+  ];
 }

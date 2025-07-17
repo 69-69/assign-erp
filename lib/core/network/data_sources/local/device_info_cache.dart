@@ -7,6 +7,7 @@ import 'package:hive/hive.dart';
 class DeviceInfoCache {
   final Box<CacheData> _dataBox;
   static const _cacheKey = DeviceInfo.cacheKey;
+  static const String _onboardingCacheKey = 'hide_onboarding';
 
   DeviceInfoCache() : _dataBox = Hive.box<CacheData>(deviceInfoCache);
 
@@ -25,12 +26,31 @@ class DeviceInfoCache {
   }
 
   /// Stores the generated device Info in local storage.
-  Future<void> cacheDeviceInfo(Map<String, dynamic> deviceInfo) async {
-    final did = DeviceInfo.fromMap(deviceInfo);
-    final cacheData = CacheData.fromCache(did.toCache(), _cacheKey);
+  Future<void> setDeviceInfo(Map<String, dynamic> info) async {
+    final did = DeviceInfo.fromMap(info);
+    final cacheData = CacheData.fromCache(
+      did.toCache(),
+      id: _cacheKey,
+      scopeId: 'device_info',
+    );
 
     return await _addToCache(_cacheKey, cacheData);
   }
+
+  Future<void> setOnboarding() async {
+    final cacheData = CacheData.fromCache(
+      id: _onboardingCacheKey,
+      scopeId: 'on_boarding',
+      {
+        'data': {'hide': true},
+      },
+    );
+    // Add to Cache/localStorage
+    await _addToCache(_onboardingCacheKey, cacheData);
+  }
+
+  bool get hideOnboarding =>
+      _getCacheByKey(_onboardingCacheKey)?.data['hide'] ?? false;
 
   /// Clears the stored device Info from local storage.
   Future<void> clearDeviceInfo() async =>

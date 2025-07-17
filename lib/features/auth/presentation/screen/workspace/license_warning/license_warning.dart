@@ -3,7 +3,7 @@ import 'package:assign_erp/core/util/size_config.dart';
 import 'package:flutter/material.dart';
 
 extension LicenseWarningBottomSheet on BuildContext {
-  Future<void> openLicenseWarningPopUp() => showModalBottomSheet(
+  Future<void> showUpgradeWarningDialog() => showModalBottomSheet(
     context: this,
     isDismissible: false,
     isScrollControlled: true,

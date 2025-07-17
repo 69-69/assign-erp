@@ -21,7 +21,7 @@ class CustomerScreen extends StatelessWidget {
     return BlocProvider<CustomerAccountBloc>(
       create: (context) =>
           CustomerAccountBloc(firestore: FirebaseFirestore.instance)
-            ..add(GetCustomer<Customer>()),
+            ..add(GetCustomers<Customer>()),
       child: CustomScaffold(
         title: customersScreenTitle.toUpperCase(),
         body: _buildBody(),

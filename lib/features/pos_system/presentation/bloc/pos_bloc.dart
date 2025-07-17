@@ -45,15 +45,17 @@ class POSBloc<T> extends Bloc<POSEvent, POSState<T>> {
     _posRepository.dataStream.listen(
       (cacheData) => add(_POSLoaded<T>(_toList(cacheData))),
     );
+
+    // on<_POSLoaded<T>>((event, emit) => emit(POSsLoaded<T>(event.data)));
   }
 
   Future<void> _initialize() async {
     // on<GetShortIDEvent<T>>(_onGetShortID);
-    on<RefreshPOS<T>>(_onRefreshSales);
-    on<GetPOS<T>>(_onGetPOS);
+    on<RefreshPOSs<T>>(_onRefreshPOSs);
+    on<GetPOSs<T>>(_onGetPOS);
     on<GetPOSById<T>>(_onGetPOSById);
-    on<GetMultiplePOSByIDs<T>>(_onGetMultiplePOSByIDs);
-    on<GetAllPOSWithSameId<T>>(_onGetAllPOSWithSameId);
+    on<GetPOSsByIds<T>>(_onGetPOSsByIds);
+    on<GetPOSsWithSameId<T>>(_onGetPOSsWithSameId);
     on<SearchPOS<T>>(_onSearchPOS);
     on<AddPOS<T>>(_onAddPOS);
     on<AddPOS<List<T>>>(_onAddMultiplePOS);
@@ -66,8 +68,8 @@ class POSBloc<T> extends Bloc<POSEvent, POSState<T>> {
     on<_POSLoadError>(_onPOSLoadError);
   }
 
-  Future<void> _onRefreshSales(
-    RefreshPOS<T> event,
+  Future<void> _onRefreshPOSs(
+    RefreshPOSs<T> event,
     Emitter<POSState> emit,
   ) async {
     emit(LoadingPOS<T>());
@@ -80,7 +82,7 @@ class POSBloc<T> extends Bloc<POSEvent, POSState<T>> {
       final data = _toList(snapshot);
 
       // Emit the loaded state with the refreshed data
-      emit(POSLoaded<T>(data));
+      emit(POSsLoaded<T>(data));
     } catch (e) {
       // Emit an error state in case of failure
       emit(POSError<T>(e.toString()));
@@ -88,7 +90,7 @@ class POSBloc<T> extends Bloc<POSEvent, POSState<T>> {
   }
 
   /// Load All Data Function [_onGetPOS]
-  Future<void> _onGetPOS(GetPOS<T> event, Emitter<POSState<T>> emit) async {
+  Future<void> _onGetPOS(GetPOSs<T> event, Emitter<POSState<T>> emit) async {
     emit(LoadingPOS<T>());
 
     try {
@@ -97,7 +99,7 @@ class POSBloc<T> extends Bloc<POSEvent, POSState<T>> {
           final data = _toList(snapshot);
 
           // Update internal state in the BLoC to reflect data loaded
-          emit(POSLoaded<T>(data));
+          emit(POSsLoaded<T>(data));
 
           // Trigger an event to handle the loaded data
           // add(_POSLoadedEvent<T>(data));
@@ -127,8 +129,8 @@ class POSBloc<T> extends Bloc<POSEvent, POSState<T>> {
     }
   }
 
-  Future<void> _onGetMultiplePOSByIDs(
-    GetMultiplePOSByIDs<T> event,
+  Future<void> _onGetPOSsByIds(
+    GetPOSsByIds<T> event,
     Emitter<POSState<T>> emit,
   ) async {
     emit(LoadingPOS<T>());
@@ -170,8 +172,8 @@ class POSBloc<T> extends Bloc<POSEvent, POSState<T>> {
     }
   }
 
-  Future<void> _onGetAllPOSWithSameId(
-    GetAllPOSWithSameId<T> event,
+  Future<void> _onGetPOSsWithSameId(
+    GetPOSsWithSameId<T> event,
     Emitter<POSState<T>> emit,
   ) async {
     emit(LoadingPOS<T>());
@@ -183,7 +185,7 @@ class POSBloc<T> extends Bloc<POSEvent, POSState<T>> {
 
       if (localData.isNotEmpty) {
         final data = _toList(localData);
-        emit(POSLoaded<T>(data));
+        emit(POSsLoaded<T>(data));
       } else {
         emit(POSError<T>('Data not found'));
       }
@@ -206,7 +208,7 @@ class POSBloc<T> extends Bloc<POSEvent, POSState<T>> {
       );
 
       var localData = _toList(data);
-      emit(POSLoaded<T>(localData));
+      emit(POSsLoaded<T>(localData));
       // emit(DataLoadedState<T>(data.cast<T>()));
     } catch (e) {
       emit(POSError<T>('Error searching data: $e'));
@@ -277,7 +279,7 @@ class POSBloc<T> extends Bloc<POSEvent, POSState<T>> {
       await _posRepository.deleteData(event.documentId);
 
       // Trigger LoadDataEvent to reload the data
-      add(GetPOS<T>());
+      add(GetPOSs<T>());
 
       // Update State: Notify that data deleted
       emit(POSDeleted<T>(message: 'data deleted successfully'));
@@ -297,7 +299,7 @@ class POSBloc<T> extends Bloc<POSEvent, POSState<T>> {
       }
 
       // Trigger LoadDataEvent to reload the data
-      add(GetPOS<T>());
+      add(GetPOSs<T>());
 
       // Update State: Notify that data deleted
       emit(POSDeleted<T>(message: 'data deleted successfully'));
@@ -307,23 +309,23 @@ class POSBloc<T> extends Bloc<POSEvent, POSState<T>> {
   }
 
   void _onShortUIDLoaded(_ShortIDLoaded<T> event, Emitter<POSState<T>> emit) {
-    emit(SinglePOSLoaded<T>(event.shortID));
+    emit(POSLoaded<T>(event.shortID));
   }
 
   void _onPOSLoaded(_POSLoaded<T> event, Emitter<POSState<T>> emit) {
-    emit(POSLoaded<T>(event.data));
+    emit(POSsLoaded<T>(event.data));
   }
 
   void _onSinglePOSLoaded(
     _SinglePOSLoaded<T> event,
     Emitter<POSState<T>> emit,
   ) {
-    emit(SinglePOSLoaded<T>(event.data));
+    emit(POSLoaded<T>(event.data));
   }
 
   void _onPOSLoadError(_POSLoadError event, Emitter<POSState<T>> emit) {
     final errorLogCache = ErrorLogCache();
-    errorLogCache.cacheError(error: event.error, fileName: 'pos_bloc');
+    errorLogCache.setError(error: event.error, fileName: 'pos_bloc');
     emit(POSError<T>(event.error));
   }
 

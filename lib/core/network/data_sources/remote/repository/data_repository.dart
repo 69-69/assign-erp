@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:assign_erp/core/constants/collection_type_enum.dart';
 import 'package:assign_erp/core/network/data_sources/local/cache_data_model.dart';
 import 'package:assign_erp/core/network/data_sources/remote/repository/firestore_repository.dart';
+import 'package:assign_erp/features/auth/data/data_sources/local/auth_cache_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
@@ -28,8 +29,8 @@ class DataRepository extends FirestoreRepository {
     required this.collectionPath,
     super.collectionRef,
   }) : super(
-         collectionType: collectionType,
          firestore: firestore,
+         collectionType: collectionType,
          collectionPath: collectionPath,
        ) {
     _init();
@@ -51,6 +52,12 @@ class DataRepository extends FirestoreRepository {
       return await Hive.openBox<CacheData>(collectionPath);
     }
     return Hive.box<CacheData>(collectionPath);
+  }
+
+  /// Scope ID to restrict cache-data access to specific scope/context
+  String get _scopeId {
+    final authCacheService = AuthCacheService();
+    return (authCacheService.getWorkspace())?.id ?? '';
   }
 
   /// Emit Data / Add Event to Stream [_emitDataToStream]
@@ -155,7 +162,7 @@ class DataRepository extends FirestoreRepository {
   }
 
   CacheData _fromMap(Map<String, dynamic> data, String id) =>
-      CacheData.fromMap(data, documentId: id);
+      CacheData.fromMap(data, id: id, scopeId: _scopeId);
 
   /// Update/Push to Cache / LocalStorage [_updateCacheWithData]
   void _updateCacheWithData(List<CacheData> data) {
@@ -169,7 +176,7 @@ class DataRepository extends FirestoreRepository {
 
   /// Add/Create New Data Function [createData]
   Future<void> createData(Map<String, dynamic> data) async {
-    final cacheData = CacheData.fromCache(data, '');
+    final cacheData = CacheData.fromCache(data, id: '', scopeId: _scopeId);
 
     // Add to remote DB
     final docId = await _backupNewDataToFirestore(cacheData);
@@ -181,7 +188,7 @@ class DataRepository extends FirestoreRepository {
 
   /// Update/Modify Data Function [updateData]
   Future<void> updateData(String id, Map<String, dynamic> data) async {
-    final cacheData = CacheData.fromCache(data, id);
+    final cacheData = CacheData.fromCache(data, id: id, scopeId: _scopeId);
 
     await _addToCache(cacheData.id, cacheData); // Add to Cache/localStorage
     await _updateBackupDataToFirestore(cacheData); // Update to remote DB
@@ -294,7 +301,11 @@ class DataRepository extends FirestoreRepository {
       final futures = chunks.map((chunk) async {
         final snapshot = await findManyByIds(ids: chunk);
         return snapshot.docs.map((doc) {
-          final data = CacheData.fromMap(doc.data(), documentId: doc.id);
+          final data = CacheData.fromMap(
+            doc.data(),
+            id: doc.id,
+            scopeId: _scopeId,
+          );
           _addToCache(doc.id, data); // Add to cache
           return data;
         }).toList();

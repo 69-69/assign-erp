@@ -27,7 +27,7 @@ class Employee extends Equatable {
   Employee({
     this.id = '',
     required this.workspaceId,
-    this.storeNumber = 'main',
+    this.storeNumber = '', // mainStore,
     this.username = '',
     required this.fullName,
     required this.mobileNumber,

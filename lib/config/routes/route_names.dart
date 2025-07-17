@@ -4,17 +4,19 @@
 
 abstract class RouteNames {
   /// ──────────────────────── 🌟 Core Entry Points ────────────────────────
-  static const onBoarding = 'onboarding_screen';
+  /// Entry/Startup Point for Home / Landing-Page [initialScreen]
+  static const initialScreen = '/';
+  static const initialScreenName = 'initial_screen';
   static const mainDashboard = 'main_dashboard';
 
-  /// ─────────────────────────── 🔐 Authentication ───────────────────────────
+  /// ─────────────────────────── 🔐 Workspace Authentication ───────────────────────────
+  static const workspaceSignIn = 'workspace_sign_in';
   static const employeeSignIn = 'employee_sign_in';
   static const verifyWorkspaceEmail = 'verify_workspace_email';
   static const changeTemporalPasscode = 'change_temporal_passcode';
   static const wForgotPassword = 'forgot_password';
   static const wUpdatePassword = 'update_password';
   static const wAddMissingSocialAuthInfo = 'add_missing_social_auth_info';
-  // static const workspaceSignIn = 'workspace_sign_in';
   // static const workspaceSignup = 'create_workspace_acc';
 
   /// ──────────────────────── 🏠 Home Modules / Tiles ────────────────────────
@@ -33,8 +35,8 @@ abstract class RouteNames {
   static const liveChatSupport = 'live_chat_support_app';
   static const agentChat = 'agent_chat_screen';
 
-  /// ───────────────────────── 📄 User Manual ─────────────────────────
-  static const userManualApp = 'user_manual_app';
+  /// ───────────────────────── 📄 User Guide/Manual ─────────────────────────
+  static const userGuideApp = 'user_guide_app';
   static const howToConfigApp = 'how_to_config_app';
   static const howToRenewLicense = 'how_to_renew_license';
 
@@ -68,6 +70,7 @@ abstract class RouteNames {
   static const warehouseSales = 'warehouse_sales_screen';
 
   /// ─────────────────────── ⚙️ Setup / Settings ───────────────────────
+  static const switchStoresAccount = 'switch_stores_account_screen';
   static const createUserAccount = 'create_user_account_screen';
   static const manageUserAccount = 'manage_user_account_screen';
   static const checkForUpdate = 'check_for_update_screen';

@@ -1,14 +1,16 @@
 import 'package:assign_erp/core/constants/account_status.dart';
 import 'package:assign_erp/core/constants/app_colors.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/constants/app_enum.dart';
+import 'package:assign_erp/core/constants/hosting_type.dart';
 import 'package:assign_erp/core/network/data_sources/models/subscription_licenses_enum.dart';
 import 'package:assign_erp/core/network/data_sources/models/workspace_model.dart';
-import 'package:assign_erp/core/util/adaptive_layout.dart';
-import 'package:assign_erp/core/util/async_progress_dialog.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
 import 'package:assign_erp/core/util/date_time_picker.dart';
+import 'package:assign_erp/core/widgets/adaptive_layout.dart';
+import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_dropdown_field.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/custom_text_field.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/sign_in/sign_in_bloc.dart';
 import 'package:flutter/material.dart';
@@ -59,9 +61,9 @@ class ExpiryAndEffectiveDateInput extends StatelessWidget {
   }
 }
 
-/// App-Package(Module) & Number-of-Device TextField/Dropdown [PackageAndTotalDevices]
-class PackageAndTotalDevices extends StatelessWidget {
-  const PackageAndTotalDevices({
+/// Subscription License & Number-of-Device TextField/Dropdown [LicenseAndTotalDevices]
+class LicenseAndTotalDevices extends StatelessWidget {
+  const LicenseAndTotalDevices({
     super.key,
     required this.totalDevicesController,
     this.onTotalDevicesChanged,
@@ -94,6 +96,75 @@ class PackageAndTotalDevices extends StatelessWidget {
           onValueChange: (String? v) => onPackageChange(v),
         ),
       ],
+    );
+  }
+}
+
+/// Subscription Fee & Hosting Type Dropdown [SubscribeFeeAndHostingType]
+class SubscribeFeeAndHostingType extends StatelessWidget {
+  const SubscribeFeeAndHostingType({
+    super.key,
+    required this.subscribeFeeController,
+    this.onSubscribeFeeChanged,
+    required this.onHostingChanged,
+    this.serverHosting,
+  });
+
+  final Function(String?) onHostingChanged;
+  final String? serverHosting;
+
+  final TextEditingController subscribeFeeController;
+  final ValueChanged? onSubscribeFeeChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return AdaptiveLayout(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        SubscriptionFee(
+          onSubscribeFeeChanged: onSubscribeFeeChanged,
+          subscribeFeeController: subscribeFeeController,
+        ),
+        CustomDropdown(
+          key: key,
+          items: hostingTypeList,
+          labelText: 'hosting type',
+          serverValue: serverHosting,
+          onValueChange: (String? v) => onHostingChanged(v),
+        ),
+      ],
+    );
+  }
+}
+
+/// Subscription Fee TextField [SubscriptionFee]
+class SubscriptionFee extends StatelessWidget {
+  const SubscriptionFee({
+    super.key,
+    required this.onSubscribeFeeChanged,
+    required this.subscribeFeeController,
+  });
+
+  final TextEditingController subscribeFeeController;
+  final ValueChanged? onSubscribeFeeChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomTextField(
+      labelText: 'Subscription Fee',
+      onChanged: onSubscribeFeeChanged,
+      controller: subscribeFeeController,
+      keyboardType: TextInputType.number,
+      inputDecoration: InputDecoration(
+        hintText: 'Subscription Fee',
+        label: const Text(
+          'Subscription Fee',
+          semanticsLabel: 'Subscription Fee',
+        ),
+        alignLabelWithHint: true,
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        prefixIcon: const Icon(Icons.payments, size: 15),
+      ),
     );
   }
 }
@@ -136,9 +207,9 @@ class WorkspaceRoleAndStatus extends StatelessWidget {
   }
 }
 
-/// Workspace Company/Entity Category Dropdown [CompanyCategory]
-class CompanyCategory extends StatelessWidget {
-  const CompanyCategory({super.key, this.serverEntity});
+/// Workspace Category Dropdown [workspace Category]
+class WorkspaceCategory extends StatelessWidget {
+  const WorkspaceCategory({super.key, this.serverEntity});
 
   final String? serverEntity;
 
@@ -146,24 +217,24 @@ class CompanyCategory extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SignInBloc, SignInState>(
       buildWhen: (previous, current) =>
-          previous.companyCategory != current.companyCategory,
+          previous.workspaceCategory != current.workspaceCategory,
       builder: (_, state) => _buildBody(context, state),
     );
   }
 
   CustomDropdown _buildBody(BuildContext context, SignInState state) {
     return CustomDropdown(
-      items: companyCategories,
-      labelText: 'Company category',
+      items: worspaceCategories,
+      labelText: 'Workspace category',
       serverValue: serverEntity,
       onValueChange: (String? v) {
         if (v != null) {
-          context.read<SignInBloc>().add(CompanyCategoryChanged(v.trim()));
+          context.read<SignInBloc>().add(WorkspaceCategoryChanged(v.trim()));
         }
       },
       inputDecoration: InputDecoration(
         errorText: state.workspaceName.displayError != null
-            ? 'Choose Company category'
+            ? 'Choose workspace category'
             : null,
       ),
     );
@@ -178,9 +249,9 @@ class WorkspaceNameInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SignInBloc, SignInState>(
       buildWhen: (previous, current) =>
-          (previous.companyCategory != current.companyCategory) ||
+          (previous.workspaceCategory != current.workspaceCategory) ||
           previous.workspaceName != current.workspaceName,
-      builder: (cxt, state) => state.companyCategory.isValid
+      builder: (cxt, state) => state.workspaceCategory.isValid
           ? _workspaceNameFormField(cxt, state)
           : const SizedBox.shrink(),
     );
@@ -190,17 +261,17 @@ class WorkspaceNameInput extends StatelessWidget {
     return CustomTextField(
       key: const Key('reg_Workspace_name_Form_Input_textField'),
       keyboardType: TextInputType.text,
-      onChanged: (company) =>
-          context.read<SignInBloc>().add(WorkspaceNameChanged(company.trim())),
+      onChanged: (name) =>
+          context.read<SignInBloc>().add(WorkspaceNameChanged(name.trim())),
       inputDecoration: InputDecoration(
         isDense: true,
         contentPadding: const EdgeInsets.all(1.0),
-        hintText: "Enter Workspace name",
+        hintText: "Enter workspace name",
         label: const Text('Workspace name', semanticsLabel: 'Workspace name'),
         alignLabelWithHint: true,
         fillColor: kGrayColor.withAlpha((0.1 * 255).toInt()),
         errorText: state.workspaceName.displayError != null
-            ? 'Enter Workspace name. Ex: Cash firms'
+            ? 'Enter workspace name. Ex: Cash firms'
             : null,
         floatingLabelBehavior: FloatingLabelBehavior.always,
         prefixIcon: const Icon(Icons.business, size: 15),
@@ -235,7 +306,7 @@ class NameInput extends StatelessWidget {
       inputDecoration: InputDecoration(
         isDense: true,
         contentPadding: const EdgeInsets.all(1.0),
-        hintText: "Enter Client name",
+        hintText: "Enter client name",
         label: const Text('Client name', semanticsLabel: 'Client name'),
         alignLabelWithHint: true,
         fillColor: kGrayColor.withAlpha((0.1 * 255).toInt()),
@@ -575,7 +646,7 @@ class SignUpButton extends StatelessWidget {
 
   Future<dynamic> _setupWorkspace(BuildContext context) =>
       // Simulate delayed to complete Workspace SignUp/Setup
-      Future.delayed(const Duration(seconds: 5), () async {
+      Future.delayed(kFAnimateDuration, () async {
         if (context.mounted) {
           onPressed.call(true);
           context.read<SignInBloc>().add(CreateWorkspaceRequested());
@@ -587,7 +658,7 @@ class SignUpButton extends StatelessWidget {
     bool inProgress = false,
     required void Function()? onPress,
   }) => context.elevatedBtn(
-    label: inProgress ? "Please wait..." : "Create Workspace",
+    label: inProgress ? "Please wait..." : "Setup New  Workspace",
     onPressed: onPress,
   );
 }
@@ -612,7 +683,7 @@ class UpdateWorkspacePasswordButton extends StatelessWidget {
 
   Future<dynamic> _setupWorkspace(BuildContext context) =>
       // Simulate delayed to complete Workspace Password Update
-      Future.delayed(const Duration(seconds: 2), () async {
+      Future.delayed(wAnimateDuration, () async {
         if (context.mounted) {
           context.read<SignInBloc>().add(UpdateWorkspacePasswordRequested());
         }

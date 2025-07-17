@@ -34,16 +34,33 @@ class DashboardTile {
     'description': description,
   };
 
-  // Filter tiles: matching or excluding a specific label.
-  static filter(
-    List<DashboardTile> packages,
-    String label, {
+  /*
+  * Filter tiles: matching or excluding labels or patterns.
+  * USAGE:
+  * filter(tiles, ['Home', 'Settings']);
+  * --OR--
+  * filter(tiles, [RegExp(r'^Admin'), RegExp(r'log$', caseSensitive: false)]);
+  * --OR--
+  * filter(tiles, ['Admin', 'log'], exclude: true);*/
+  static List<DashboardTile> filter(
+    List<DashboardTile> tiles,
+    List<dynamic> patterns, { // Can be List<String> or List<RegExp>
     bool exclude = false,
-  }) => List<DashboardTile>.unmodifiable(
-    packages.where(
-      (package) => exclude ? package.label != label : package.label == label,
-    ),
-  );
+  }) {
+    bool matches(String label) {
+      for (var pattern in patterns) {
+        if (pattern is String && label == pattern) return true;
+        if (pattern is RegExp && pattern.hasMatch(label)) return true;
+      }
+      return false;
+    }
+
+    return List<DashboardTile>.unmodifiable(
+      tiles.where(
+        (tile) => exclude ? !matches(tile.label) : matches(tile.label),
+      ),
+    );
+  }
 }
 
 class RoleBasedDashboardTile<T> {

@@ -17,9 +17,9 @@ class FinanceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<OrderBloc>(
-      create: (context) => OrderBloc(
-        firestore: FirebaseFirestore.instance,
-      )..add(GetInventory<Orders>()),
+      create: (context) =>
+          OrderBloc(firestore: FirebaseFirestore.instance)
+            ..add(GetInventories<Orders>()),
       child: CustomScaffold(
         title: salesOrderScreenTitle.toUpperCase(),
         body: _buildBody(),
@@ -39,7 +39,7 @@ class FinanceScreen extends StatelessWidget {
         {'label': 'Pending', 'icon': Icons.pending},
         {
           'label': 'Shipped or Dispatched',
-          'icon': Icons.local_shipping_outlined
+          'icon': Icons.local_shipping_outlined,
         },
         {'label': 'Completed', 'icon': Icons.done_all},
       ],

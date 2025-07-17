@@ -18,11 +18,13 @@ abstract class BaseAuthGuard {
   User? get currentUser => _firebaseAuth.currentUser;
 
   AuthState? getAuthState(BuildContext context) {
-    // var val = context.watch<AuthBloc>().state;
+    /* If you're calling this inside a widget (not an extension), use:
+    final authState = context.watch<AuthBloc>().state;*/
     final authState = BlocProvider.of<AuthBloc>(context).state;
+    // final authState = context.select<AuthBloc, AuthState>((bloc) => bloc.state);
 
     var authStatus = authState.authStatus;
-    if (currentUser != null && authStatus == AuthStatusEnum.authenticated) {
+    if (currentUser != null && authStatus == AuthStatus.authenticated) {
       return authState;
     }
     return null;
@@ -33,7 +35,7 @@ abstract class BaseAuthGuard {
 class AuthGuard extends BaseAuthGuard {
   AuthGuard({super.firebaseAuth});
 
-  ({Workspace? workspace, Employee? employee})? getCurrentUser(
+  ({Workspace? workspace, Employee? employee})? getAuthSession(
     BuildContext context,
   ) {
     final authState = getAuthState(context);
@@ -46,8 +48,8 @@ class AuthGuard extends BaseAuthGuard {
 
   Future<bool> redirect(BuildContext context, GoRouterState state) async {
     if (currentUser == null) {
-      if (state.name != RouteNames.onBoarding) {
-        context.goNamed(RouteNames.onBoarding);
+      if (state.name != RouteNames.initialScreenName) {
+        context.goNamed(RouteNames.initialScreenName);
       }
       return false;
     }
@@ -61,6 +63,7 @@ class DashboardGuard extends BaseAuthGuard {
 
   Future<bool> redirect(BuildContext context) async {
     final authState = getAuthState(context);
+
     if (authState != null) {
       final workspace = authState.workspace;
       final employee = authState.employee;
@@ -83,19 +86,6 @@ class EmailVerificationGuard extends BaseAuthGuard {
   }
 }
 
-/// Access Signed In User Data [GetSignedInUser]
-extension GetSignedInUser on BuildContext {
-  // Retrieves the currently signed-in user
-  ({Employee? employee, Workspace? workspace})? get signedInUser =>
-      AuthGuard().getCurrentUser(this);
-
-  // Retrieves the workspace of the signed-in user or returns a default Workspace instance
-  Workspace? get workspace => signedInUser?.workspace;
-
-  // Retrieves the employee of the signed-in user or returns a default Employee instance
-  Employee? get employee => signedInUser?.employee;
-}
-
 /// Guard for workspace role-based access [WorkspaceRoleGuard]
 class WorkspaceRoleGuard {
   static bool _canAccess(
@@ -104,7 +94,7 @@ class WorkspaceRoleGuard {
   ) {
     final authState = context.watch<AuthBloc>().state;
 
-    if (authState.authStatus == AuthStatusEnum.authenticated) {
+    if (authState.authStatus == AuthStatus.authenticated) {
       final workspace = authState.workspace;
       if (workspace != null) {
         return roleCheck(workspace);
@@ -140,4 +130,18 @@ class WorkspaceRoleGuard {
       (workspace) => workspace.canAccessDeveloperDashboard(workspace),
     );
   }
+}
+
+/// Access Signed In User Data [GetSignedInUser]
+extension GetSignedInUser on BuildContext {
+  // Retrieves the currently signed-in Workspace & Employee data for the user
+  get _session => AuthGuard().getAuthSession(this);
+
+  ({Employee? employee, Workspace? workspace})? get authSession => _session;
+
+  // Retrieves the workspace of the signed-in user or returns a default Workspace instance
+  Workspace? get workspace => _session?.workspace;
+
+  // Retrieves the employee of the signed-in user or returns a default Employee instance
+  Employee? get employee => _session?.employee;
 }

@@ -48,7 +48,7 @@ extension InventoryTiles on dynamic {
       // products tab
       {
         'label': 'stocks',
-        'icon': Icons.dashboard,
+        'icon': Icons.receipt_long,
         'action': RouteNames.products,
         'param': {},
         'description': 'add or create new products to the inventory.',

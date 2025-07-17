@@ -1,13 +1,13 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
-import 'package:assign_erp/core/util/custom_bottom_sheet.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/util/top_header_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/barcode_scanner.dart';
+import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
+import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/product_model.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/bloc/inventory_bloc.dart';
@@ -167,7 +167,7 @@ class _AddProductBodyState extends State<_AddProductBody> {
     _selectedManufactureDate = null;
   }
 
-  void _removeProduct(Product product) {
+  void _removeProductFromBatch(Product product) {
     setState(() => _products.remove(product));
   }
 
@@ -181,15 +181,15 @@ class _AddProductBodyState extends State<_AddProductBody> {
         alignment: WrapAlignment.center,
         children: [
           if (isMultipleOrders && _products.isNotEmpty)
-            _buildProductPreviewChips(),
+            _buildBatchPreviewChips(),
           _buildBody(),
         ],
       ),
     );
   }
 
-  // Preview Products added to list
-  Widget _buildProductPreviewChips() {
+  // Horizontal scrollable row of chips representing the List of batches
+  Widget _buildBatchPreviewChips() {
     return CustomScrollBar(
       controller: _scrollController,
       padding: EdgeInsets.zero,
@@ -216,7 +216,7 @@ class _AddProductBodyState extends State<_AddProductBody> {
                       Icons.clear,
                       color: kGrayColor,
                     ),
-                    onDeleted: () => _removeProduct(o),
+                    onDeleted: () => _removeProductFromBatch(o),
                   ),
                 );
         }).toList(),

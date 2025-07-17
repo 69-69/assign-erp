@@ -1,7 +1,10 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/column_row_builder.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/core/widgets/column_row_builder.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/live_support/data/models/live_chat_model.dart';
 import 'package:assign_erp/features/live_support/presentation/bloc/chat/live_support_service.dart';
@@ -9,13 +12,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ChatOverviewPane extends StatefulWidget {
-  final String workspaceId;
+  final String clientWorkspaceId;
   final String? selectedChatId;
   final void Function(String chatId, String userName) onChatSelected;
 
   const ChatOverviewPane({
     super.key,
-    required this.workspaceId,
+    required this.clientWorkspaceId,
     required this.onChatSelected,
     this.selectedChatId,
   });
@@ -26,11 +29,18 @@ class ChatOverviewPane extends StatefulWidget {
 
 class _ChatOverviewPaneState extends State<ChatOverviewPane>
     with SingleTickerProviderStateMixin {
+  final _liveSupportService = LiveSupportService();
+  bool previousIsResolved = false; // Track the previous state
+  // Track the drag direction
+  double dragPosition = 0.0; // Track horizontal drag position
+  double previousDragPosition = 0.0;
+  final double dragThreshold = 10.0;
+
   bool _isDrawerOpen = false;
   late AnimationController _controller;
   late Animation<double> _widthAnimation;
 
-  String get workspaceId => widget.workspaceId;
+  String get workspaceId => widget.clientWorkspaceId;
 
   String? get selectedChatId => widget.selectedChatId;
   final double _beginWidth = 50;
@@ -39,17 +49,14 @@ class _ChatOverviewPaneState extends State<ChatOverviewPane>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
+    _controller = AnimationController(vsync: this, duration: kAnimateDuration);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    _endWidth = context.screenWidth * (context.isMobile ? 0.7 : 0.3);
+    _endWidth = context.screenWidth * (context.isMobile ? 0.64 : 0.3);
     _widthAnimation = Tween<double>(
       begin: _beginWidth,
       end: _endWidth,
@@ -88,19 +95,21 @@ class _ChatOverviewPaneState extends State<ChatOverviewPane>
 
   @override
   Widget build(BuildContext context) {
-    return /*BlocProvider<ChatBloc>(
+    /*BlocProvider<ChatBloc>(
       create: (context) =>
           ChatBloc(firestore: FirebaseFirestore.instance)
             ..add(LoadChatOverviews<LiveChatMessage>(workspaceId: workspaceId)),
       child: Container(
         color: kGrayColor.withAlpha((0.2 * 255).toInt()),
-        child:*/ StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      stream: LiveSupportService().getChatOverviews(workspaceId: workspaceId),
+        child:*/
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: _liveSupportService.getChatOverviews(workspaceId: workspaceId),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return context.loader;
-        final chats = snapshot.data!.docs;
+        if (snapshot.hasError) {
+          return context.buildError('Something went wrong...');
+        }
+
         return Container(
-          // border left
           decoration: BoxDecoration(
             color: kGrayColor.withAlpha((0.2 * 255).toInt()),
             border: Border(
@@ -110,7 +119,9 @@ class _ChatOverviewPaneState extends State<ChatOverviewPane>
               ),
             ),
           ),
-          child: _buildChatOverviewContent(chats),
+          child: !snapshot.hasData || snapshot.data?.size == 0
+              ? const SizedBox.shrink()
+              : _buildChatOverviewContent(snapshot.data!.docs),
         );
       },
       // ),
@@ -197,36 +208,71 @@ class _ChatOverviewPaneState extends State<ChatOverviewPane>
         final doc = chats[index];
         final isSelected = doc.id == selectedChatId;
         final chat = LiveChatOverview.fromMap(doc.data());
+
         return SizedBox(
           width: width,
-          child: _buildChatListTile(isSelected, doc, chat: chat),
+          child: GestureDetector(
+            onHorizontalDragUpdate: (details) {
+              final chatId = doc.id;
+              final pos = details.localPosition.dx;
+
+              // Only update if drag position has moved enough to justify an update
+              if ((pos - previousDragPosition).abs() > dragThreshold) {
+                setState(() => dragPosition = pos);
+
+                // Drag right to resolve, drag left to unresolve
+                if (pos > 10) {
+                  _markChatResolved(chatId, isResolved: true);
+                } else if (pos < -10) {
+                  _markChatResolved(chatId, isResolved: false);
+                }
+
+                // Update previous drag position for future comparison
+                previousDragPosition = pos;
+              }
+            },
+
+            onHorizontalDragEnd: (details) {
+              setState(() => dragPosition = 0.0);
+              previousDragPosition = 0.0; // Reset
+            },
+            child: _buildChatListTile(isSelected, chat, doc),
+          ),
         );
       },
     );
   }
 
-  Widget _buildChatListTile(
+  ListTile _buildChatListTile(
     bool isSelected,
-    QueryDocumentSnapshot<Map<String, dynamic>> doc, {
-    required LiveChatOverview chat,
-  }) {
+    LiveChatOverview chat,
+    QueryDocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
     return ListTile(
+      dense: true,
       selected: isSelected,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      selectedTileColor: _getDragColor(dragPosition, isSelected: isSelected),
       leading: _buildUserAvatarWithStatus(chat),
       title: _buildChatTileHeader(chat, isSelected),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       subtitle: Text(
         chat.lastMessage,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: TextStyle(color: Colors.grey.shade800),
+        style: TextStyle(color: kTextColor),
       ),
-      tileColor: isSelected ? Colors.blue.withAlpha((0.1 * 255).toInt()) : null,
       onTap: () {
         widget.onChatSelected(doc.id, chat.userName!);
         _collapseDrawer();
       },
     );
+  }
+
+  // Method to determine background color based on drag position
+  Color _getDragColor(double dragPos, {bool isSelected = false}) {
+    if (dragPos > 10) return kSuccessColor.toAlpha(0.3);
+    if (dragPos < -10) return kDangerColor.toAlpha(0.3);
+    return isSelected ? kPrimaryAccentColor.toAlpha(0.1) : kTransparentColor;
   }
 
   Row _buildChatTileHeader(LiveChatOverview chat, bool isSelected) {
@@ -245,7 +291,7 @@ class _ChatOverviewPaneState extends State<ChatOverviewPane>
         ),
         Expanded(
           child: Text(
-            _formatTimestamp(chat.lastTimestamp ?? DateTime.now()),
+            '${chat.updatedAt?.chatDatetime}',
             overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 12, color: kTextColor),
           ),
@@ -266,24 +312,33 @@ class _ChatOverviewPaneState extends State<ChatOverviewPane>
           ),
         ),
         Positioned(
-          right: -1,
-          top: -1,
+          right: -5,
+          top: -5,
           child: chat.isResolved
-              ? Icon(Icons.check_circle, color: kSuccessColor, size: 14)
-              : Icon(Icons.chat_bubble, color: kDangerColor, size: 14),
+              ? Icon(Icons.check_circle, color: kSuccessColor)
+              : Icon(Icons.chat_bubble, color: kDangerColor),
         ),
       ],
     );
   }
 
-  String _formatTimestamp(DateTime timestamp) {
-    final now = DateTime.now();
-    final diff = now.difference(timestamp);
+  void _markChatResolved(String chatId, {required bool isResolved}) {
+    // Only proceed if the resolved state has changed
+    if (previousIsResolved != isResolved) {
+      // Update Firestore or dispatch Bloc event
+      _liveSupportService.updateChatResolvedStatus(
+        chatId: chatId,
+        isResolved: isResolved,
+        workspaceId: workspaceId,
+      );
 
-    if (diff.inDays > 0) {
-      return '${timestamp.month}/${timestamp.day}';
-    } else {
-      return '${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')}';
+      // Show the snack-bar only if the state changes
+      context.showAlertOverlay(
+        "Marked as ${isResolved ? 'resolved' : 'unresolved'}",
+      );
+
+      // Update the previous state to the new one
+      previousIsResolved = isResolved;
     }
   }
 }

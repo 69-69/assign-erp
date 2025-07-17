@@ -1,7 +1,7 @@
-import 'package:equatable/equatable.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:equatable/equatable.dart';
 
 var _today = DateTime.now(); /*.millisecondsSinceEpoch.toString()*/
 
@@ -52,14 +52,16 @@ class RequestForQuotation extends Equatable {
     DateTime? createdAt,
     this.updatedBy = '',
     DateTime? updatedAt,
-  })  : deadline = deadline ?? _today,
-        deliveryDate = deliveryDate ?? _today,
-        createdAt = createdAt ?? _today,
-        updatedAt = updatedAt ?? _today; // Set default value
+  }) : deadline = deadline ?? _today,
+       deliveryDate = deliveryDate ?? _today,
+       createdAt = createdAt ?? _today,
+       updatedAt = updatedAt ?? _today; // Set default value
 
   /// fromFirestore / fromJson Function [RequestForQuotation.fromMap]
   factory RequestForQuotation.fromMap(
-      Map<String, dynamic> data, String documentId) {
+    Map<String, dynamic> data,
+    String documentId,
+  ) {
     return RequestForQuotation(
       id: documentId,
       storeNumber: data['storeNumber'] ?? '',
@@ -84,25 +86,25 @@ class RequestForQuotation extends Equatable {
 
   // map template
   Map<String, dynamic> _mapTemp() => {
-        'id': id,
-        'storeNumber': storeNumber,
-        'rfqNumber': rfqNumber,
-        'supplierId': supplierId,
-        'productName': productName,
-        'unitPrice': unitPrice,
-        'quantity': quantity,
-        'status': status,
-        'remarks': remarks,
-        'netPrice': netPrice,
-        'taxPercent': taxPercent,
-        'discountPercent': discountPercent,
-        'deadline': deadline,
-        'deliveryDate': deliveryDate,
-        'createdBy': createdBy,
-        'createdAt': createdAt,
-        'updatedBy': updatedBy,
-        'updatedAt': updatedAt,
-      };
+    'id': id,
+    'storeNumber': storeNumber,
+    'rfqNumber': rfqNumber,
+    'supplierId': supplierId,
+    'productName': productName,
+    'unitPrice': unitPrice,
+    'quantity': quantity,
+    'status': status,
+    'remarks': remarks,
+    'netPrice': netPrice,
+    'taxPercent': taxPercent,
+    'discountPercent': discountPercent,
+    'deadline': deadline,
+    'deliveryDate': deliveryDate,
+    'createdBy': createdBy,
+    'createdAt': createdAt,
+    'updatedBy': updatedBy,
+    'updatedAt': updatedAt,
+  };
 
   /// Convert Model to toFirestore / toJson Function [toMap]
   Map<String, dynamic> toMap() {
@@ -170,22 +172,25 @@ class RequestForQuotation extends Equatable {
 
   /// [findRequestForQuotationById]
   static Iterable<RequestForQuotation> findRequestForQuotationById(
-          List<RequestForQuotation> quotes, String quoteId) =>
-      quotes.where((quote) => quote.id == quoteId);
+    List<RequestForQuotation> quotes,
+    String quoteId,
+  ) => quotes.where((quote) => quote.id == quoteId);
 
   /// [filterRequestForQuotationByDate]
   static List<RequestForQuotation> filterRequestForQuotationByDate(
-          List<RequestForQuotation> quotes,
-          {bool isSameDay = true}) =>
-      quotes
-          .where((quote) =>
-              !quote.isAwarded && (isSameDay ? quote.isToday : !quote.isToday))
-          .toList();
+    List<RequestForQuotation> quotes, {
+    bool isSameDay = true,
+  }) => quotes
+      .where(
+        (quote) =>
+            !quote.isAwarded && (isSameDay ? quote.isToday : !quote.isToday),
+      )
+      .toList();
 
   /// [filterAwardedRFQ]
   static List<RequestForQuotation> filterAwardedRFQ(
-          List<RequestForQuotation> quotes) =>
-      quotes.where((quote) => quote.isAwarded).toList();
+    List<RequestForQuotation> quotes,
+  ) => quotes.where((quote) => quote.isAwarded).toList();
 
   @override
   String toString() => 'RFQ: $rfqNumber - $productName';
@@ -235,25 +240,25 @@ class RequestForQuotation extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
+    id,
     storeNumber,
-        rfqNumber,
-        supplierId,
-        status,
-        productName,
-        quantity,
-        unitPrice,
-        remarks,
-        netPrice,
-        deadline ?? '',
-        deliveryDate ?? '',
-        taxPercent,
-        discountPercent,
-        createdBy,
-        createdAt,
-        updatedBy,
-        updatedAt,
-      ];
+    rfqNumber,
+    supplierId,
+    status,
+    productName,
+    quantity,
+    unitPrice,
+    remarks,
+    netPrice,
+    deadline ?? '',
+    deliveryDate ?? '',
+    taxPercent,
+    discountPercent,
+    createdBy,
+    createdAt,
+    updatedBy,
+    updatedAt,
+  ];
 
   /// ToList for RequestPriceQuotation [itemAsList]
   List<String> itemAsList({int? start, int? end}) {
@@ -281,22 +286,22 @@ class RequestForQuotation extends Equatable {
   }
 
   static List<String> get dataTableHeader => const [
-        'ID',
-        'Store Number',
-        'RFQ Number',
-        'Supplier ID',
-        'Status',
-        'Product Name',
-        'Unit Price',
-        'Quantity',
-        'Discount',
-        'Net Price',
-        'Tax',
-        'Quotation Deadline',
-        'Delivery Date',
-        'Created By',
-        'Created At',
-        'Updated By',
-        'Updated At',
-      ];
+    'ID',
+    'Store Number',
+    'RFQ Number',
+    'Supplier ID',
+    'Status',
+    'Product Name',
+    'Unit Price',
+    'Quantity',
+    'Discount',
+    'Net Price',
+    'Tax',
+    'Quotation Deadline',
+    'Delivery Date',
+    'Created By',
+    'Created At',
+    'Updated By',
+    'Updated At',
+  ];
 }

@@ -2,24 +2,22 @@ import 'dart:io';
 
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
-import 'package:assign_erp/core/util/adaptive_layout.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
 import 'package:assign_erp/core/util/size_config.dart';
+import 'package:assign_erp/core/widgets/adaptive_layout.dart';
 import 'package:assign_erp/core/widgets/animated_hexagon_grid.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
-import 'package:assign_erp/features/auth/domain/repository/auth_repository.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/index.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/auth/presentation/screen/widget/form_inputs.dart';
+import 'package:assign_erp/features/auth/presentation/screen/widget/show_sign_in_alert.dart';
 import 'package:assign_erp/features/auth/presentation/screen/widget/workspace_acc_guide.dart';
 import 'package:assign_erp/features/auth/presentation/screen/workspace/create/create_workspace_acc.dart';
 import 'package:assign_erp/features/refresh_entire_app.dart';
 import 'package:assign_erp/features/setup/data/data_sources/local/printout_setup_cache_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:formz/formz.dart';
 
 class EmployeeSignInScreen extends StatefulWidget {
   const EmployeeSignInScreen({super.key});
@@ -53,67 +51,45 @@ class _EmployeeSignInScreenState extends State<EmployeeSignInScreen> {
     isInitialSetupAllowed = WorkspaceRoleGuard.canAccessInitialSetup(context);
   }
 
-  /// Shows the alert overlay if there is a failure state.
-  void _showSignInAlert(SignInState state, BuildContext context) {
-    if ((state.email.isValid && state.password.isValid) &&
-        state.status.isFailure) {
-      final msg =
-          state.errorMessage?.split(':').last ?? 'Incorrect email or password';
-
-      // Ensure the overlay is displayed with the current context
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.showAlertOverlay(msg, bgColor: kDangerColor);
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     _canAccessInitialSetup();
 
+    /*MINE-STEVE
     return BlocProvider(
       create: (context) {
         return SignInBloc(
           authRepository: RepositoryProvider.of<AuthRepository>(context),
         );
       },
-      child: _buildBody(context),
+      child: */
+    return CustomScaffold(
+      backButton: const SizedBox.shrink(),
+      bgColor: kWarningColor,
+      body: CustomScrollBar(
+        controller: _scrollController,
+        padding: EdgeInsets.only(top: 0, bottom: context.bottomInsetPadding),
+        child: _buildBody(context),
+      ),
+      actions: [
+        context.reloadAppIconButton(
+          onPressed: () => RefreshEntireApp.restartApp(context),
+        ),
+      ],
+      bottomNavigationBar: const SizedBox.shrink(),
     );
   }
 
   BlocListener<SignInBloc, SignInState> _buildBody(BuildContext context) {
     return BlocListener<SignInBloc, SignInState>(
       listenWhen: (oldState, newState) => oldState.status != newState.status,
-      listener: (_, state) => _showSignInAlert(state, context),
-      child: CustomScaffold(
-        backButton: const SizedBox.shrink(),
-        bgColor: kWarningColor,
-        body: CustomScrollBar(
-          controller: _scrollController,
-          padding: EdgeInsets.only(top: 0, bottom: context.bottomInsetPadding),
-          child: Container(
-            decoration: const BoxDecoration(
-              color: kGrayBlueColor,
-              image: DecorationImage(
-                image: AssetImage(appBg),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: AnimatedHexagonGrid(child: _buildCard(context)),
-          ),
+      listener: (_, state) => context.showSignInAlert(state),
+      child: Container(
+        decoration: const BoxDecoration(
+          color: kGrayBlueColor,
+          image: DecorationImage(image: AssetImage(appBg), fit: BoxFit.cover),
         ),
-        actions: [
-          context.reloadAppIconButton(
-            onPressed: () => RefreshEntireApp.restartApp(context),
-          ),
-
-          context.signOutIconButton(
-            onPressed: () {
-              _handleSignOut(context);
-              RefreshEntireApp.restartApp(context);
-            },
-          ),
-        ],
+        child: AnimatedHexagonGrid(child: _buildCard(context)),
       ),
     );
   }
@@ -214,8 +190,9 @@ class _EmployeeSignInScreenState extends State<EmployeeSignInScreen> {
                   'Need Help?',
                   softWrap: false,
                   style: context.ofTheme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                     overflow: TextOverflow.ellipsis,
+                    color: context.primaryColor,
                   ),
                 ),
               ),

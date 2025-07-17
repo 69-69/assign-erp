@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:assign_erp/core/network/data_sources/models/print_util_model.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/print_util_model.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/print/print_report_model.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/sale_model.dart';
 import 'package:collection/collection.dart';

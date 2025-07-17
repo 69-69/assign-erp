@@ -10,11 +10,11 @@ enum CollectionType { global, workspace, chats, stores, clients }
 extension CollectionTypeExtension on CollectionType {
   String get label {
     return switch (this) {
-      CollectionType.global => 'global',
-      CollectionType.chats => 'chats',
-      CollectionType.stores => 'stores',
-      CollectionType.clients => 'clients',
-      CollectionType.workspace => 'workspace',
+      CollectionType.global => 'global', // Global collections
+      CollectionType.chats => 'chats', // Chat conversations
+      CollectionType.stores => 'stores', // Company-specific stores/shops
+      CollectionType.clients => 'clients', // Agent-clients mapping
+      CollectionType.workspace => 'workspace', // Workspace-specific collections
     };
   }
 }

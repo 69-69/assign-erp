@@ -1,6 +1,6 @@
-import 'package:equatable/equatable.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:equatable/equatable.dart';
 
 var _today = DateTime.now(); /*.millisecondsSinceEpoch.toString()*/
 
@@ -33,8 +33,8 @@ class Delivery extends Equatable {
     DateTime? createdAt,
     this.updatedBy = '',
     DateTime? updatedAt,
-  })  : createdAt = createdAt ?? _today,
-        updatedAt = updatedAt ?? _today; // Set default value
+  }) : createdAt = createdAt ?? _today,
+       updatedAt = updatedAt ?? _today; // Set default value
 
   /// fromFirestore / fromJson Function [Delivery.fromMap]
   factory Delivery.fromMap(Map<String, dynamic> data, String documentId) {
@@ -57,20 +57,20 @@ class Delivery extends Equatable {
 
   // map template
   Map<String, dynamic> _mapTemp() => {
-      'id': id,
-      'status': status,
-      'storeNumber': storeNumber,
-      'orderNumber': orderNumber,
-      'barcode': barcode,
-      'deliveryType': deliveryType,
-      'deliveryPerson': deliveryPerson,
-      'deliveryPhone': deliveryPhone,
-      'remarks': remarks,
-      'createdBy': createdBy,
-      'createdAt': createdAt,
-      'updatedBy': updatedBy,
-      'updatedAt': updatedAt,
-    };
+    'id': id,
+    'status': status,
+    'storeNumber': storeNumber,
+    'orderNumber': orderNumber,
+    'barcode': barcode,
+    'deliveryType': deliveryType,
+    'deliveryPerson': deliveryPerson,
+    'deliveryPhone': deliveryPhone,
+    'remarks': remarks,
+    'createdBy': createdBy,
+    'createdAt': createdAt,
+    'updatedBy': updatedBy,
+    'updatedAt': updatedAt,
+  };
 
   /// Convert Model to toFirestore / toJson Function [toMap]
   Map<String, dynamic> toMap() {
@@ -123,13 +123,15 @@ class Delivery extends Equatable {
 
   /// [findDeliveryById]
   static Iterable<Delivery> findDeliveryById(
-          List<Delivery> deliveries, String id) =>
-      deliveries.where((d) => d.id == id);
+    List<Delivery> deliveries,
+    String id,
+  ) => deliveries.where((d) => d.id == id);
 
   /// [filterDeliveriesByDate]
-  static List<Delivery> filterDeliveriesByDate(List<Delivery> deliveries,
-          {bool isSameDay = false}) =>
-      deliveries.where((d) => isSameDay ? d.isToday : !d.isToday).toList();
+  static List<Delivery> filterDeliveriesByDate(
+    List<Delivery> deliveries, {
+    bool isSameDay = false,
+  }) => deliveries.where((d) => isSameDay ? d.isToday : !d.isToday).toList();
 
   /// copyWith method
   Delivery copyWith({
@@ -166,47 +168,47 @@ class Delivery extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        status,
-        storeNumber,
-        orderNumber,
-        barcode,
-        deliveryType,
-        deliveryPerson,
-        deliveryPhone,
-        remarks,
-        createdBy,
-        createdAt,
-        updatedBy,
-        updatedAt,
-      ];
+    id,
+    status,
+    storeNumber,
+    orderNumber,
+    barcode,
+    deliveryType,
+    deliveryPerson,
+    deliveryPhone,
+    remarks,
+    createdBy,
+    createdAt,
+    updatedBy,
+    updatedAt,
+  ];
 
   /// ToList for DELIVERY [itemAsList]
   List<String> itemAsList() => [
-        id,
-        storeNumber,
-        orderNumber,
-        status.toUppercaseFirstLetterEach,
-        deliveryType.toUppercaseFirstLetterEach,
-        deliveryPerson.toUppercaseFirstLetterEach,
-        deliveryPhone,
-        createdBy.toUppercaseFirstLetterEach,
-        getCreatedAt,
-        updatedBy.toUppercaseFirstLetterEach,
-        getUpdatedAt,
-      ];
+    id,
+    storeNumber,
+    orderNumber,
+    status.toUppercaseFirstLetterEach,
+    deliveryType.toUppercaseFirstLetterEach,
+    deliveryPerson.toUppercaseFirstLetterEach,
+    deliveryPhone,
+    createdBy.toUppercaseFirstLetterEach,
+    getCreatedAt,
+    updatedBy.toUppercaseFirstLetterEach,
+    getUpdatedAt,
+  ];
 
   static List<String> get dataHeader => const [
-        'ID',
-        'Store Number',
-        'Order Number',
-        'Status',
-        'Delivery Type',
-        'Delivery Staff',
-        'Delivery Phone',
-        'Created By',
-        'Created At',
-        'Updated By',
-        'Updated At',
-      ];
+    'ID',
+    'Store Number',
+    'Order Number',
+    'Status',
+    'Delivery Type',
+    'Delivery Staff',
+    'Delivery Phone',
+    'Created By',
+    'Created At',
+    'Updated By',
+    'Updated At',
+  ];
 }

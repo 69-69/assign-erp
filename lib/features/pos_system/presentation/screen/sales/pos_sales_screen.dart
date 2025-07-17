@@ -17,7 +17,7 @@ class PosSalesScreen extends StatelessWidget {
     return BlocProvider<POSSaleBloc>(
       create: (context) =>
           POSSaleBloc(firestore: FirebaseFirestore.instance)
-            ..add(GetPOS<POSSale>()),
+            ..add(GetPOSs<POSSale>()),
       child: CustomScaffold(
         title: posSalesScreenTitle.toUpperCase(),
         body: const ListPOSSales(),

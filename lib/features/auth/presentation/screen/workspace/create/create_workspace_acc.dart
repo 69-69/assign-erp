@@ -1,8 +1,7 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
 import 'package:assign_erp/core/util/size_config.dart';
-import 'package:assign_erp/features/auth/domain/repository/auth_repository.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/sign_in/sign_in_bloc.dart';
 import 'package:assign_erp/features/auth/presentation/screen/widget/form_inputs.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +23,9 @@ class WorkspaceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return _buildAlertDialog(context);
+
+    /*MINE-STEVE
     return BlocProvider(
       create: (context) {
         return SignInBloc(
@@ -31,7 +33,7 @@ class WorkspaceScreen extends StatelessWidget {
         );
       },
       child: _buildAlertDialog(context),
-    );
+    );*/
   }
 
   _buildAlertDialog(BuildContext context) {
@@ -139,7 +141,7 @@ class CreateNewWorkspaceForm extends StatelessWidget {
   Column _buildColumn(BuildContext context) {
     return const Column(
       children: [
-        CompanyCategory(),
+        WorkspaceCategory(),
         SizedBox(height: 20),
         WorkspaceNameInput(),
         SizedBox(height: 20),

@@ -2,11 +2,12 @@ import 'package:assign_erp/core/util/str_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
+final _today = DateTime.now();
+
 extension ConvertDateTime on dynamic {
   ({String filename, String id}) get generateBackupFileName {
-    final now = DateTime.now();
-    final formattedDate = DateFormat('yyyy-MM-dd').format(now);
-    return (filename: '$this-$formattedDate', id: now.toISOString);
+    final formattedDate = DateFormat('yyyy-MM-dd').format(_today);
+    return (filename: '$this-$formattedDate', id: _today.toISOString);
   }
 
   /// Convert microsecondsSinceEpoch to DateTime object [toStandardDT]
@@ -68,6 +69,21 @@ extension ConvertDateTime on dynamic {
 
   /// Convert Timestamp to DateTime [toDate]
   DateTime? get toDate => this != null ? (this as Timestamp).toDate() : null;
+
+  String get chatDatetime {
+    final diff = _today.difference(this);
+
+    // Format date as "Month Day, Year"
+    if (diff.inDays > 0) {
+      final localDate = this.toLocal();
+      return DateFormat('MMMM dd, yyyy').format(localDate);
+    } else {
+      final hour = this.hour % 12;
+      final minute = this.minute.toString().padLeft(2, '0');
+      final amPm = this.hour >= 12 ? 'PM' : 'AM';
+      return '${hour == 0 ? 12 : hour}:$minute $amPm';
+    }
+  }
 }
 
 extension TotalDaysFromDate on DateTime? {
@@ -76,14 +92,12 @@ extension TotalDaysFromDate on DateTime? {
     if (this == null) {
       return 0;
     }
-    // Current date
-    DateTime currentDate = DateTime.now();
 
     // Future date (12/24/2024 in this example)
     DateTime futureDate = this ?? DateTime(0000, 00, 00);
 
     // Calculate the difference
-    Duration difference = futureDate.difference(currentDate);
+    Duration difference = futureDate.difference(_today);
 
     // Get the number of days from the duration
     int daysDifference = difference.inDays;
@@ -93,11 +107,19 @@ extension TotalDaysFromDate on DateTime? {
 }
 
 DateTime toDateTimeFn(dateTime) {
-  if ('$dateTime'.isNullOrEmpty) {
-    return DateTime.now();
+  if ('$dateTime'.trim().isNullOrEmpty) {
+    return _today;
   }
   // If is int else string
-  return dateTime is int
-      ? DateTime.fromMillisecondsSinceEpoch(dateTime)
-      : DateTime.parse(dateTime.toString());
+  if (dateTime is DateTime) return dateTime;
+  if (dateTime is Timestamp) return dateTime.toDate();
+  if (dateTime is int) return DateTime.fromMillisecondsSinceEpoch(dateTime);
+  if (dateTime is String) {
+    try {
+      return DateTime.parse(dateTime);
+    } catch (_) {
+      return DateTime.now(); // fallback on parse error
+    }
+  }
+  return _today;
 }

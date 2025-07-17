@@ -1,10 +1,13 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
-import 'package:assign_erp/core/util/developer_info.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
+import 'package:assign_erp/core/widgets/developer_info.dart';
 import 'package:flutter/material.dart';
+
+const subTitle =
+    'A.I\nP.O.S\nC.R.M\nReports\nInventory\nWarehouse\nMulti-Location\nMobile & Desktop\nWeb-Cloud\n...';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -24,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void _updateMaxCrossAxisExtent() {
     var screenW = context.screenWidth;
-    maxCrossAxisExtent = context.isMobile
+    maxCrossAxisExtent = context.isMiniMobile
         ? screenW
         : (context.isPortraitMode ? screenW / 2 : screenW / 3);
   }
@@ -32,16 +35,18 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      noAppBar: true,
+      isGradientBg: true,
       backButton: const SizedBox.shrink(),
-      bgColor: context.ofTheme.primaryColor,
+      // bgColor: context.ofTheme.primaryColor,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(child: _buildBody(context)),
-          const DeveloperInfo(),
+          const DeveloperInfo(textColor: kPrimaryColor),
         ],
       ),
+      actions: [],
+      bottomNavigationBar: const SizedBox.shrink(),
     );
   }
 
@@ -63,25 +68,25 @@ class _SplashScreenState extends State<SplashScreen> {
         // Ratio between the width and height of grid items
         childAspectRatio: 1,
       ),
-      itemBuilder: (context, index) =>
-          index.isOdd ? _buildStack(context) : _buildCard(context),
+      itemBuilder: (context, index) => index.isOdd
+          ? _buildStack(context)
+          : _buildCard(context, index: index),
     );
   }
 
-  _buildCard(BuildContext context) {
-    const subTitle =
-        'P.O.S\nReports\nInventory\nCustomer\nWarehouse\nMulti-Location\nMobile & Desktop\nWeb\n...';
-
+  _buildCard(BuildContext context, {int index = 0}) {
+    var randomBgColor = randomBgColors[index % randomBgColors.length];
+    final borderSide = BorderSide(width: 4, color: randomBgColor);
     return AnimatedContainer(
       // width: context.mediaShortSize / 1.3,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(
-          top: BorderSide(width: 4, color: kLightBlueColor),
-          left: BorderSide(width: 4, color: kLightBlueColor),
-          right: BorderSide(width: 4, color: kLightBlueColor),
-          bottom: BorderSide(width: 4, color: kLightBlueColor),
+          top: borderSide,
+          left: borderSide,
+          right: borderSide,
+          bottom: borderSide,
         ),
-        color: Color(0xD7BFBFBF),
+        color: randomBgColor, //Color(0xD7BFBFBF),
       ),
 
       padding: const EdgeInsets.all(20.0),
@@ -138,7 +143,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 "Getting $appName Ready...",
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(color: kLightBlueColor),
+                style: TextStyle(color: kPrimaryColor),
               ),
               _buildDefaultProgressIndicator(),
             ],

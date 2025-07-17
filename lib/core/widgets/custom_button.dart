@@ -25,7 +25,7 @@ extension Custombutton on BuildContext {
             style: ButtonStyle(
               padding: const WidgetStatePropertyAll(EdgeInsets.all(20)),
               backgroundColor: WidgetStatePropertyAll(
-                ofTheme.colorScheme.secondary.withAlpha(
+                ofTheme.colorScheme.primary.withAlpha(
                   ((isDisabled ? 0.4 : 1) * 255).toInt(),
                 ),
               ),

@@ -39,8 +39,8 @@ class POSOrder extends Equatable {
     required this.unitPrice,
     this.discountPercent = 0.0,
     this.taxPercent = 0.0,
-    this.discountAmount=0.0,
-    this.taxAmount=0.0,
+    this.discountAmount = 0.0,
+    this.taxAmount = 0.0,
     this.barcode = '',
     required this.totalAmount,
     required this.paymentMethod,
@@ -49,8 +49,8 @@ class POSOrder extends Equatable {
     DateTime? createdAt,
     this.updatedBy = '',
     DateTime? updatedAt,
-  })  : createdAt = createdAt ?? _today,
-        updatedAt = updatedAt ?? _today; // Set default value
+  }) : createdAt = createdAt ?? _today,
+       updatedAt = updatedAt ?? _today; // Set default value
 
   factory POSOrder.fromMap(Map<String, dynamic> map, String documentId) {
     return POSOrder(
@@ -79,27 +79,27 @@ class POSOrder extends Equatable {
 
   // map template
   Map<String, dynamic> _mapTemp() => {
-        'id': id,
-        'storeNumber': storeNumber,
-        'orderNumber': orderNumber,
-        'productId': productId,
-        'productName': productName,
-        'customerId': customerId,
-        'quantity': quantity,
-        'unitPrice': unitPrice,
-        'barcode': barcode,
-        'discountPercent': discountPercent,
-        'taxPercent': taxPercent,
-        'totalAmount': totalAmount,
-        'discountAmount': discountAmount,
-        'taxAmount': taxAmount,
-        'paymentMethod': paymentMethod,
-        'status': status,
-        'createdBy': createdBy,
-        'createdAt': createdAt,
-        'updatedBy': updatedBy,
-        'updatedAt': updatedAt,
-      };
+    'id': id,
+    'storeNumber': storeNumber,
+    'orderNumber': orderNumber,
+    'productId': productId,
+    'productName': productName,
+    'customerId': customerId,
+    'quantity': quantity,
+    'unitPrice': unitPrice,
+    'barcode': barcode,
+    'discountPercent': discountPercent,
+    'taxPercent': taxPercent,
+    'totalAmount': totalAmount,
+    'discountAmount': discountAmount,
+    'taxAmount': taxAmount,
+    'paymentMethod': paymentMethod,
+    'status': status,
+    'createdBy': createdBy,
+    'createdAt': createdAt,
+    'updatedBy': updatedBy,
+    'updatedAt': updatedAt,
+  };
 
   /// Convert Model to toFirestore / toJson Function [toMap]
   Map<String, dynamic> toMap() {
@@ -153,14 +153,18 @@ class POSOrder extends Equatable {
       costPrice == 0.0 ? 0.0 : (unitPrice - costPrice) * quantity.toDouble();
 
   /// Find a Specific order by id [findOrdersById]
-  static Iterable<POSOrder> findOrdersById(List<POSOrder> orders,
-      {required String orderId}) =>
-      orders.where((order) => order.id == orderId);
+  static Iterable<POSOrder> findOrdersById(
+    List<POSOrder> orders, {
+    required String orderId,
+  }) => orders.where((order) => order.id == orderId);
 
   /// Filter Orders [filterOrdersByDate]
-  static List<POSOrder> filterOrdersByDate(List<POSOrder> orders,
-      {bool isSameDay = true}) =>
-      orders.where((order) => isSameDay ? order.isToday : !order.isToday).toList();
+  static List<POSOrder> filterOrdersByDate(
+    List<POSOrder> orders, {
+    bool isSameDay = true,
+  }) => orders
+      .where((order) => isSameDay ? order.isToday : !order.isToday)
+      .toList();
 
   /// copyWith method
   POSOrder copyWith({
@@ -209,68 +213,68 @@ class POSOrder extends Equatable {
 
   @override
   List<Object> get props => [
-        id,
-        orderNumber,
-        customerId,
-        productId,
-        productName,
-        quantity,
-        unitPrice,
-        barcode,
-        discountPercent,
-        taxPercent,
-        totalAmount,
-        paymentMethod,
-        status,
-        createdBy,
-        createdAt,
-        updatedBy,
-        storeNumber,
-        updatedAt,
-      ];
+    id,
+    orderNumber,
+    customerId,
+    productId,
+    productName,
+    quantity,
+    unitPrice,
+    barcode,
+    discountPercent,
+    taxPercent,
+    totalAmount,
+    paymentMethod,
+    status,
+    createdBy,
+    createdAt,
+    updatedBy,
+    storeNumber,
+    updatedAt,
+  ];
 
   /// ToList for POS-ORDER [itemAsList]
   List<String> itemAsList() => [
-        id,
-        storeNumber,
-        productId.toUppercaseAllLetter,
-        orderNumber,
-        customerId,
-        productName.toUppercaseFirstLetterEach,
-        status.toUppercaseFirstLetterEach,
-        '$ghanaCedis${unitPrice.toCurrency}',
-        '$quantity',
-        '$ghanaCedis${getSubTotal.toCurrency}',
-        '$discountPercent% = $ghanaCedis${discountAmount.toCurrency}',
-        '$taxPercent% = $ghanaCedis${taxAmount.toCurrency}',
-        '$ghanaCedis${totalAmount.toCurrency}',
-        paymentMethod.toUppercaseFirstLetterEach,
-        createdBy.toUppercaseFirstLetterEach,
-        getCreatedAt,
-        updatedBy.toUppercaseFirstLetterEach,
-        getUpdatedAt,
-      ];
+    id,
+    storeNumber,
+    productId.toUppercaseAllLetter,
+    orderNumber,
+    customerId,
+    productName.toUppercaseFirstLetterEach,
+    status.toUppercaseFirstLetterEach,
+    '$ghanaCedis${unitPrice.toCurrency}',
+    '$quantity',
+    '$ghanaCedis${getSubTotal.toCurrency}',
+    '$discountPercent% = $ghanaCedis${discountAmount.toCurrency}',
+    '$taxPercent% = $ghanaCedis${taxAmount.toCurrency}',
+    '$ghanaCedis${totalAmount.toCurrency}',
+    paymentMethod.toUppercaseFirstLetterEach,
+    createdBy.toUppercaseFirstLetterEach,
+    getCreatedAt,
+    updatedBy.toUppercaseFirstLetterEach,
+    getUpdatedAt,
+  ];
 
   static List<String> get dataTableHeader => const [
-        'ID',
-        'Store Number',
-        'Product ID',
-        'Order Number',
-        'Customer ID',
-        'Product Name',
-        'Status',
-        'Unit Price',
-        'Quantity',
-        'Sub Total',
-        'Discount',
-        'Tax',
-        'Total Amount',
-        'Payment Method',
-        'Created By',
-        'Created At',
-        'Updated By',
-        'Updated At',
-      ];
+    'ID',
+    'Store Number',
+    'Product ID',
+    'Order Number',
+    'Customer ID',
+    'Product Name',
+    'Status',
+    'Unit Price',
+    'Quantity',
+    'Sub Total',
+    'Discount',
+    'Tax',
+    'Total Amount',
+    'Payment Method',
+    'Created By',
+    'Created At',
+    'Updated By',
+    'Updated At',
+  ];
 }
 
 /*

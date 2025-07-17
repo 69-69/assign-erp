@@ -20,14 +20,16 @@ class AgentClient extends Equatable {
 
   /// fromFirestore / fromJson Function [AgentClient.fromMap]
   factory AgentClient.fromMap(Map<String, dynamic> map, {String? id}) {
-    final workspace = map['clientWorkspace'] != null
-        ? Workspace.fromMap(Map<String, dynamic>.from(map['clientWorkspace']))
-        : null;
+    final workspace = Workspace.fromMap(
+      Map<String, dynamic>.from(map['clientWorkspace'] ?? map),
+    );
 
     return AgentClient(
-      clientWorkspaceId: map['clientWorkspaceId'] ?? workspace?.id,
+      clientWorkspaceId: map['clientWorkspaceId'] ?? workspace.id ?? '',
       commission: List<String>.from(map['commission'] ?? []),
-      assignedAt: toDateTimeFn(map['assignedAt'] ?? _today),
+      assignedAt: toDateTimeFn(
+        map['assignedAt'] ?? workspace.createdAt ?? _today,
+      ),
       clientWorkspace: workspace,
     );
   }
@@ -47,6 +49,8 @@ class AgentClient extends Equatable {
 
     return {'id': clientWorkspaceId, 'data': map};
   }
+
+  get getAssignedAt => assignedAt.toStandardDT;
 
   @override
   List<Object?> get props => [

@@ -51,11 +51,11 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
 
   Future<void> _initialize() async {
     // on<GetShortIDEvent<T>>(_onGetShortID);
-    on<RefreshSetup<T>>(_onRefreshSetup);
-    on<GetSetup<T>>(_onGetSetup);
+    on<RefreshSetups<T>>(_onRefreshSetups);
+    on<GetSetups<T>>(_onGetSetups);
     on<GetSetupById<T>>(_onGetSetupById);
-    on<GetMultiSetupByIDs<T>>(_onGetMultiSetupByIDs);
-    on<GetAllSetupWithSameId<T>>(_onGetAllSetupWithSameId);
+    on<GetSetupsByIds<T>>(_onGetSetupsByIds);
+    on<GetSetupsWithSameId<T>>(_onGetSetupsWithSameId);
     on<SearchSetup<T>>(_onSearchSetup);
     on<AddSetup<T>>(_onAddSetup);
     on<AddSetup<List<T>>>(_onAddMultiSetup);
@@ -67,8 +67,8 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
     on<_SetupLoadError>(_onSetupLoadError);
   }
 
-  Future<void> _onRefreshSetup(
-    RefreshSetup<T> event,
+  Future<void> _onRefreshSetups(
+    RefreshSetups<T> event,
     Emitter<SetupState> emit,
   ) async {
     emit(LoadingSetup<T>());
@@ -81,16 +81,16 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
       final data = _toList(snapshot);
 
       // Emit the loaded state with the refreshed data
-      emit(SetupLoaded<T>(data));
+      emit(SetupsLoaded<T>(data));
     } catch (e) {
       // Emit an error state in case of failure
       emit(SetupError<T>(e.toString()));
     }
   }
 
-  /// Load All Data Function [_onGetSetup]
-  Future<void> _onGetSetup(
-    GetSetup<T> event,
+  /// Load All Data Function [_onGetSetups]
+  Future<void> _onGetSetups(
+    GetSetups<T> event,
     Emitter<SetupState<T>> emit,
   ) async {
     emit(LoadingSetup<T>());
@@ -101,7 +101,7 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
           final data = _toList(snapshot);
 
           // Update internal state in the BLoC to reflect data loaded
-          emit(SetupLoaded<T>(data));
+          emit(SetupsLoaded<T>(data));
 
           // Trigger an event to handle the loaded data
           // add(_SetupLoadedEvent<T>(data));
@@ -125,8 +125,8 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
     }
   }
 
-  Future<void> _onGetMultiSetupByIDs(
-    GetMultiSetupByIDs<T> event,
+  Future<void> _onGetSetupsByIds(
+    GetSetupsByIds<T> event,
     Emitter<SetupState<T>> emit,
   ) async {
     emit(LoadingSetup<T>());
@@ -139,7 +139,7 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
         final data = _toList(localDataList);
 
         add(_SetupLoaded<T>(data));
-        // emit(DataLoadedState<T>(data));
+        // emit(SetupsLoaded<T>(data));
       }
     } catch (e) {
       emit(SetupError<T>(e.toString()));
@@ -168,8 +168,8 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
     }
   }
 
-  Future<void> _onGetAllSetupWithSameId(
-    GetAllSetupWithSameId<T> event,
+  Future<void> _onGetSetupsWithSameId(
+    GetSetupsWithSameId<T> event,
     Emitter<SetupState<T>> emit,
   ) async {
     emit(LoadingSetup<T>());
@@ -181,7 +181,7 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
 
       if (localData.isNotEmpty) {
         final data = _toList(localData);
-        emit(SetupLoaded<T>(data));
+        emit(SetupsLoaded<T>(data));
       } else {
         emit(SetupError<T>('Data not found'));
       }
@@ -204,7 +204,7 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
       );
 
       var localData = _toList(data);
-      emit(SetupLoaded<T>(localData));
+      emit(SetupsLoaded<T>(localData));
       // emit(DataLoadedState<T>(data.cast<T>()));
     } catch (e) {
       emit(SetupError<T>('Error searching data: $e'));
@@ -281,7 +281,7 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
       await _setupRepository.deleteData(event.documentId);
 
       // Trigger LoadDataEvent to reload the data
-      add(GetSetup<T>());
+      add(GetSetups<T>());
 
       // Update State: Notify that data deleted
       emit(SetupDeleted<T>(message: 'data deleted successfully'));
@@ -291,23 +291,23 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
   }
 
   void _onShortUIDLoaded(_ShortIDLoaded<T> event, Emitter<SetupState<T>> emit) {
-    emit(SingleSetupLoaded<T>(event.shortID));
+    emit(SetupLoaded<T>(event.shortID));
   }
 
   void _onSetupLoaded(_SetupLoaded<T> event, Emitter<SetupState<T>> emit) {
-    emit(SetupLoaded<T>(event.data));
+    emit(SetupsLoaded<T>(event.data));
   }
 
   void _onSingleSetupLoaded(
     _SingleSetupLoaded<T> event,
     Emitter<SetupState<T>> emit,
   ) {
-    emit(SingleSetupLoaded<T>(event.data));
+    emit(SetupLoaded<T>(event.data));
   }
 
   void _onSetupLoadError(_SetupLoadError event, Emitter<SetupState<T>> emit) {
     final errorLogCache = ErrorLogCache();
-    errorLogCache.cacheError(error: event.error, fileName: 'setup_bloc');
+    errorLogCache.setError(error: event.error, fileName: 'setup_bloc');
     emit(SetupError<T>(event.error));
   }
 

@@ -13,11 +13,9 @@ class PrintoutSetupCacheService {
     return dataBox.get(_settingsKey, defaultValue: SetupPrintOut());
   }
 
-  Future<void> cacheSettings(SetupPrintOut settings) async {
+  Future<void> setSettings(SetupPrintOut settings) async {
     await dataBox.put(_settingsKey, settings);
   }
 
-  Future<void> deleteSettings() async {
-    await dataBox.delete(_settingsKey);
-  }
+  Future<void> deleteSettings() async => await dataBox.delete(_settingsKey);
 }

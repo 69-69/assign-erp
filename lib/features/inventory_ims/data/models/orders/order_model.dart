@@ -1,7 +1,7 @@
-import 'package:equatable/equatable.dart';
-import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/util/format_date_utl.dart';
+import 'package:assign_erp/core/util/str_util.dart';
+import 'package:equatable/equatable.dart';
 
 var _today = DateTime.now(); /*.millisecondsSinceEpoch.toString()*/
 
@@ -69,10 +69,10 @@ class Orders extends Equatable {
     DateTime? createdAt,
     this.updatedBy = '',
     DateTime? updatedAt,
-  })  : shippingDate = shippingDate ?? _today,
-        deliveryDate = deliveryDate ?? _today,
-        createdAt = createdAt ?? _today,
-        updatedAt = updatedAt ?? _today; // Set default value
+  }) : shippingDate = shippingDate ?? _today,
+       deliveryDate = deliveryDate ?? _today,
+       createdAt = createdAt ?? _today,
+       updatedAt = updatedAt ?? _today; // Set default value
 
   /// fromFirestore / fromJson Function [Orders.fromMap]
   factory Orders.fromMap(Map<String, dynamic> data, String documentId) {
@@ -112,37 +112,37 @@ class Orders extends Equatable {
 
   // map template
   Map<String, dynamic> _mapTemp() => {
-        'id': id,
-        'storeNumber': storeNumber,
-        'orderNumber': orderNumber,
-        'productId': productId,
-        'customerId': customerId,
-        'status': status,
-        'productName': productName,
-        'barcode': barcode,
-        'orderType': orderType,
-        'quantity': quantity,
-        'unitPrice': unitPrice,
-        'paymentTerms': paymentTerms,
-        'paymentStatus': paymentStatus,
-        'deliveryAmount': deliveryAmount,
-        'taxPercent': taxPercent,
-        'discountPercent': discountPercent,
-        // 'subTotal': subTotal,
-        // 'taxAmount': taxAmount,
-        // 'discountAmount': discountAmount,
-        'orderSource': orderSource,
-        'remarks': remarks,
-        'totalAmount': totalAmount,
-        'amountPaid': amountPaid,
-        'validityDate': validityDate,
-        'shippingDate': shippingDate,
-        'deliveryDate': deliveryDate,
-        'createdBy': createdBy,
-        'createdAt': createdAt,
-        'updatedBy': updatedBy,
-        'updatedAt': updatedAt,
-      };
+    'id': id,
+    'storeNumber': storeNumber,
+    'orderNumber': orderNumber,
+    'productId': productId,
+    'customerId': customerId,
+    'status': status,
+    'productName': productName,
+    'barcode': barcode,
+    'orderType': orderType,
+    'quantity': quantity,
+    'unitPrice': unitPrice,
+    'paymentTerms': paymentTerms,
+    'paymentStatus': paymentStatus,
+    'deliveryAmount': deliveryAmount,
+    'taxPercent': taxPercent,
+    'discountPercent': discountPercent,
+    // 'subTotal': subTotal,
+    // 'taxAmount': taxAmount,
+    // 'discountAmount': discountAmount,
+    'orderSource': orderSource,
+    'remarks': remarks,
+    'totalAmount': totalAmount,
+    'amountPaid': amountPaid,
+    'validityDate': validityDate,
+    'shippingDate': shippingDate,
+    'deliveryDate': deliveryDate,
+    'createdBy': createdBy,
+    'createdAt': createdAt,
+    'updatedBy': updatedBy,
+    'updatedAt': updatedAt,
+  };
 
   /// Convert Model to toFirestore / toJson Function [toMap]
   Map<String, dynamic> toMap() {
@@ -231,11 +231,12 @@ class Orders extends Equatable {
       orders.where((order) => order.id == id);
 
   /// [filterOrdersByDate]
-  static List<Orders> filterOrdersByDate(List<Orders> orders,
-          {bool isSameDay = true}) =>
-      orders
-          .where((order) => isSameDay ? order.isToday : !order.isToday)
-          .toList();
+  static List<Orders> filterOrdersByDate(
+    List<Orders> orders, {
+    bool isSameDay = true,
+  }) => orders
+      .where((order) => isSameDay ? order.isToday : !order.isToday)
+      .toList();
 
   @override
   String toString() =>
@@ -310,37 +311,37 @@ class Orders extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        storeNumber,
-        orderNumber,
-        productId,
-        customerId,
-        status,
+    id,
+    storeNumber,
+    orderNumber,
+    productId,
+    customerId,
+    status,
     orderSource,
-        productName,
-        orderType,
-        barcode,
-        quantity,
-        unitPrice,
-        paymentTerms,
-        paymentStatus,
-        deliveryAmount,
-        taxPercent,
-        discountPercent,
-        totalAmount,
-        amountPaid,
-        remarks,
-        validityDate,
-        deliveryDate ?? '',
-        shippingDate ?? '',
-        createdBy,
-        createdAt,
-        updatedBy,
-        updatedAt,
-        // subTotal,
-        // taxAmount,
-        // discountAmount,
-      ];
+    productName,
+    orderType,
+    barcode,
+    quantity,
+    unitPrice,
+    paymentTerms,
+    paymentStatus,
+    deliveryAmount,
+    taxPercent,
+    discountPercent,
+    totalAmount,
+    amountPaid,
+    remarks,
+    validityDate,
+    deliveryDate ?? '',
+    shippingDate ?? '',
+    createdBy,
+    createdAt,
+    updatedBy,
+    updatedAt,
+    // subTotal,
+    // taxAmount,
+    // discountAmount,
+  ];
 
   /// ToList for ORDERS [itemAsList]
   List<String> itemAsList({int? start, int? end}) {
@@ -383,32 +384,32 @@ class Orders extends Equatable {
   }
 
   static List<String> get dataTableHeader => const [
-        'ID',
-        'Store Number',
-        'Order Number',
-        'Customer ID',
-        'Status',
-        'Order Source',
-        'Product Name',
-        'Type',
-        'Quantity',
-        'Unit Price',
-        'SubTotal',
-        'Discount',
-        'Net Price',
-        'Delivery fee',
-        'Tax',
-        'Total Amount',
-        'Amount Paid',
-        'OutStanding Balance',
-        'Payment Terms',
-        'Payment Status',
-        'Validity',
-        'Shipping',
-        'Delivery',
-        'Created By',
-        'Created At',
-        'Updated By',
-        'Updated At',
-      ];
+    'ID',
+    'Store Number',
+    'Order Number',
+    'Customer ID',
+    'Status',
+    'Order Source',
+    'Product Name',
+    'Type',
+    'Quantity',
+    'Unit Price',
+    'SubTotal',
+    'Discount',
+    'Net Price',
+    'Delivery fee',
+    'Tax',
+    'Total Amount',
+    'Amount Paid',
+    'OutStanding Balance',
+    'Payment Terms',
+    'Payment Status',
+    'Validity',
+    'Shipping',
+    'Delivery',
+    'Created By',
+    'Created At',
+    'Updated By',
+    'Updated At',
+  ];
 }

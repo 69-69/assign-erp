@@ -11,9 +11,10 @@ class OrdersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      actions: const [],
+      isGradientBg: true,
       title: allOrderScreenTitle.toUpperCase(),
       body: TileCard(tiles: ordersTiles),
+      actions: const [],
     );
   }
 }

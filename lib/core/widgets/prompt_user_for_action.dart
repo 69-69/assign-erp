@@ -1,3 +1,4 @@
+import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -44,10 +45,7 @@ extension PromptUserFor on BuildContext {
     String onReject,
   ) {
     var cupertinoAlertDialog = CupertinoAlertDialog(
-      title: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(title),
-      ),
+      title: Padding(padding: const EdgeInsets.all(8.0), child: Text(title)),
       content: message,
       actions: [
         _cupertinoDialogAction(context, label: onAccept),
@@ -68,7 +66,7 @@ extension PromptUserFor on BuildContext {
       key: ValueKey(label),
       isDefaultAction: true,
       onPressed: () async => Navigator.pop(context, status),
-      child: Text(label),
+      child: Text(label, style: TextStyle(color: context.onSecondaryContainer)),
     );
   }
 }

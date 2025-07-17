@@ -1,19 +1,19 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
-import 'package:assign_erp/core/util/async_progress_dialog.dart';
-import 'package:assign_erp/core/util/custom_bottom_sheet.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
+import 'package:assign_erp/core/util/calculate_extras.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/generate_new_uid.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/util/top_header_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
 import 'package:assign_erp/core/widgets/barcode_scanner.dart';
-import 'package:assign_erp/core/widgets/calculate_extras.dart';
+import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
+import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/customer_crm/data/data_sources/remote/get_customers.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/orders/order_model.dart';
@@ -278,7 +278,7 @@ class _AddOrderBodyState extends State<_AddOrderBody> {
     );
   }
 
-  // Preview Orders add to list
+  // Horizontal scrollable row of chips representing the List of batch of Orders
   Widget _buildOrderPreviewChips() {
     return CustomScrollBar(
       controller: _scrollController,
@@ -558,15 +558,14 @@ class _AddOrderBodyState extends State<_AddOrderBody> {
     }
   }
 
-  Future<dynamic> _printout() =>
-      Future.delayed(const Duration(seconds: 3), () async {
-        // Simulate loading supplier and company info
-        final cus = await GetCustomers.byCustomerId(_orders.first.customerId);
-        if (cus.isNotEmpty) {
-          PrintOrderInvoice(
-            orders: _orders,
-            customer: cus,
-          ).onPrintIn(title: 'proforma invoice');
-        }
-      });
+  Future<dynamic> _printout() => Future.delayed(wAnimateDuration, () async {
+    // Simulate loading supplier and company info
+    final cus = await GetAllCustomers.byCustomerId(_orders.first.customerId);
+    if (cus.isNotEmpty) {
+      PrintOrderInvoice(
+        orders: _orders,
+        customer: cus,
+      ).onPrintIn(title: 'proforma invoice');
+    }
+  });
 }

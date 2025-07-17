@@ -1,7 +1,8 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/adaptive_layout.dart';
-import 'package:assign_erp/core/util/async_progress_dialog.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/widgets/adaptive_layout.dart';
+import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/dynamic_table.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
@@ -39,8 +40,8 @@ class _ListFinanceState extends State<ListFinance> {
     return BlocBuilder<OrderBloc, InventoryState<Orders>>(
       builder: (context, state) {
         return switch (state) {
-          LoadingInventory<Orders>() => context.loader,
-          InventoryLoaded<Orders>(data: var results) =>
+          LoadingInventories<Orders>() => context.loader,
+          InventoriesLoaded<Orders>(data: var results) =>
             results.isEmpty
                 ? context.buildAddButton(
                     'Place an Finance',
@@ -104,7 +105,7 @@ class _ListFinanceState extends State<ListFinance> {
           // Dispatch an event to refresh data
           onPressed: () {
             // Refresh Orders Data
-            context.read<OrderBloc>().add(RefreshInventory<Orders>());
+            context.read<OrderBloc>().add(RefreshInventories<Orders>());
           },
         ),
         // final orderBloc = context.read<OrdersBloc>();
@@ -183,10 +184,12 @@ class _ListFinanceState extends State<ListFinance> {
   }
 
   Future<dynamic> _printout(List<Orders> orders, List<String> row) =>
-      Future.delayed(const Duration(seconds: 1), () async {
+      Future.delayed(wAnimateDuration, () async {
         // Simulate loading supplier and company info
         final getOrders = Orders.findOrderById(orders, row.first).toList();
-        final cus = await GetCustomers.byCustomerId(getOrders.first.customerId);
+        final cus = await GetAllCustomers.byCustomerId(
+          getOrders.first.customerId,
+        );
 
         if (getOrders.isNotEmpty && cus.isNotEmpty) {
           PrintOrderInvoice(
@@ -260,7 +263,7 @@ class _IssueMultiInvoicePrintout extends StatelessWidget {
         ),
       ),
       onPressed: () async {
-        final cus = await GetCustomers.byCustomerId(orders.first.customerId);
+        final cus = await GetAllCustomers.byCustomerId(orders.first.customerId);
 
         PrintOrderInvoice(
           orders: orders,

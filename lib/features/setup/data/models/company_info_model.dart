@@ -1,10 +1,10 @@
-import 'package:equatable/equatable.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:equatable/equatable.dart';
 
-var _today = DateTime.now(); /*.millisecondsSinceEpoch.toString()*/
+var _today = DateTime.now();
 
-class CompanyInfo extends Equatable {
+class Company extends Equatable {
   final String id;
   final String name;
   final String email;
@@ -18,7 +18,7 @@ class CompanyInfo extends Equatable {
   final String updatedBy;
   final DateTime updatedAt;
 
-  CompanyInfo({
+  Company({
     this.id = '',
     required this.name,
     required this.email,
@@ -31,12 +31,12 @@ class CompanyInfo extends Equatable {
     DateTime? createdAt,
     this.updatedBy = '',
     DateTime? updatedAt,
-  })  : createdAt = createdAt ?? _today,
-        updatedAt = updatedAt ?? _today; // Set default value
+  }) : createdAt = createdAt ?? _today,
+       updatedAt = updatedAt ?? _today; // Set default value
 
   /// fromFirestore / fromJson Function [CompanyInfo.fromMap]
-  factory CompanyInfo.fromMap(Map<String, dynamic> data, String documentId) {
-    return CompanyInfo(
+  factory Company.fromMap(Map<String, dynamic> data, String documentId) {
+    return Company(
       id: documentId,
       name: data['name'] ?? '',
       email: data['email'] ?? '',
@@ -54,19 +54,19 @@ class CompanyInfo extends Equatable {
 
   // map template
   Map<String, dynamic> _mapTemp() => {
-      'id': id,
-      'name': name,
-      'email': email,
-      'phone': phone,
-      'address': address,
-      'altPhone': altPhone,
-      'faxNumber': faxNumber,
-      'logo': logo,
-      'createdBy': createdBy,
-      'createdAt': createdAt,
-      'updatedBy': updatedBy,
-      'updatedAt': updatedAt,
-    };
+    'id': id,
+    'name': name,
+    'email': email,
+    'phone': phone,
+    'address': address,
+    'altPhone': altPhone,
+    'faxNumber': faxNumber,
+    'logo': logo,
+    'createdBy': createdBy,
+    'createdAt': createdAt,
+    'updatedBy': updatedBy,
+    'updatedAt': updatedAt,
+  };
 
   /// Convert Model to toFirestore / toJson Function [toMap]
   Map<String, dynamic> toMap() {
@@ -105,16 +105,16 @@ class CompanyInfo extends Equatable {
         dt.day == _today.day;
   }
 
-  static get notFound => CompanyInfo(
-        name: 'No Data',
-        email: 'No Data',
-        phone: 'No Data',
-        address: 'No Data',
-        createdBy: 'No Data',
-      );
+  static get notFound => Company(
+    name: 'No Data',
+    email: 'No Data',
+    phone: 'No Data',
+    address: 'No Data',
+    createdBy: 'No Data',
+  );
 
   /// copyWith method
-  CompanyInfo copyWith({
+  Company copyWith({
     String? id,
     String? phone,
     String? email,
@@ -128,7 +128,7 @@ class CompanyInfo extends Equatable {
     String? updatedBy,
     DateTime? updatedAt,
   }) {
-    return CompanyInfo(
+    return Company(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
@@ -146,46 +146,46 @@ class CompanyInfo extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        phone,
-        address,
-        altPhone,
-        email,
-        name,
-        faxNumber,
-        logo,
-        createdBy,
-        createdAt,
-        updatedBy,
-        updatedAt,
-      ];
+    id,
+    phone,
+    address,
+    altPhone,
+    email,
+    name,
+    faxNumber,
+    logo,
+    createdBy,
+    createdAt,
+    updatedBy,
+    updatedAt,
+  ];
 
   /// ToList for CompanyInfo [toListC]
   List<String> toListC() => [
-        id,
-        name.toUppercaseFirstLetterEach,
-        phone,
-        altPhone,
-        email,
-        address.toUppercaseFirstLetterEach,
-        faxNumber,
-        createdBy.toUppercaseFirstLetterEach,
-        getCreatedAt,
-        updatedBy.toUppercaseFirstLetterEach,
-        getUpdatedAt,
-      ];
+    id,
+    name.toUppercaseFirstLetterEach,
+    phone,
+    altPhone,
+    email,
+    address.toUppercaseFirstLetterEach,
+    faxNumber,
+    createdBy.toUppercaseFirstLetterEach,
+    getCreatedAt,
+    updatedBy.toUppercaseFirstLetterEach,
+    getUpdatedAt,
+  ];
 
   static List<String> get dataHeader => const [
-        'ID',
-        'Name',
-        'phone',
-        'Alt Phone',
-        'Email',
-        'Address',
-        'Fax',
-        'Created By',
-        'Created At',
-        'Updated By',
-        'Updated At',
-      ];
+    'ID',
+    'Name',
+    'phone',
+    'Alt Phone',
+    'Email',
+    'Address',
+    'Fax',
+    'Created By',
+    'Created At',
+    'Updated By',
+    'Updated At',
+  ];
 }

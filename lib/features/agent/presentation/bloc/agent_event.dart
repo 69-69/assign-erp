@@ -10,12 +10,16 @@ sealed class AgentEvent<T> extends Equatable {
 }
 
 class LoadClients<T> extends AgentEvent<T> {
-  final bool isDeveloper;
+  final bool isSystemWide;
 
-  const LoadClients({this.isDeveloper = false});
+  const LoadClients({this.isSystemWide = false});
 }
 
-class RefreshClients<T> extends AgentEvent<T> {}
+class RefreshClients<T> extends AgentEvent<T> {
+  final bool isSystemWide;
+
+  const RefreshClients({this.isSystemWide = false});
+}
 
 class LoadClientById<T> extends AgentEvent<T> {
   final Object? field;
@@ -25,6 +29,16 @@ class LoadClientById<T> extends AgentEvent<T> {
 
   @override
   List<Object?> get props => [documentId, field];
+}
+
+/// [LoadAgentById] For Getting Agent Data `agentId` is same as `Agent workspace Id`
+class LoadAgentById<T> extends AgentEvent<T> {
+  final String agentId;
+
+  const LoadAgentById({required this.agentId});
+
+  @override
+  List<Object?> get props => [agentId];
 }
 
 /// T data: Generic Data Update: using Model-Class
@@ -39,6 +53,16 @@ class UpdateClient<T> extends AgentEvent<T> {
 
   @override
   List<Object?> get props => [data, documentId];
+}
+
+class ResetAuthorizedDeviceIds<T> extends AgentEvent<T> {
+  final T? data;
+  final String documentId;
+
+  const ResetAuthorizedDeviceIds({required this.documentId, this.data});
+
+  @override
+  List<Object?> get props => [documentId, this.data];
 }
 
 class DeleteClient<T> extends AgentEvent<T> {

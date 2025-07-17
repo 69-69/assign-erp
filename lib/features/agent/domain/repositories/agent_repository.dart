@@ -6,6 +6,7 @@ import 'package:assign_erp/core/network/data_sources/local/cache_data_model.dart
 import 'package:assign_erp/core/network/data_sources/remote/repository/firestore_helper.dart';
 import 'package:assign_erp/core/network/data_sources/remote/repository/firestore_repository.dart';
 import 'package:assign_erp/core/util/debug_printify.dart';
+import 'package:assign_erp/features/auth/data/data_sources/local/auth_cache_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
@@ -56,6 +57,12 @@ class AgentRepository extends FirestoreRepository {
     return Hive.box<CacheData>(collectionPath);
   }
 
+  /// Scope ID to restrict cache-data access to specific scope/context
+  String get scopeId {
+    final authCacheService = AuthCacheService();
+    return (authCacheService.getWorkspace())?.id ?? '';
+  }
+
   /// Emit Data / Add Event to Stream [_emitDataToStream]
   void _emitDataToStream() {
     if (!_isDataControllerClosed) {
@@ -94,6 +101,20 @@ class AgentRepository extends FirestoreRepository {
   /// Update BackUp Data to Remote-Server (Firestore) [_updateBackupDataToFirestore]
   Future<void> _updateBackupDataToFirestore(CacheData item) async {
     await updateById(item.id, data: item.data);
+  }
+
+  /// Reset Authorized Device IDs [resetAuthorizedDeviceIds]
+  Future<void> resetAuthorizedDeviceIds(
+    String id, {
+    String? authorizedDeviceId,
+  }) async {
+    final data = authorizedDeviceId != null
+        ? FieldValue.arrayRemove([authorizedDeviceId])
+        : [];
+
+    await updateById(id, data: {'authorizedDeviceIds': data});
+
+    _emitDataToStream(); // Update the stream with the latest data
   }
 
   /// Helper function to search in local HiveBox
@@ -158,7 +179,7 @@ class AgentRepository extends FirestoreRepository {
   }
 
   CacheData _fromMap(Map<String, dynamic> data, String id) =>
-      CacheData.fromMap(data, documentId: id);
+      CacheData.fromMap(data, id: id, scopeId: scopeId);
 
   /// Update/Push to Cache / LocalStorage [_updateCacheWithData]
   void _updateCacheWithData(List<CacheData> data) {
@@ -172,7 +193,7 @@ class AgentRepository extends FirestoreRepository {
 
   /// Add/Create New Data Function [createData]
   Future<void> createData(Map<String, dynamic> data) async {
-    final cacheData = CacheData.fromCache(data, '');
+    final cacheData = CacheData.fromCache(data, id: '', scopeId: scopeId);
 
     // Add to remote DB
     final docId = await _backupNewDataToFirestore(cacheData);
@@ -184,7 +205,7 @@ class AgentRepository extends FirestoreRepository {
 
   /// Update/Modify Data Function [updateData]
   Future<void> updateData(String id, Map<String, dynamic> data) async {
-    final cacheData = CacheData.fromCache(data, id);
+    final cacheData = CacheData.fromCache(data, id: id, scopeId: scopeId);
 
     await _addToCache(cacheData.id, cacheData); // Add to Cache/localStorage
     await _updateBackupDataToFirestore(cacheData); // Update to remote DB
@@ -297,7 +318,11 @@ class AgentRepository extends FirestoreRepository {
       final futures = chunks.map((chunk) async {
         final snapshot = await findManyByIds(ids: chunk);
         return snapshot.docs.map((doc) {
-          final data = CacheData.fromMap(doc.data(), documentId: doc.id);
+          final data = CacheData.fromMap(
+            doc.data(),
+            id: doc.id,
+            scopeId: scopeId,
+          );
           _addToCache(doc.id, data); // Add to cache
           return data;
         }).toList();
@@ -340,7 +365,7 @@ class AgentRepository extends FirestoreRepository {
           cachedData != null && cachedData.data['clientWorkspace'] != null;
       if (isValid) {
         cached.add(cachedData);
-        prettyPrint('✅ Cached workspace doc', cachedData.data);
+        // prettyPrint('✅ Cached workspace doc', cachedData.data);
       } else {
         missingIds.add(id);
         prettyPrint('❌ Missing workspace doc', id);
@@ -361,7 +386,10 @@ class AgentRepository extends FirestoreRepository {
     final futures = chunks.map((chunk) async {
       final snapshot = await _workspacesRef(ids: chunk); // Fetch workspace docs
       return snapshot.docs
-          .map((doc) => CacheData.fromMap(doc.data(), documentId: doc.id))
+          .map(
+            (doc) =>
+                CacheData.fromMap(doc.data(), id: doc.id, scopeId: scopeId),
+          )
           .toList();
     });
 
@@ -383,7 +411,11 @@ class AgentRepository extends FirestoreRepository {
         'assignedAt': client['assignedAt'],
         'clientWorkspace': workspaceData,
       };
-      final enriched = CacheData(id: workspaceId, data: enrichedMap);
+      final enriched = CacheData(
+        id: workspaceId,
+        data: enrichedMap,
+        scopeId: scopeId,
+      );
       _addToCache(
         workspaceId,
         enriched,
@@ -400,11 +432,30 @@ class AgentRepository extends FirestoreRepository {
     return enrichedCacheData;
   }
 
-  // get all workspaces if role is developer
-  Future<List<CacheData>> getAllClientsWorkspaces() async {
-    final snapshot = await _workspacesRef(isDeveloper: true);
+  // Get Agent workspace
+  Future<CacheData?> getAgentById(String agentId) async {
+    // final snapshot = await _workspacesRef(isDeveloper: true);
+    CacheData? data = _getCacheById(agentId);
+
+    if (data != null) {
+      return data;
+    } else {
+      final docSnapshot = await findById(agentId);
+      if (docSnapshot.exists && docSnapshot.data() != null) {
+        final data = _fromMap(docSnapshot.data()!, docSnapshot.id);
+        await _addToCache(agentId, data);
+        return data;
+      }
+      return null;
+    }
+  }
+
+  // Get all workspaces if current signedIn role is developer
+  Future<List<CacheData>> getSystemWideWorkspaces() async {
+    final snapshot = await findAll();
+
     return snapshot.docs.map((doc) {
-      final data = CacheData.fromMap(doc.data(), documentId: doc.id);
+      final data = CacheData.fromMap(doc.data(), id: doc.id, scopeId: scopeId);
       _addToCache(doc.id, data); // Add to cache
       return data;
     }).toList();
@@ -413,15 +464,17 @@ class AgentRepository extends FirestoreRepository {
   Future<QuerySnapshot<Map<String, dynamic>>> _workspacesRef({
     List<String> ids = const [],
     bool isDeveloper = false,
-  }) {
+  }) async {
     final fireHelper = FirestoreHelper();
     final collectionRef = fireHelper.getCollectionRef(
       collectionType: CollectionType.global,
       workspaceUserDBCollectionPath,
     );
-    return isDeveloper
-        ? collectionRef.get()
-        : collectionRef.where(FieldPath.documentId, whereIn: ids).get();
+
+    final repo = isDeveloper
+        ? await collectionRef.get()
+        : await collectionRef.where(FieldPath.documentId, whereIn: ids).get();
+    return repo;
   }
 
   /// Get Single Data by ID [getDataById]

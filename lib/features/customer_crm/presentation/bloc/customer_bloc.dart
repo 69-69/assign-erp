@@ -49,12 +49,12 @@ class CustomerBloc<T> extends Bloc<CustomerEvent, CustomerState<T>> {
 
   Future<void> _initialize() async {
     // on<GetShortIDEvent<T>>(_onGetShortID);
-    on<RefreshCustomers<T>>(_onRefreshCustomer);
-    on<GetCustomer<T>>(_onGetCustomer);
+    on<RefreshCustomers<T>>(_onRefreshCustomers);
+    on<GetCustomers<T>>(_onGetCustomers);
     on<GetCustomerById<T>>(_onGetCustomerById);
-    on<GetMultiCustomerByIDs<T>>(_onGetMultiCustomerByIDs);
-    on<GetCustomersWithSameId<T>>(_onGetAllCustomerWithSameId);
-    on<SearchCustomers<T>>(_onSearchCustomer);
+    on<GetCustomersByIds<T>>(_onGetCustomersByIds);
+    on<GetCustomersWithSameId<T>>(_onGetCustomersWithSameId);
+    on<SearchCustomers<T>>(_onSearchCustomers);
     on<AddCustomer<T>>(_onAddCustomer);
     on<AddCustomer<List<T>>>(_onAddMultiCustomer);
     on<UpdateCustomer>(_onUpdateCustomer);
@@ -65,7 +65,7 @@ class CustomerBloc<T> extends Bloc<CustomerEvent, CustomerState<T>> {
     on<_CustomerError>(_onCustomerLoadError);
   }
 
-  Future<void> _onRefreshCustomer(
+  Future<void> _onRefreshCustomers(
     RefreshCustomers<T> event,
     Emitter<CustomerState> emit,
   ) async {
@@ -86,9 +86,9 @@ class CustomerBloc<T> extends Bloc<CustomerEvent, CustomerState<T>> {
     }
   }
 
-  /// Load All Data Function [_onGetCustomer]
-  Future<void> _onGetCustomer(
-    GetCustomer<T> event,
+  /// Load All Data Function [_onGetCustomers]
+  Future<void> _onGetCustomers(
+    GetCustomers<T> event,
     Emitter<CustomerState<T>> emit,
   ) async {
     emit(LoadingCustomers<T>());
@@ -145,8 +145,8 @@ class CustomerBloc<T> extends Bloc<CustomerEvent, CustomerState<T>> {
     });
   }*/
 
-  Future<void> _onGetMultiCustomerByIDs(
-    GetMultiCustomerByIDs<T> event,
+  Future<void> _onGetCustomersByIds(
+    GetCustomersByIds<T> event,
     Emitter<CustomerState<T>> emit,
   ) async {
     emit(LoadingCustomers<T>());
@@ -188,7 +188,7 @@ class CustomerBloc<T> extends Bloc<CustomerEvent, CustomerState<T>> {
     }
   }
 
-  Future<void> _onGetAllCustomerWithSameId(
+  Future<void> _onGetCustomersWithSameId(
     GetCustomersWithSameId<T> event,
     Emitter<CustomerState<T>> emit,
   ) async {
@@ -210,7 +210,7 @@ class CustomerBloc<T> extends Bloc<CustomerEvent, CustomerState<T>> {
     }
   }
 
-  Future<void> _onSearchCustomer(
+  Future<void> _onSearchCustomers(
     SearchCustomers<T> event,
     Emitter<CustomerState<T>> emit,
   ) async {
@@ -301,7 +301,7 @@ class CustomerBloc<T> extends Bloc<CustomerEvent, CustomerState<T>> {
       await _customerRepository.deleteData(event.documentId);
 
       // Trigger LoadDataEvent to reload the data
-      add(GetCustomer<T>());
+      add(GetCustomers<T>());
 
       // Update State: Notify that data deleted
       emit(CustomerDeleted<T>(message: 'data deleted successfully'));
@@ -336,7 +336,7 @@ class CustomerBloc<T> extends Bloc<CustomerEvent, CustomerState<T>> {
     Emitter<CustomerState<T>> emit,
   ) {
     final errorLogCache = ErrorLogCache();
-    errorLogCache.cacheError(error: event.error, fileName: 'customer_bloc');
+    errorLogCache.setError(error: event.error, fileName: 'customer_bloc');
     emit(CustomerError<T>(event.error));
   }
 

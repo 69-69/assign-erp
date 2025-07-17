@@ -1,11 +1,12 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/result/result.dart';
-import 'package:assign_erp/core/util/adaptive_layout.dart';
-import 'package:assign_erp/core/util/async_progress_dialog.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/core/widgets/adaptive_layout.dart';
+import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/data_backup_manager.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
@@ -98,7 +99,7 @@ class _BackUpState extends State<BackUp> {
   }
 
   Future<dynamic> _performBackup(String label) =>
-      Future.delayed(const Duration(seconds: 3), () async {
+      Future.delayed(wAnimateDuration, () async {
         try {
           final zipResult = await DataBackupManager.startBackup(
             zipFileName: '$label-backup',

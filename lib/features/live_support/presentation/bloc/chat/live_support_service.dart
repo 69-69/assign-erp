@@ -20,9 +20,9 @@ class LiveSupportService {
   /// Returns the chat document reference for a specific user within a workspace.
   DocumentReference<Map<String, dynamic>> _chatMessageRef(
     String workspaceId,
-    String userId,
+    String employeeId,
   ) {
-    return _chatsCollection(workspaceId).doc(userId);
+    return _chatsCollection(workspaceId).doc(employeeId);
   }
 
   /// Get a stream of chat overviews/summary ordered by latest activity.
@@ -31,7 +31,7 @@ class LiveSupportService {
   }) {
     return _chatsCollection(
       workspaceId,
-    ).orderBy('lastTimestamp', descending: true).snapshots();
+    ).orderBy('updatedAt', descending: true).snapshots();
   }
 
   /// Get real-time messages for a specific chat (i.e., user).
@@ -41,7 +41,7 @@ class LiveSupportService {
   }) {
     return _chatMessageRef(workspaceId, userId)
         .collection('messages')
-        .orderBy('timestamp', descending: true)
+        .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
@@ -71,13 +71,10 @@ class LiveSupportService {
     required String workspaceId,
     String? userName, // Optional: set if creating chat for first time
   }) async {
-    final timestamp = DateTime.now();
-
     final message = LiveChatMessage(
       senderId: senderId,
       senderRole: senderRole,
       message: messageText,
-      timestamp: timestamp,
     );
 
     final chatDoc = _firestore
@@ -89,12 +86,23 @@ class LiveSupportService {
     // ✅ Ensure chat document exists before writing to subcollection
     await chatDoc.set({
       'lastMessage': message.message,
-      'lastTimestamp': message.timestamp,
+      'updatedAt': message.createdAt,
       if (userName != null) 'userName': userName,
     }, SetOptions(merge: true)); // merge = only updates provided fields
 
     // ✅ Add message to messages subcollection
     await chatDoc.collection('messages').add(message.toMap());
+  }
+
+  Future<void> updateChatResolvedStatus({
+    required String chatId,
+    required bool isResolved,
+    required String workspaceId,
+  }) {
+    return _chatMessageRef(
+      workspaceId,
+      chatId,
+    ).update({'isResolved': isResolved});
   }
 
   /*/// Update a message by its ID in a specific user's chat.

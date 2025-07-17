@@ -1,11 +1,11 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/custom_bottom_sheet.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/util/top_header_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
+import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/setup/data/models/supplier_model.dart';
 import 'package:assign_erp/features/setup/presentation/bloc/product_config/suppliers_bloc.dart';
@@ -151,15 +151,15 @@ class _AddSuppliersFormBodyState extends State<_AddSuppliersFormBody> {
         alignment: WrapAlignment.center,
         children: [
           if (isMultipleSuppliers && _suppliers.isNotEmpty)
-            _buildSupplierPreviewChips(),
+            _buildBatchPreviewChips(),
           _buildBody(context),
         ],
       ),
     );
   }
 
-  // Preview Suppliers add to list
-  Widget _buildSupplierPreviewChips() {
+  // Horizontal scrollable row of chips representing the List of batches
+  Widget _buildBatchPreviewChips() {
     return CustomScrollBar(
       controller: _scrollController,
       padding: EdgeInsets.zero,

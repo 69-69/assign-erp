@@ -1,5 +1,5 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/adaptive_layout.dart';
+import 'package:assign_erp/core/widgets/adaptive_layout.dart';
 import 'package:assign_erp/core/widgets/dynamic_table.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
@@ -40,8 +40,8 @@ class _ListProductsState extends State<ListProducts> {
     return BlocBuilder<ProductBloc, InventoryState<Product>>(
       builder: (context, state) {
         return switch (state) {
-          LoadingInventory<Product>() => context.loader,
-          InventoryLoaded<Product>(data: var results) =>
+          LoadingInventories<Product>() => context.loader,
+          InventoriesLoaded<Product>(data: var results) =>
             results.isEmpty
                 ? context.buildAddButton(
                     'Add Stock',
@@ -105,7 +105,7 @@ class _ListProductsState extends State<ListProducts> {
           count: products.length,
           onPressed: () {
             // Refresh Products Data
-            context.read<ProductBloc>().add(RefreshInventory<Product>());
+            context.read<ProductBloc>().add(RefreshInventories<Product>());
           },
         ),
         // final productBloc = context.read<ProductBloc>();

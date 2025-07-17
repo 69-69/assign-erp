@@ -1,7 +1,8 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/async_progress_dialog.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:flutter/material.dart';
 
@@ -53,7 +54,7 @@ class RestoreFromCloud extends StatelessWidget {
 
   /// Restore from cloud storage (e.g., Google Drive, Dropbox)
   Future<dynamic> _restoreFromCloud() =>
-      Future.delayed(const Duration(seconds: 3), () async {
+      Future.delayed(wAnimateDuration, () async {
         try {
           throw Exception('Restoring failed');
         } catch (e) {

@@ -1,8 +1,8 @@
-import 'package:equatable/equatable.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:equatable/equatable.dart';
 
-var _today = DateTime.now(); /*.millisecondsSinceEpoch.toString()*/
+var _today = DateTime.now();
 
 class Category extends Equatable {
   final String id;
@@ -19,8 +19,8 @@ class Category extends Equatable {
     DateTime? createdAt,
     this.updatedBy = '',
     DateTime? updatedAt,
-  })  : createdAt = createdAt ?? _today,
-        updatedAt = updatedAt ?? _today; // Set default value
+  }) : createdAt = createdAt ?? _today,
+       updatedAt = updatedAt ?? _today; // Set default value
 
   /// fromFirestore / fromJson Function [StoreLocation.fromMap]
   factory Category.fromMap(Map<String, dynamic> data, String documentId) {
@@ -36,13 +36,13 @@ class Category extends Equatable {
 
   // map template
   Map<String, dynamic> _mapTemp() => {
-      'id': id,
-      'name': name,
-      'createdBy': createdBy,
-      'createdAt': createdAt,
-      'updatedBy': updatedBy,
-      'updatedAt': updatedAt,
-    };
+    'id': id,
+    'name': name,
+    'createdBy': createdBy,
+    'createdAt': createdAt,
+    'updatedBy': updatedBy,
+    'updatedAt': updatedAt,
+  };
 
   /// Convert Model to toFirestore / toJson Function [toMap]
   Map<String, dynamic> toMap() {
@@ -90,8 +90,10 @@ class Category extends Equatable {
       name.contains(filter) || id.contains(filter);
 
   /// [findCategoriesById]
-  static Iterable<Category> findCategoriesById(List<Category> categories, String id) =>
-      categories.where((d) => d.id == id);
+  static Iterable<Category> findCategoriesById(
+    List<Category> categories,
+    String id,
+  ) => categories.where((d) => d.id == id);
 
   /// copyWith method
   Category copyWith({
@@ -114,30 +116,30 @@ class Category extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        createdBy,
-        createdAt,
-        updatedBy,
-        updatedAt,
-      ];
+    id,
+    name,
+    createdBy,
+    createdAt,
+    updatedBy,
+    updatedAt,
+  ];
 
   /// ToList for StoreLocation [toListL]
   List<String> toListL() => [
-        id,
-        name.toUppercaseFirstLetterEach,
-        createdBy.toUppercaseFirstLetterEach,
-        getCreatedAt,
-        updatedBy.toUppercaseFirstLetterEach,
-        getUpdatedAt,
-      ];
+    id,
+    name.toUppercaseFirstLetterEach,
+    createdBy.toUppercaseFirstLetterEach,
+    getCreatedAt,
+    updatedBy.toUppercaseFirstLetterEach,
+    getUpdatedAt,
+  ];
 
   static List<String> get dataHeader => const [
-        'ID',
-        'Name',
-        'Created By',
-        'Created At',
-        'Updated By',
-        'Updated At',
-      ];
+    'ID',
+    'Name',
+    'Created By',
+    'Created At',
+    'Updated By',
+    'Updated At',
+  ];
 }

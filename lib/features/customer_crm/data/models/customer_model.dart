@@ -1,7 +1,7 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
-import 'package:equatable/equatable.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:equatable/equatable.dart';
 
 var _today = DateTime.now(); /*.millisecondsSinceEpoch.toString()*/
 
@@ -36,9 +36,9 @@ class Customer extends Equatable {
     DateTime? createdAt,
     this.updatedBy = '',
     DateTime? updatedAt,
-  })  : createdAt = createdAt ?? _today,
-        birthDay = birthDay ?? _today,
-        updatedAt = updatedAt ?? _today; // Set default value
+  }) : createdAt = createdAt ?? _today,
+       birthDay = birthDay ?? _today,
+       updatedAt = updatedAt ?? _today; // Set default value
 
   /// fromFirestore / fromJson Function [Customer.fromMap]
   factory Customer.fromMap(Map<String, dynamic> data, String documentId) {
@@ -62,26 +62,26 @@ class Customer extends Equatable {
 
   // map template
   Map<String, dynamic> _mapTemp() => {
-      'id': id,
-      'storeNumber': storeNumber,
-      'customerId': customerId,
-      'name': name,
-      'phone': phone,
-      'altPhone': altPhone,
-      'email': email,
-      'address': address,
-      'companyName': companyName,
-      'birthDay': birthDay,
-      'createdBy': createdBy,
-      'createdAt': createdAt,
-      'updatedBy': updatedBy,
-      'updatedAt': updatedAt,
-    };
+    'id': id,
+    'storeNumber': storeNumber,
+    'customerId': customerId,
+    'name': name,
+    'phone': phone,
+    'altPhone': altPhone,
+    'email': email,
+    'address': address,
+    'companyName': companyName,
+    'birthDay': birthDay,
+    'createdBy': createdBy,
+    'createdAt': createdAt,
+    'updatedBy': updatedBy,
+    'updatedAt': updatedAt,
+  };
 
   /// Convert Model to toFirestore / toJson Function [toMap]
   Map<String, dynamic> toMap() {
     var newMap = _mapTemp();
-    newMap['birthDay']= birthDay?.toISOString;
+    newMap['birthDay'] = birthDay?.toISOString;
     newMap['createdAt'] = createdAt.toISOString;
     newMap['updatedAt'] = updatedAt.toISOString;
 
@@ -91,7 +91,7 @@ class Customer extends Equatable {
   /// toCache Function [toCache]
   Map<String, dynamic> toCache() {
     var newMap = _mapTemp();
-    newMap['birthDay']= birthDay?.millisecondsSinceEpoch;
+    newMap['birthDay'] = birthDay?.millisecondsSinceEpoch;
     newMap['createdAt'] = createdAt.millisecondsSinceEpoch;
     newMap['updatedAt'] = updatedAt.millisecondsSinceEpoch;
 
@@ -121,36 +121,43 @@ class Customer extends Equatable {
   }
 
   static get notFound => Customer(
-        customerId: '',
-        storeNumber: 'No Data',
-        name: 'No Data',
-        phone: 'No Data',
-        createdBy: 'No Data',
-      );
+    customerId: '',
+    storeNumber: 'No Data',
+    name: 'No Data',
+    phone: 'No Data',
+    createdBy: 'No Data',
+  );
 
   String get itemAsString => name.contains(autoID)
       ? name.toUpperCase()
-      : isEmpty? 'No Data': '$name - $customerId'.toUppercaseFirstLetterEach;
+      : isEmpty
+      ? 'No Data'
+      : '$name - $customerId'.toUppercaseFirstLetterEach;
 
   /// [findCustomerById]
   static Iterable<Customer> findCustomerById(
-          List<Customer> customers, String customerId) =>
-      customers.where((customer) => customer.customerId == customerId);
+    List<Customer> customers,
+    String customerId,
+  ) => customers.where((customer) => customer.customerId == customerId);
 
   /// [filterCustomersByDate]
-  static List<Customer> filterCustomersByDate(List<Customer> customers,
-      {bool isSameDay = true}) {
+  static List<Customer> filterCustomersByDate(
+    List<Customer> customers, {
+    bool isSameDay = true,
+  }) {
     // If customer-name isNotEqual Auto-ID, & isToday or not isToday
     return customers
-        .where((c) =>
-            !c.name.contains(autoID) && (isSameDay ? c.isToday : !c.isToday))
+        .where(
+          (c) =>
+              !c.name.contains(autoID) && (isSameDay ? c.isToday : !c.isToday),
+        )
         .toList();
   }
 
   /// Filter
   bool filterByAny(String filter) =>
       name.contains(filter) ||
-          storeNumber.contains(filter) ||
+      storeNumber.contains(filter) ||
       customerId.contains(filter) ||
       phone.contains(filter) ||
       altPhone.contains(filter) ||
@@ -194,50 +201,50 @@ class Customer extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
+    id,
     storeNumber,
-        name,
-        phone,
-        altPhone,
-        email,
-        address,
-        companyName,
-        customerId,
-        birthDay,
-        createdBy,
-        createdAt,
-        updatedBy,
-        updatedAt,
-      ];
+    name,
+    phone,
+    altPhone,
+    email,
+    address,
+    companyName,
+    customerId,
+    birthDay,
+    createdBy,
+    createdAt,
+    updatedBy,
+    updatedAt,
+  ];
 
   /// ToList for Customers [itemAsList]
   List<String> itemAsList() => [
-        customerId,
+    customerId,
     storeNumber,
-        name.toUppercaseFirstLetterEach,
-        phone,
-        altPhone,
-        email,
-        getBirthDay,
-        address.toUppercaseFirstLetterEach,
-        companyName.toUppercaseFirstLetterEach,
-        createdBy.toUppercaseFirstLetterEach,
-        updatedBy.toUppercaseFirstLetterEach,
-        getUpdatedAt,
-      ];
+    name.toUppercaseFirstLetterEach,
+    phone,
+    altPhone,
+    email,
+    getBirthDay,
+    address.toUppercaseFirstLetterEach,
+    companyName.toUppercaseFirstLetterEach,
+    createdBy.toUppercaseFirstLetterEach,
+    updatedBy.toUppercaseFirstLetterEach,
+    getUpdatedAt,
+  ];
 
   static List<String> get dataTableHeader => const [
-        'Customer ID',
-        'Store Number',
-        'Name',
-        'Phone',
-        'Alt-Phone',
-        'Email',
-        'Birth day',
-        'Address / Location',
-        'Company Name',
-        'Created By',
-        'Updated By',
-        'Updated At',
-      ];
+    'Customer ID',
+    'Store Number',
+    'Name',
+    'Phone',
+    'Alt-Phone',
+    'Email',
+    'Birth day',
+    'Address / Location',
+    'Company Name',
+    'Created By',
+    'Updated By',
+    'Updated At',
+  ];
 }

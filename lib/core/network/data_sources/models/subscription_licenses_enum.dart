@@ -1,29 +1,29 @@
 enum SubscriptionLicenses {
-  // Write-only access, typically granted to Agents and Developers for system setup purposes.
-  inventory,
-
-  // Full access to read, write, and execute operations for managing POS (Point of Sale) systems.
+  /// [pos] Point of Sale (P.O.S) License: Grants customers access to the Point of Sale system.
   pos,
 
-  // Full access to read, write, and execute operations for customer relationship management (CRM).
+  /// [crm] CRM License: Grants customers full access to the Customer Relationship Management system.
   crm,
 
-  // Full access to read, write, and execute operations for managing warehouse operations.
+  /// [warehouse] Warehouse (W.M.S) License: Grants customers access to the Warehouse Management System.
   warehouse,
 
-  // Full access to all system operations (read, write, and execute) without any restrictions.
+  /// [inventory] Inventory (I.M.S) License: Grants customers access to the Inventory Management System.
+  inventory,
+
+  /// [full] Full Access License: Grants unrestricted access to all App system operations/packages.
   full,
 
-  // Full access to read, write, and execute operations for agents managing subscribers.
+  /// [agent] Agent License: Allows agents to manage their own and clients' workspaces.
   agent,
 
-  // Full access to read, write, and execute operations for developers maintaining and troubleshooting the system.
+  /// [dev] Developer License: Used by developers for testing and troubleshooting purposes.
   dev,
 
-  // Full access to write and execute operations for setting up agent workspaces and configurations.
+  /// [setup] Setup License: Used for configuring agent workspaces and system setup.
   setup,
 
-  // Denied access or unauthorized operations.
+  /// [unauthorized] Onboarding License: Used to deactivate/block any Workspace licenses.
   unauthorized,
 }
 

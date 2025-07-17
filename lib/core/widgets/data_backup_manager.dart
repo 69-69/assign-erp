@@ -6,10 +6,10 @@ import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/widgets/file_doc_manager.dart';
 
 class DataBackupManager {
-  /// Delete files in a directory [deleteFilesInDirectory]
+  /// Delete files in a directory [deleteCache]
   /* USAGE:
   * final directory = Directory('/path/to/directory');
-  * await DataBackupManager.deleteFilesInDirectory(
+  * await DataBackupManager.deleteCache(
   *   directory: directory,
   *   skipFileNames: {
   *     'file1.txt',
@@ -17,7 +17,7 @@ class DataBackupManager {
   *   recursive: true,
   * });
   * */
-  static Future<Result<String>> deleteCacheData({
+  static Future<Result<String>> deleteCache({
     Directory? directory,
     Set<String> skipFileNames = const {},
     bool recursive = false,
@@ -41,7 +41,7 @@ class DataBackupManager {
     if (zipResult is Success<File>) {
       final zipFile = zipResult.data;
 
-      BackupFilenameCache().cacheBackupFilename({
+      BackupFilenameCache().setBackupFilename({
         'id': data.id,
         'filename': newZipFilename,
       });

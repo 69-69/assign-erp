@@ -3,6 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+///NOTE: If you plan to use this, make sure: Google Fonts is in pubspec.yaml
+TextTheme textTheme = createTextTheme(context, "Roboto", "Playfair Display");
+
 TextTheme createTextTheme(
     BuildContext context, String bodyFontString, String displayFontString) {
   TextTheme baseTextTheme = Theme.of(context).textTheme;

@@ -1,58 +1,59 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
-import 'package:assign_erp/core/util/adaptive_layout.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
 import 'package:assign_erp/core/util/size_config.dart';
+import 'package:assign_erp/core/widgets/adaptive_layout.dart';
+import 'package:assign_erp/core/widgets/animated_hexagon_grid.dart';
+import 'package:assign_erp/core/widgets/custom_scaffold.dart';
+import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
-import 'package:assign_erp/features/auth/domain/repository/auth_repository.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/sign_in/sign_in_bloc.dart';
 import 'package:assign_erp/features/auth/presentation/screen/widget/form_inputs.dart';
+import 'package:assign_erp/features/auth/presentation/screen/widget/show_sign_in_alert.dart';
 import 'package:assign_erp/features/auth/presentation/screen/widget/workspace_acc_guide.dart';
 import 'package:assign_erp/features/auth/presentation/screen/workspace/forgot/forgot_workspace_password.dart';
-import 'package:assign_erp/features/auth/presentation/screen/workspace/license_warning/license_warning.dart';
 import 'package:assign_erp/features/refresh_entire_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:formz/formz.dart';
 
-class WorkspaceSignInForm extends StatelessWidget {
-  const WorkspaceSignInForm({super.key});
+class WorkspaceSignInScreen extends StatelessWidget {
+  const WorkspaceSignInScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    /*MINE-STEVE
     return BlocProvider(
       create: (context) {
         return SignInBloc(
           authRepository: RepositoryProvider.of<AuthRepository>(context),
         );
       },
-      child: _buildBody(context),
+      child:*/
+    return CustomScaffold(
+      backButton: const SizedBox.shrink(),
+      bgColor: kWarningColor,
+      body: CustomScrollBar(
+        controller: ScrollController(),
+        padding: EdgeInsets.only(top: 0, bottom: context.bottomInsetPadding),
+        child: _buildBody(context),
+      ),
+      actions: [],
+      bottomNavigationBar: const SizedBox.shrink(),
     );
-  }
-
-  /// Shows the alert overlay if there is a failure state.
-  void _showSignInAlert(SignInState state, BuildContext context) {
-    if ((state.email.isValid && state.password.isValid) &&
-        state.status.isFailure) {
-      final msg =
-          state.errorMessage?.split(':').last ?? 'Incorrect email or password';
-
-      // Ensure the overlay is displayed with the current context
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.showAlertOverlay(msg, bgColor: kDangerColor);
-        if (msg.toLowerCase().contains('license')) {
-          Future.delayed(const Duration(seconds: 2));
-          context.openLicenseWarningPopUp();
-        }
-      });
-    }
   }
 
   BlocListener<SignInBloc, SignInState> _buildBody(BuildContext context) {
     return BlocListener<SignInBloc, SignInState>(
       listenWhen: (oldState, newState) => oldState.status != newState.status,
-      listener: (_, state) => _showSignInAlert(state, context),
-      child: AutofillGroup(child: _buildLayout(context)),
+      listener: (_, state) => context.showSignInAlert(state, isWorkspace: true),
+      child: Container(
+        decoration: const BoxDecoration(
+          color: kGrayBlueColor,
+          image: DecorationImage(image: AssetImage(appBg), fit: BoxFit.cover),
+        ),
+        child: AnimatedHexagonGrid(
+          child: AutofillGroup(child: _buildLayout(context)),
+        ),
+      ),
     );
   }
 
@@ -175,8 +176,9 @@ class WorkspaceSignInForm extends StatelessWidget {
                 child: Text(
                   'Need Help?',
                   style: context.ofTheme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                     overflow: TextOverflow.ellipsis,
+                    color: context.primaryColor,
                   ),
                 ),
               ),

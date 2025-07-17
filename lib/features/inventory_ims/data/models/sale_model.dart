@@ -1,7 +1,7 @@
-import 'package:equatable/equatable.dart';
-import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/util/format_date_utl.dart';
+import 'package:assign_erp/core/util/str_util.dart';
+import 'package:equatable/equatable.dart';
 
 var _today = DateTime.now(); /*.millisecondsSinceEpoch.toString()*/
 
@@ -60,8 +60,8 @@ class Sale extends Equatable {
     DateTime? createdAt,
     this.updatedBy = '',
     DateTime? updatedAt,
-  })  : createdAt = createdAt ?? _today,
-        updatedAt = updatedAt ?? _today; // Set default value
+  }) : createdAt = createdAt ?? _today,
+       updatedAt = updatedAt ?? _today; // Set default value
 
   /// fromFirestore / fromJson Function [Sale.fromMap]
   factory Sale.fromMap(Map<String, dynamic> data, String documentId) {
@@ -72,7 +72,8 @@ class Sale extends Equatable {
       orderNumber: data['orderNumber'] ?? '',
       productId: data['productId'] ?? '',
       customerId: data['customerId'] ?? '',
-      invoiceNumber: data['invoiceNumber'] ??
+      invoiceNumber:
+          data['invoiceNumber'] ??
           '${data['orderNumber']}'.convertOrderNumberTo,
       quantity: data['quantity'] ?? 0,
       unitPrice: data['unitPrice'] ?? 0.0,
@@ -100,33 +101,33 @@ class Sale extends Equatable {
 
   // map template
   Map<String, dynamic> _mapTemp() => {
-        'id': id,
-        'orderNumber': orderNumber,
-        'productId': productId,
-        'customerId': customerId,
-        'invoiceNumber': invoiceNumber,
-        'quantity': quantity,
-        'unitPrice': unitPrice,
-        'deliveryAmount': deliveryAmount,
-        'taxPercent': taxPercent,
-        'taxAmount': taxAmount,
-        'storeNumber': storeNumber,
-        'remarks': remarks,
-        'discountPercent': discountPercent,
-        'discountAmount': discountAmount,
-        'totalAmount': totalAmount,
-        'amountPaid': amountPaid,
-        'outstandingBalance': outstandingBalance,
-        'revenue': revenue,
-        'profit': profit,
-        'paymentTerms': paymentTerms,
-        'paymentStatus': paymentStatus,
-        'status': status,
-        'createdBy': createdBy,
-        'createdAt': createdAt,
-        'updatedBy': updatedBy,
-        'updatedAt': updatedAt,
-      };
+    'id': id,
+    'orderNumber': orderNumber,
+    'productId': productId,
+    'customerId': customerId,
+    'invoiceNumber': invoiceNumber,
+    'quantity': quantity,
+    'unitPrice': unitPrice,
+    'deliveryAmount': deliveryAmount,
+    'taxPercent': taxPercent,
+    'taxAmount': taxAmount,
+    'storeNumber': storeNumber,
+    'remarks': remarks,
+    'discountPercent': discountPercent,
+    'discountAmount': discountAmount,
+    'totalAmount': totalAmount,
+    'amountPaid': amountPaid,
+    'outstandingBalance': outstandingBalance,
+    'revenue': revenue,
+    'profit': profit,
+    'paymentTerms': paymentTerms,
+    'paymentStatus': paymentStatus,
+    'status': status,
+    'createdBy': createdBy,
+    'createdAt': createdAt,
+    'updatedBy': updatedBy,
+    'updatedAt': updatedAt,
+  };
 
   /// Convert Model to toFirestore / toJson Function [toMap]
   Map<String, dynamic> toMap() {
@@ -188,7 +189,7 @@ class Sale extends Equatable {
           'amountPaid': double amountPaid,
         } =>
           (totalAmount - amountPaid, totalAmount * unitPrice),
-        _ => (0, 0)
+        _ => (0, 0),
       };
 
   /// Calculate Profit [calculateProfit]
@@ -197,13 +198,16 @@ class Sale extends Equatable {
       costPrice == 0.0 ? 0.0 : (unitPrice - costPrice) * quantity.toDouble();
 
   /// Find a Specific sale by id [findSaleById]
-  static Iterable<Sale> findSaleById(List<Sale> sales,
-          {required String saleId}) =>
-      sales.where((sale) => sale.id == saleId);
+  static Iterable<Sale> findSaleById(
+    List<Sale> sales, {
+    required String saleId,
+  }) => sales.where((sale) => sale.id == saleId);
 
   /// Filter sales [filterSalesByDate]
-  static List<Sale> filterSalesByDate(List<Sale> sales,
-          {bool isSameDay = true}) =>
+  static List<Sale> filterSalesByDate(
+    List<Sale> sales, {
+    bool isSameDay = true,
+  }) =>
       sales.where((sale) => isSameDay ? sale.isToday : !sale.isToday).toList();
 
   /// copyWith method
@@ -267,32 +271,32 @@ class Sale extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        storeNumber,
-        orderNumber,
-        productId,
-        customerId,
-        invoiceNumber,
-        quantity,
-        unitPrice,
-        status,
-        deliveryAmount,
-        taxPercent,
-        taxAmount,
-        discountPercent,
-        discountAmount,
-        totalAmount,
-        amountPaid,
-        outstandingBalance,
-        revenue,
-        profit,
-        paymentTerms,
-        remarks,
-        createdBy,
-        createdAt,
-        updatedBy,
-        updatedAt,
-      ];
+    id,
+    storeNumber,
+    orderNumber,
+    productId,
+    customerId,
+    invoiceNumber,
+    quantity,
+    unitPrice,
+    status,
+    deliveryAmount,
+    taxPercent,
+    taxAmount,
+    discountPercent,
+    discountAmount,
+    totalAmount,
+    amountPaid,
+    outstandingBalance,
+    revenue,
+    profit,
+    paymentTerms,
+    remarks,
+    createdBy,
+    createdAt,
+    updatedBy,
+    updatedAt,
+  ];
 
   /// Check if any required fields are missing or empty [isDataComplete]
   bool isDataComplete() {
@@ -305,7 +309,7 @@ class Sale extends Equatable {
       paymentTerms,
       paymentStatus,
       status,
-      createdBy
+      createdBy,
     ].every((field) => field.isNotEmpty);
 
     // Check for numerical fields
@@ -318,54 +322,54 @@ class Sale extends Equatable {
 
   /// ToList for SALES [itemAsList]
   List<String> itemAsList() => [
-        id,
-        storeNumber,
-        productId.toUppercaseAllLetter,
-        orderNumber,
-        invoiceNumber,
-        customerId,
-        status.toUppercaseFirstLetterEach,
-        '$quantity',
-        '$ghanaCedis${unitPrice.toCurrency}',
-        '$ghanaCedis${deliveryAmount.toCurrency}',
-        '$discountPercent% = $ghanaCedis${getDiscountAmount.toCurrency}',
-        '$taxPercent% = $ghanaCedis${getTaxAmount.toCurrency}',
-        '$ghanaCedis${totalAmount.toCurrency}',
-        '$ghanaCedis${amountPaid.toCurrency}',
-        '$ghanaCedis${getOutStandingBalance.toCurrency}',
-        '$ghanaCedis${getRevenue.toCurrency}',
-        '$ghanaCedis${profit.toCurrency}',
-        paymentTerms.toUppercaseFirstLetterEach,
-        paymentStatus.toUppercaseFirstLetterEach,
-        createdBy.toUppercaseFirstLetterEach,
-        getCreatedAt,
-        updatedBy.toUppercaseFirstLetterEach,
-        getUpdatedAt,
-      ];
+    id,
+    storeNumber,
+    productId.toUppercaseAllLetter,
+    orderNumber,
+    invoiceNumber,
+    customerId,
+    status.toUppercaseFirstLetterEach,
+    '$quantity',
+    '$ghanaCedis${unitPrice.toCurrency}',
+    '$ghanaCedis${deliveryAmount.toCurrency}',
+    '$discountPercent% = $ghanaCedis${getDiscountAmount.toCurrency}',
+    '$taxPercent% = $ghanaCedis${getTaxAmount.toCurrency}',
+    '$ghanaCedis${totalAmount.toCurrency}',
+    '$ghanaCedis${amountPaid.toCurrency}',
+    '$ghanaCedis${getOutStandingBalance.toCurrency}',
+    '$ghanaCedis${getRevenue.toCurrency}',
+    '$ghanaCedis${profit.toCurrency}',
+    paymentTerms.toUppercaseFirstLetterEach,
+    paymentStatus.toUppercaseFirstLetterEach,
+    createdBy.toUppercaseFirstLetterEach,
+    getCreatedAt,
+    updatedBy.toUppercaseFirstLetterEach,
+    getUpdatedAt,
+  ];
 
   static List<String> get dataTableHeader => const [
-        'ID',
-        'Store Number',
-        'Product ID',
-        'Order Number',
-        'Invoice Number',
-        'Customer ID',
-        'Status',
-        'Quantity',
-        'Unit Price',
-        'Delivery fee',
-        'Discount',
-        'Tax',
-        'Total Amount',
-        'Amount Paid',
-        'OutStanding Balance',
-        'Revenue',
-        'Gross Profit',
-        'Payment Terms',
-        'Payment Status',
-        'Created By',
-        'Created At',
-        'Updated By',
-        'Updated At',
-      ];
+    'ID',
+    'Store Number',
+    'Product ID',
+    'Order Number',
+    'Invoice Number',
+    'Customer ID',
+    'Status',
+    'Quantity',
+    'Unit Price',
+    'Delivery fee',
+    'Discount',
+    'Tax',
+    'Total Amount',
+    'Amount Paid',
+    'OutStanding Balance',
+    'Revenue',
+    'Gross Profit',
+    'Payment Terms',
+    'Payment Status',
+    'Created By',
+    'Created At',
+    'Updated By',
+    'Updated At',
+  ];
 }

@@ -1,4 +1,4 @@
-const companyCategories = [
+const worspaceCategories = [
   'Retail Stores',
   'Pharmacies',
   'Healthcare',
@@ -141,8 +141,8 @@ final List<String> miscOrderTypes = [
   'subscription order',
 ];
 
-/// User manual Categories
-final List<String> userManualCategories = [
+/// User Guide Categories
+final List<String> userGuideCategories = [
   'agent',
   'setup',
   'pos',

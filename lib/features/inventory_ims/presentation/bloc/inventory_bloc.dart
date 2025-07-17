@@ -35,11 +35,11 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
     required this.toFirestore,
     required this.toCache,
   }) : _inventoryRepository = InventoryRepository(
-         collectionType: CollectionType.stores,
          firestore: firestore,
          collectionPath: collectionPath,
+         collectionType: CollectionType.stores,
        ),
-       super(LoadingInventory<T>()) {
+       super(LoadingInventories<T>()) {
     _initialize();
 
     _inventoryRepository.dataStream.listen(
@@ -49,11 +49,11 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
 
   Future<void> _initialize() async {
     // on<GetShortIDEvent<T>>(_onGetShortID);
-    on<RefreshInventory<T>>(_onRefreshInventory);
-    on<GetInventory<T>>(_onGetInventory);
+    on<RefreshInventories<T>>(_onRefreshInventories);
+    on<GetInventories<T>>(_onGetInventories);
     on<GetInventoryById<T>>(_onGetInventoryById);
-    on<GetMultiInventoryByIDs<T>>(_onGetMultiInventoryByIDs);
-    on<GetAllInventoryWithSameId<T>>(_onGetAllInventoryWithSameId);
+    on<GetInventoriesByIds<T>>(_onGetInventoriesByIds);
+    on<GetInventoriesWithSameId<T>>(_onGetInventoriesWithSameId);
     on<SearchInventory<T>>(_onSearchInventory);
     on<AddInventory<T>>(_onAddInventory);
     on<AddInventory<List<T>>>(_onAddMultiInventory);
@@ -66,11 +66,11 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
     on<_InventoryLoadError>(_onInventoryLoadError);
   }
 
-  Future<void> _onRefreshInventory(
-    RefreshInventory<T> event,
+  Future<void> _onRefreshInventories(
+    RefreshInventories<T> event,
     Emitter<InventoryState> emit,
   ) async {
-    emit(LoadingInventory<T>());
+    emit(LoadingInventories<T>());
     try {
       // Trigger data refresh in the DataRepository
       await _inventoryRepository.refreshCacheData();
@@ -80,19 +80,19 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
       final data = _toList(snapshot);
 
       // Emit the loaded state with the refreshed data
-      emit(InventoryLoaded<T>(data));
+      emit(InventoriesLoaded<T>(data));
     } catch (e) {
       // Emit an error state in case of failure
       emit(InventoryError<T>(e.toString()));
     }
   }
 
-  /// Load All Data Function [_onGetInventory]
-  Future<void> _onGetInventory(
-    GetInventory<T> event,
+  /// Load All Data Function [_onGetInventories]
+  Future<void> _onGetInventories(
+    GetInventories<T> event,
     Emitter<InventoryState<T>> emit,
   ) async {
-    emit(LoadingInventory<T>());
+    emit(LoadingInventories<T>());
 
     try {
       _getDataStreamObserver = _inventoryRepository.getAllData().listen(
@@ -100,7 +100,7 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
           final data = _toList(snapshot);
 
           // Update internal state in the BLoC to reflect data loaded
-          emit(InventoryLoaded<T>(data));
+          emit(InventoriesLoaded<T>(data));
 
           // Trigger an event to handle the loaded data
           // add(_InventoryLoadedEvent<T>(data));
@@ -130,11 +130,11 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
     }
   }
 
-  Future<void> _onGetMultiInventoryByIDs(
-    GetMultiInventoryByIDs<T> event,
+  Future<void> _onGetInventoriesByIds(
+    GetInventoriesByIds<T> event,
     Emitter<InventoryState<T>> emit,
   ) async {
-    emit(LoadingInventory<T>());
+    emit(LoadingInventories<T>());
     try {
       final localDataList = await _inventoryRepository.getMultipleDataByIDs(
         event.documentIDs,
@@ -155,7 +155,7 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
     GetInventoryById<T> event,
     Emitter<InventoryState<T>> emit,
   ) async {
-    emit(LoadingInventory<T>());
+    emit(LoadingInventories<T>());
     try {
       final localData = await _inventoryRepository.getDataById(
         event.documentId,
@@ -173,11 +173,11 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
     }
   }
 
-  Future<void> _onGetAllInventoryWithSameId(
-    GetAllInventoryWithSameId<T> event,
+  Future<void> _onGetInventoriesWithSameId(
+    GetInventoriesWithSameId<T> event,
     Emitter<InventoryState<T>> emit,
   ) async {
-    emit(LoadingInventory<T>());
+    emit(LoadingInventories<T>());
     try {
       final localData = await _inventoryRepository.getAllDataWithSameId(
         event.documentId,
@@ -186,7 +186,7 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
 
       if (localData.isNotEmpty) {
         final data = _toList(localData);
-        emit(InventoryLoaded<T>(data));
+        emit(InventoriesLoaded<T>(data));
       } else {
         emit(InventoryError<T>('Data not found'));
       }
@@ -199,7 +199,7 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
     SearchInventory<T> event,
     Emitter<InventoryState<T>> emit,
   ) async {
-    emit(LoadingInventory<T>());
+    emit(LoadingInventories<T>());
     try {
       List<CacheData> data = await _inventoryRepository.searchData(
         field: event.field ?? '',
@@ -209,7 +209,7 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
       );
 
       var localData = _toList(data);
-      emit(InventoryLoaded<T>(localData));
+      emit(InventoriesLoaded<T>(localData));
       // emit(DataLoadedState<T>(data.cast<T>()));
     } catch (e) {
       emit(InventoryError<T>('Error searching data: $e'));
@@ -286,7 +286,7 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
       await _inventoryRepository.deleteData(event.documentId);
 
       // Trigger LoadDataEvent to reload the data
-      add(GetInventory<T>());
+      add(GetInventories<T>());
 
       // Update State: Notify that data deleted
       emit(InventoryDeleted<T>(message: 'data deleted successfully'));
@@ -306,7 +306,7 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
       }
 
       // Trigger LoadDataEvent to reload the data
-      add(GetInventory<T>());
+      add(GetInventories<T>());
 
       // Update State: Notify that data deleted
       emit(InventoryDeleted<T>(message: 'data deleted successfully'));
@@ -319,21 +319,21 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
     _ShortIDLoaded<T> event,
     Emitter<InventoryState<T>> emit,
   ) {
-    emit(SingleInventoryLoaded<T>(event.shortID));
+    emit(InventoryLoaded<T>(event.shortID));
   }
 
   void _onInventoryLoaded(
     _InventoryLoaded<T> event,
     Emitter<InventoryState<T>> emit,
   ) {
-    emit(InventoryLoaded<T>(event.data));
+    emit(InventoriesLoaded<T>(event.data));
   }
 
   void _onSingleInventoryLoaded(
     _SingleInventoryLoaded<T> event,
     Emitter<InventoryState<T>> emit,
   ) {
-    emit(SingleInventoryLoaded<T>(event.data));
+    emit(InventoryLoaded<T>(event.data));
   }
 
   void _onInventoryLoadError(
@@ -341,7 +341,7 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
     Emitter<InventoryState<T>> emit,
   ) {
     final errorLogCache = ErrorLogCache();
-    errorLogCache.cacheError(error: event.error, fileName: 'inventory_bloc');
+    errorLogCache.setError(error: event.error, fileName: 'inventory_bloc');
     emit(InventoryError<T>(event.error));
   }
 

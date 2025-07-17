@@ -5,13 +5,14 @@ class CustomTextField extends StatelessWidget {
   final int? maxLength;
   final int? maxLines;
   final bool? enable;
+  final bool autofocus;
   final Color? fillColor;
-  final String? initialValue;
+  final bool obscureText;
   final String? labelText;
   final String? helperText;
+  final String? initialValue;
   final FocusNode? focusNode;
   final TextInputType keyboardType;
-  final bool obscureText;
   final Iterable<String>? autofillHints;
   final InputDecoration? inputDecoration;
   final void Function(String)? onChanged;
@@ -39,6 +40,7 @@ class CustomTextField extends StatelessWidget {
     this.autofillHints,
     this.obscureText = false,
     this.textInputAction,
+    this.autofocus = false,
   });
 
   @override
@@ -80,6 +82,7 @@ class CustomTextField extends StatelessWidget {
             validator: validator2,
           )
         : TextFormField(
+            autofocus: autofocus,
             controller: controller,
             initialValue: initialValue,
             focusNode: focusNode,
@@ -122,6 +125,7 @@ class CustomTextField extends StatelessWidget {
 
 class LowercaseTextField extends StatefulWidget {
   final int? maxLength;
+  final bool autofocus;
   final int? maxLines;
   final bool? enable;
   final String? labelText;
@@ -136,18 +140,19 @@ class LowercaseTextField extends StatefulWidget {
 
   const LowercaseTextField({
     super.key,
-    this.labelText,
-    this.helperText,
-    this.controller,
-    this.validator,
-    this.onChanged,
-    this.onFieldSubmitted,
-    this.inputDecoration,
     this.enable,
-    this.maxLength,
     this.maxLines,
     this.focusNode,
+    this.labelText,
+    this.validator,
+    this.onChanged,
+    this.maxLength,
+    this.helperText,
+    this.controller,
     this.textInputAction,
+    this.inputDecoration,
+    this.onFieldSubmitted,
+    this.autofocus = false,
   });
 
   @override
@@ -161,6 +166,7 @@ class _LowercaseTextFieldState extends State<LowercaseTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      autofocus: widget.autofocus,
       controller: _controller,
       enabled: widget.enable,
       focusNode: widget.focusNode,

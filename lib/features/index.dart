@@ -12,5 +12,5 @@ export 'package:assign_erp/features/setup/presentation/bloc/index.dart';
 export 'package:cloud_firestore/cloud_firestore.dart';
 export 'package:flutter_bloc/flutter_bloc.dart';
 
-export 'manual/presentation/bloc/index.dart';
 export 'pos_system/presentation/bloc/index.dart';
+export 'user_guide/presentation/bloc/index.dart';

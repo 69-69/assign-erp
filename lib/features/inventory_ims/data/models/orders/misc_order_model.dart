@@ -1,7 +1,7 @@
-import 'package:equatable/equatable.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:equatable/equatable.dart';
 
 var _today = DateTime.now(); /*.millisecondsSinceEpoch.toString()*/
 
@@ -44,9 +44,9 @@ class MiscOrder extends Equatable {
     DateTime? createdAt,
     this.updatedBy = '',
     DateTime? updatedAt,
-  })  : deliveryDate = deliveryDate ?? _today,
-        createdAt = createdAt ?? _today,
-        updatedAt = updatedAt ?? _today; // Set default value
+  }) : deliveryDate = deliveryDate ?? _today,
+       createdAt = createdAt ?? _today,
+       updatedAt = updatedAt ?? _today; // Set default value
 
   /// fromFirestore / fromJson Function [MiscOrder.fromMap]
   factory MiscOrder.fromMap(Map<String, dynamic> data, String documentId) {
@@ -74,25 +74,25 @@ class MiscOrder extends Equatable {
 
   // map template
   Map<String, dynamic> _mapTemp() => {
-        'id': id,
-        'moNumber': moNumber,
-        'storeNumber': storeNumber,
-        'productId': productId,
-        'supplierId': supplierId,
-        'productName': productName,
-        'unitPrice': unitPrice,
-        'quantity': quantity,
-        'status': status,
-        'paymentMethod': paymentMethod,
-        'shipTo': shipTo,
-        'remarks': remarks,
-        'approval': approvedBy,
-        'deliveryDate': deliveryDate,
-        'createdBy': createdBy,
-        'createdAt': createdAt,
-        'updatedBy': updatedBy,
-        'updatedAt': updatedAt,
-      };
+    'id': id,
+    'moNumber': moNumber,
+    'storeNumber': storeNumber,
+    'productId': productId,
+    'supplierId': supplierId,
+    'productName': productName,
+    'unitPrice': unitPrice,
+    'quantity': quantity,
+    'status': status,
+    'paymentMethod': paymentMethod,
+    'shipTo': shipTo,
+    'remarks': remarks,
+    'approval': approvedBy,
+    'deliveryDate': deliveryDate,
+    'createdBy': createdBy,
+    'createdAt': createdAt,
+    'updatedBy': updatedBy,
+    'updatedAt': updatedAt,
+  };
 
   /// Convert Model to toFirestore / toJson Function [toMap]
   Map<String, dynamic> toMap() {
@@ -162,12 +162,15 @@ class MiscOrder extends Equatable {
 
   /// [findMiscOrderById]
   static Iterable<MiscOrder> findMiscOrderById(
-          List<MiscOrder> po, String poId) =>
-      po.where((order) => order.id == poId);
+    List<MiscOrder> po,
+    String poId,
+  ) => po.where((order) => order.id == poId);
 
   /// [filterMiscOrderByDate]
-  static List<MiscOrder> filterMiscOrderByDate(List<MiscOrder> po,
-          {bool isSameDay = true}) =>
+  static List<MiscOrder> filterMiscOrderByDate(
+    List<MiscOrder> po, {
+    bool isSameDay = true,
+  }) =>
       po.where((order) => isSameDay ? order.isToday : !order.isToday).toList();
 
   @override
@@ -219,25 +222,25 @@ class MiscOrder extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
+    id,
     storeNumber,
-        moNumber,
-        productId,
-        supplierId,
-        status,
-        productName,
-        quantity,
-        unitPrice,
-        paymentMethod,
-        shipTo,
-        remarks,
-        deliveryDate ?? '',
-        approvedBy,
-        createdBy,
-        createdAt,
-        updatedBy,
-        updatedAt,
-      ];
+    moNumber,
+    productId,
+    supplierId,
+    status,
+    productName,
+    quantity,
+    unitPrice,
+    paymentMethod,
+    shipTo,
+    remarks,
+    deliveryDate ?? '',
+    approvedBy,
+    createdBy,
+    createdAt,
+    updatedBy,
+    updatedAt,
+  ];
 
   /// ToList for MiscOrder [itemAsList]
   List<String> itemAsList({int? start, int? end}) {
@@ -269,21 +272,21 @@ class MiscOrder extends Equatable {
   }
 
   static List<String> get dataTableHeader => const [
-        'ID',
-        'Store Number',
-        'MO Number',
-        'Supplier ID',
-        'Status',
-        'Product ID',
-        'Product Name',
-        'Unit Price',
-        'Quantity',
-        'Payment Terms',
-        'Delivery',
-        'Approved By',
-        'Created By',
-        'Created At',
-        'Updated By',
-        'Updated At',
-      ];
+    'ID',
+    'Store Number',
+    'MO Number',
+    'Supplier ID',
+    'Status',
+    'Product ID',
+    'Product Name',
+    'Unit Price',
+    'Quantity',
+    'Payment Terms',
+    'Delivery',
+    'Approved By',
+    'Created By',
+    'Created At',
+    'Updated By',
+    'Updated At',
+  ];
 }

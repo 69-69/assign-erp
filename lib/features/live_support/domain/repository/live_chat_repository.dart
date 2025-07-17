@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:assign_erp/core/constants/collection_type_enum.dart';
 import 'package:assign_erp/core/network/data_sources/local/cache_data_model.dart';
 import 'package:assign_erp/core/network/data_sources/remote/repository/firestore_repository.dart';
+import 'package:assign_erp/features/auth/data/data_sources/local/auth_cache_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
@@ -35,9 +36,7 @@ class LiveChatRepository extends FirestoreRepository {
     _init();
   }
 
-  Future<void> _init() async {
-    _cacheBox = await _openCacheBox();
-  }
+  Future<void> _init() async => _cacheBox = await _openCacheBox();
 
   /** PRIVATE METHODS */
 
@@ -50,6 +49,12 @@ class LiveChatRepository extends FirestoreRepository {
       return await Hive.openBox<CacheData>(collectionPath);
     }
     return Hive.box<CacheData>(collectionPath);
+  }
+
+  /// Scope ID to restrict cache-data access to specific scope/context
+  String get _scopeId {
+    final authCacheService = AuthCacheService();
+    return (authCacheService.getEmployee())?.id ?? '';
   }
 
   /// Emit Data / Add Event to Stream [_emitDataToStream]
@@ -84,10 +89,11 @@ class LiveChatRepository extends FirestoreRepository {
   }) async {
     final data = await sendChatMessage(
       item.data,
+      chatId: chatId,
       userName: userName,
       workspaceId: workspaceId,
-      chatId: chatId,
     );
+    // prettyPrint('New Data Added: ${data.id}', item.data);
 
     return data.id;
   }
@@ -100,7 +106,7 @@ class LiveChatRepository extends FirestoreRepository {
   }
 
   CacheData _fromMap(Map<String, dynamic> data, String id) =>
-      CacheData.fromMap(data, documentId: id);
+      CacheData.fromMap(data, id: id, scopeId: _scopeId);
 
   /// Update/Push to Cache / LocalStorage [_updateCacheWithData]
   void _updateCacheWithData(List<CacheData> data) {
@@ -118,21 +124,9 @@ class LiveChatRepository extends FirestoreRepository {
         getChatMessages(workspaceId: workspaceId, chatId: chatId).listen((
           snapshot,
         ) {
-          debugPrint('Chat-Snapshot: ${snapshot.docs.first.data()}');
           final List<CacheData> data = _toList(snapshot);
           _updateCacheWithData(data);
         }, onError: (e) => debugPrint('Chat Error: $e'));
-  }
-
-  Future<void> refreshChatOverviewCache(String workspaceId) async {
-    await _dataSubscription?.cancel();
-
-    _dataSubscription = getChatSummaries(workspaceId: workspaceId).listen((
-      snapshot,
-    ) {
-      final data = _toList(snapshot);
-      _updateCacheWithData(data);
-    }, onError: (e) => debugPrint('Chat Overview Error: $e'));
   }
 
   Future<void> sendChat(
@@ -141,7 +135,7 @@ class LiveChatRepository extends FirestoreRepository {
     String? userName,
     String? chatId,
   }) async {
-    final cacheData = CacheData.fromCache(data, '');
+    final cacheData = CacheData.fromCache(data, id: '', scopeId: _scopeId);
 
     // Add to remote DB
     final docId = await _backupNewDataToFirestore(
@@ -161,13 +155,6 @@ class LiveChatRepository extends FirestoreRepository {
     required String chatId,
   }) {
     refreshChatCache(workspaceId, chatId);
-    return dataStream;
-  }
-
-  Stream<List<CacheData>> getChatOverviewsByWorkspaceStream({
-    required String workspaceId,
-  }) {
-    refreshChatOverviewCache(workspaceId);
     return dataStream;
   }
 

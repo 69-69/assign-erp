@@ -19,17 +19,20 @@ class CacheDataAdapter extends TypeAdapter<CacheData> {
     return CacheData(
       id: fields[0] as String,
       data: (fields[1] as Map).cast<String, dynamic>(),
+      scopeId: fields[2] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, CacheData obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3) // 3 fields total
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.data);
+      ..write(obj.data)
+      ..writeByte(2)
+      ..write(obj.scopeId);
   }
 
   @override

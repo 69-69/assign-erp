@@ -18,7 +18,7 @@ class AuthUserChanged extends AuthEvent {
 }
 
 class AuthStatusChanged extends AuthEvent {
-  final AuthStatusEnum status;
+  final AuthStatus status;
 
   AuthStatusChanged({required this.status});
 

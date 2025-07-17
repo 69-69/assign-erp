@@ -25,7 +25,7 @@ class _ListSuppliersState extends State<ListSuppliers> {
     return BlocProvider<SupplierBloc>(
       create: (context) =>
           SupplierBloc(firestore: FirebaseFirestore.instance)
-            ..add(GetSetup<Supplier>()),
+            ..add(GetSetups<Supplier>()),
       child: CustomScaffold(
         noAppBar: true,
         body: _buildBody(),
@@ -33,6 +33,7 @@ class _ListSuppliersState extends State<ListSuppliers> {
           'Add Product Suppliers',
           onPressed: () => context.openAddSuppliers(),
         ),
+        bottomNavigationBar: const SizedBox.shrink(),
       ),
     );
   }
@@ -42,7 +43,7 @@ class _ListSuppliersState extends State<ListSuppliers> {
       builder: (context, state) {
         return switch (state) {
           LoadingSetup<Supplier>() => context.loader,
-          SetupLoaded<Supplier>(data: var results) =>
+          SetupsLoaded<Supplier>(data: var results) =>
             results.isEmpty
                 ? context.buildAddButton(
                     'Add Suppliers',
@@ -75,7 +76,7 @@ class _ListSuppliersState extends State<ListSuppliers> {
       count: sales.length,
       onPressed: () {
         // Refresh Product-Suppliers Data
-        context.read<SupplierBloc>().add(RefreshSetup<Supplier>());
+        context.read<SupplierBloc>().add(RefreshSetups<Supplier>());
       },
     );
   }

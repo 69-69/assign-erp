@@ -1,7 +1,8 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/adaptive_layout.dart';
-import 'package:assign_erp/core/util/async_progress_dialog.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/widgets/adaptive_layout.dart';
+import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/dynamic_table.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
@@ -39,8 +40,8 @@ class _ListDeliveriesState extends State<ListDeliveries> {
     return BlocBuilder<DeliveryBloc, InventoryState<Delivery>>(
       builder: (context, state) {
         return switch (state) {
-          LoadingInventory<Delivery>() => context.loader,
-          InventoryLoaded<Delivery>(data: var results) =>
+          LoadingInventories<Delivery>() => context.loader,
+          InventoriesLoaded<Delivery>(data: var results) =>
             results.isEmpty
                 ? context.buildAddButton(
                     'Add Delivery',
@@ -107,7 +108,7 @@ class _ListDeliveriesState extends State<ListDeliveries> {
           count: deliveries.length,
           onPressed: () {
             // Refresh Deliveries Data
-            context.read<DeliveryBloc>().add(RefreshInventory<Delivery>());
+            context.read<DeliveryBloc>().add(RefreshInventories<Delivery>());
           },
         ),
         // final deliveryBloc = context.read<DeliveryBloc>();
@@ -152,14 +153,14 @@ class _ListDeliveriesState extends State<ListDeliveries> {
   }
 
   Future<dynamic> _printout(List<Delivery> deliveries, List<String> row) =>
-      Future.delayed(const Duration(seconds: 1), () async {
+      Future.delayed(wAnimateDuration, () async {
         // Simulate loading supplier and company info
         final delivery = Delivery.findDeliveryById(deliveries, row.first).first;
 
         // get Orders from Orders-Database
         final orders = await GetOrders.getWithSameId(delivery.orderNumber);
 
-        final cus = await GetCustomers.byCustomerId(orders.first.customerId);
+        final cus = await GetAllCustomers.byCustomerId(orders.first.customerId);
         if (orders.isNotEmpty && cus.isNotEmpty) {
           PrintOrderInvoice(
             orders: orders,

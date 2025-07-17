@@ -17,7 +17,7 @@ class SearchCustomer extends StatelessWidget {
       labelText:
           (serverValue ?? 'Search Customer...').toUppercaseFirstLetterEach,
       asyncItems: (String filter, loadProps) async =>
-          await GetCustomers.byAnyTerm(filter),
+          await GetAllCustomers.byAnyTerm(filter),
       filterFn: (customer, filter) {
         var f = filter.isEmpty ? (serverValue ?? '') : filter;
         return customer.filterByAny(f);

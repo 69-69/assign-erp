@@ -1,6 +1,6 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/neumorphism.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/core/widgets/neumorphism.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:flutter/material.dart';
 
@@ -177,7 +177,7 @@ class _CustomTabState extends State<CustomTab>
   Widget _buildColoredTabBar(BuildContext context) {
     return widget.isColoredTab
         ? ColoredBox(
-            color: kLightBlueColor,
+            color: context.colorScheme.secondaryContainer, // kLightBlueColor
             child: _buildTabBar(context),
           ).addNeumorphism()
         : _buildTabBar(context);
@@ -218,8 +218,8 @@ class _CustomTabState extends State<CustomTab>
       indicatorSize: TabBarIndicatorSize.tab,
       labelStyle: widget.isColoredTab
           ? context.ofTheme.textTheme.titleLarge?.copyWith(
-              color: kPrimaryColor,
-              fontWeight: FontWeight.w500,
+              // color: kPrimaryColor,
+              fontWeight: FontWeight.w400,
             )
           : context.ofTheme.textTheme.titleSmall,
       padding:

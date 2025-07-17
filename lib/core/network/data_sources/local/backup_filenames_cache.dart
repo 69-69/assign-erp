@@ -18,7 +18,7 @@ class BackupFilenameCache {
       await _dataBox.put(key, cacheData);
 
   /// Retrieves the cached, if it exists.
-  BackupFilename? getFilenameById(String id) {
+  BackupFilename? getById(String id) {
     CacheData? cache = _getCacheByKey(id);
     return cache != null ? BackupFilename.fromMap(cache.data) : null;
   }
@@ -28,22 +28,26 @@ class BackupFilenameCache {
   }
 
   /// List of String of all backup filenames
-  List<String> getFilenamesString() {
+  List<String> getFilenames() {
     return BackupFilename.fromMapList(_buildMap());
   }
 
   /// Stores the generated Backup Filename in local storage.
-  Future<void> cacheBackupFilename(Map<String, dynamic> data) async {
+  Future<void> setBackupFilename(Map<String, dynamic> data) async {
     final info = BackupFilename.fromMap(data);
     final cacheKey = info.id;
-    final cacheData = CacheData.fromCache(info.toCache(), cacheKey);
+    final cacheData = CacheData.fromCache(
+      info.toCache(),
+      id: cacheKey,
+      scopeId: 'back_up_filename',
+    );
 
     return await _addToCache(cacheKey, cacheData);
   }
 
   /// Clears the stored Backup Filename by ID.
   /// [id] is same as cacheKey
-  Future<void> clearFilenameById(String id) async => await _dataBox.delete(id);
+  Future<void> clearById(String id) async => await _dataBox.delete(id);
 
   /// Clears the stored Backup Filename from local storage.
   Future<void> clearFilenames() async => await _dataBox.clear();

@@ -3,7 +3,7 @@ import 'package:assign_erp/features/customer_crm/presentation/bloc/create_acc/cu
 import 'package:assign_erp/features/customer_crm/presentation/bloc/customer_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class GetCustomers {
+class GetAllCustomers {
   // Dispatch an event to load the data
   // static final customerBloc = CustomerAccountBloc(firestore: FirebaseFirestore.instance);
 
@@ -13,7 +13,7 @@ class GetCustomers {
     );
 
     // Load all data initially to pass to the search delegate
-    customerBloc.add(GetCustomer<Customer>());
+    customerBloc.add(GetCustomers<Customer>());
 
     // Ensure to wait for the data to be loaded
     final state =

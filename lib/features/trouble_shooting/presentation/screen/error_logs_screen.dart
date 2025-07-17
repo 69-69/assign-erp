@@ -38,7 +38,7 @@ class _ErrorLogScreenState extends State<ErrorLogScreen> {
     );
   }
 
-  List<ErrorLog> _errorLogs() => ErrorLogCache().getAllLogs();
+  List<ErrorLog> _errorLogs() => ErrorLogCache().getLogs();
 
   Widget _buildCard(BuildContext context) {
     final logs = _errorLogs();
@@ -58,7 +58,7 @@ class _ErrorLogScreenState extends State<ErrorLogScreen> {
       {
         final isConfirmed = await context.confirmUserActionDialog();
         if (isConfirmed) {
-          await ErrorLogCache().clearLogsById(log.id ?? '');
+          await ErrorLogCache().clearById(log.id ?? '');
           if (mounted) {
             Navigator.of(context).pop();
           }

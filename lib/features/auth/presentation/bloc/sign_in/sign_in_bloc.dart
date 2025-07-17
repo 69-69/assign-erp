@@ -21,8 +21,8 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
   _initialize() {
     on<SignInEmailChanged>(_onEmailChanged);
     on<SignInPasswordChanged>(_onPasswordChanged);
-    on<CompanyCategoryChanged>(_onCompanyCategoryChanged);
-    on<WorkspaceNameChanged>(_onCompanyNameChanged);
+    on<WorkspaceCategoryChanged>(_onWorkspaceCategoryChanged);
+    on<WorkspaceNameChanged>(_onWorkspaceNameChanged);
     on<ClientNameChanged>(_onNameChanged);
     on<SignInMobileChanged>(_onMobileChanged);
     on<WorkspaceSignInRequested>(_onWorkspaceSignInRequested);
@@ -34,20 +34,19 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
     on<WorkspacePasswordRecoveryRequested>(
       _onWorkspacePasswordRecoveryRequested,
     );
-    on<SwitchStoresRequested>(_onSwitchStoresRequested);
     on<CreateWorkspaceRequested>(_onCreateWorkspaceRequested);
   }
 
-  void _onCompanyCategoryChanged(
-    CompanyCategoryChanged event,
+  void _onWorkspaceCategoryChanged(
+    WorkspaceCategoryChanged event,
     Emitter<SignInState> emit,
   ) {
-    final companyCategory = CompanyCategory.dirty(event.companyCategory);
+    final workspaceCategory = WorkspaceCategory.dirty(event.workspaceCategory);
     emit(
       state.copyWith(
-        companyCategory: companyCategory,
+        workspaceCategory: workspaceCategory,
         isValid: Formz.validate([
-          companyCategory,
+          workspaceCategory,
           state.clientName,
           state.mobileNumber,
           state.email,
@@ -57,17 +56,17 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
     );
   }
 
-  void _onCompanyNameChanged(
+  void _onWorkspaceNameChanged(
     WorkspaceNameChanged event,
     Emitter<SignInState> emit,
   ) {
-    final companyName = WorkspaceName.dirty(event.companyName);
+    final workspaceName = WorkspaceName.dirty(event.workspaceName);
     emit(
       state.copyWith(
-        workspaceName: companyName,
+        workspaceName: workspaceName,
         isValid: Formz.validate([
-          companyName,
-          state.companyCategory,
+          workspaceName,
+          state.workspaceCategory,
           state.clientName,
           state.mobileNumber,
           state.email,
@@ -84,7 +83,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         clientName: fullName,
         isValid: Formz.validate([
           fullName,
-          state.companyCategory,
+          state.workspaceCategory,
           state.workspaceName,
           state.mobileNumber,
           state.email,
@@ -101,7 +100,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         mobileNumber: mobile,
         isValid: Formz.validate([
           mobile,
-          state.companyCategory,
+          state.workspaceCategory,
           state.workspaceName,
           state.email,
           state.clientName,
@@ -118,7 +117,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         email: email,
         isValid: Formz.validate([
           email,
-          state.companyCategory,
+          state.workspaceCategory,
           state.workspaceName,
           state.mobileNumber,
           state.clientName,
@@ -138,7 +137,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         password: password,
         isValid: Formz.validate([
           password,
-          state.companyCategory,
+          state.workspaceCategory,
           state.workspaceName,
           state.clientName,
           state.mobileNumber,
@@ -159,8 +158,8 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         // emit(SignInLoading());
 
         final isCreated = await _authRepository.createWorkspace(
-          companyCategory: state.companyCategory.value,
-          company: state.workspaceName.value,
+          workspaceCategory: state.workspaceCategory.value,
+          workspaceName: state.workspaceName.value,
           fullName: state.clientName.value,
           email: state.email.value,
           mobileNumber: state.mobileNumber.value,
@@ -168,7 +167,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         );
 
         // delay to complete Authentication
-        await Future.delayed(const Duration(seconds: 4));
+        await Future.delayed(wAnimateDuration);
 
         FormzSubmissionStatus newStatus = isCreated
             ? FormzSubmissionStatus.success
@@ -217,7 +216,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         );
 
         // Delay to complete Authentication
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(wAnimateDuration);
 
         if (data.workspace != null) {
           emit(state.copyWith(status: FormzSubmissionStatus.success));
@@ -281,7 +280,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         );
 
         // Simulate a delay to complete the authentication process
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(wAnimateDuration);
 
         // If sign-in was successful and both employee and workspace data are available
         if (data.employee != null && data.workspace != null) {
@@ -342,7 +341,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         );
 
         // Simulate a delay to represent the time taken for the authentication process
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(wAnimateDuration);
 
         // If the passcode change was successful, perform a silent sign-in check
         if (data.employee != null && data.workspace != null) {
@@ -395,7 +394,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         );
 
         // Simulate a delay to complete the password update process
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(wAnimateDuration);
 
         // Determine the new state based on the updatePassword result
         final newState = data
@@ -451,7 +450,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         );
 
         // Simulate a delay to complete the password reset email process
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(wAnimateDuration);
 
         // Determine the new state based on the forgotPassword result
         final newState = data
@@ -478,42 +477,6 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
             status: FormzSubmissionStatus.failure,
           ),
         );
-        emit(SignInError(error: e.toString()));
-      }
-    }
-  }
-
-  Future<void> _onSwitchStoresRequested(
-    SwitchStoresRequested event,
-    Emitter<SignInState> emit,
-  ) async {
-    var storeNumber = event.storeNumber;
-
-    if (storeNumber.isNotEmpty) {
-      try {
-        // Perform the stores switching operation using the repository
-        final data = await _authRepository.switchStores(
-          storeNumber: storeNumber,
-        );
-
-        // Simulate a delay to complete the switching process
-        await Future.delayed(const Duration(seconds: 2));
-
-        // If switching to different store was successful
-        // and both employee and workspace data are available
-        if (data.employee != null && data.workspace != null) {
-          // Emit the authenticated state with updated employee and workspace data
-          /*emit(AuthAuthenticated(
-            employee: data.employee,
-            workspace: data.workspace,
-          ));*/
-
-          // Perform silent sign-in check
-          // add(AuthCheckRequested());
-        } else {
-          emit(const SignInError(error: 'error occurred'));
-        }
-      } catch (e) {
         emit(SignInError(error: e.toString()));
       }
     }

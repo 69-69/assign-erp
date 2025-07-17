@@ -6,7 +6,6 @@ import 'package:assign_erp/core/network/data_sources/local/error_logs_cache.dart
 import 'package:assign_erp/features/live_support/domain/repository/live_chat_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'live_chat_event.dart';
@@ -51,7 +50,6 @@ class LiveChatBloc<T> extends Bloc<LiveChatEvent, LiveChatState<T>> {
 
   Future<void> _initialize() async {
     on<LoadChatMessagesById<T>>(_onLoadChatMessagesById);
-    on<LoadChatOverviews<T>>(_onLoadChatOverviews);
     on<AddChat<T>>(_onSendMessage);
     on<_ChatsLoaded<T>>(_onChatsLoaded);
     on<_ChatLoaded<T>>(_onChatLoaded);
@@ -72,7 +70,6 @@ class LiveChatBloc<T> extends Bloc<LiveChatEvent, LiveChatState<T>> {
 
       final cacheList = await stream.first;
 
-      debugPrint('Chat List: ${cacheList.length}');
       if (cacheList.isNotEmpty) {
         // Assuming you're interested in the first chat item
         final cacheData = cacheList.first;
@@ -85,52 +82,6 @@ class LiveChatBloc<T> extends Bloc<LiveChatEvent, LiveChatState<T>> {
       emit(LiveChatError<T>(e.toString()));
     }
   }
-
-  Future<void> _onLoadChatOverviews(
-    LoadChatOverviews<T> event,
-    Emitter<LiveChatState<T>> emit,
-  ) async {
-    emit(LoadingChats<T>());
-    try {
-      // Await the first value emitted by the stream
-      final stream = _chatRepository.getChatOverviewsByWorkspaceStream(
-        workspaceId: event.workspaceId,
-      );
-
-      final cacheList = await stream.first;
-
-      if (cacheList.isNotEmpty) {
-        // Assuming you're interested in the first chat item
-        final cacheData = cacheList.first;
-        final data = fromFirestore(cacheData.data, cacheData.id);
-        emit(ChatOverviewLoaded<T>(data));
-      } else {
-        emit(LiveChatError<T>('Chat Overview not found'));
-      }
-
-      /*await emit.forEach<List<CacheData>>(
-        _chatRepository.getChatByWorkspace(
-          workspaceId: event.workspaceId,
-          userId: event.documentId,
-        ),
-        onData: (cacheList) => LiveChatLoaded<T>(_toList(cacheList)),
-        onError: (e, _) => LiveChatError<T>('Error: $e'),
-      );*/
-    } catch (e) {
-      emit(LiveChatError<T>(e.toString()));
-    }
-  }
-
-  /*final cacheList = await stream.first;
-  if (cacheList.isNotEmpty) {
-    final dataList = cacheList
-        .map((cacheData) => fromFirestore(cacheData.data, cacheData.id))
-        .toList();
-
-    emit(LiveSupportLoaded<T>(dataList)); // Emits all messages
-  } else {
-    emit(LiveSupportError<T>('No messages found'));
-  }*/
 
   Future<void> _onSendMessage(
     AddChat<T> event,
@@ -162,7 +113,7 @@ class LiveChatBloc<T> extends Bloc<LiveChatEvent, LiveChatState<T>> {
 
   void _onChatLoadError(_LiveChatError event, Emitter<LiveChatState<T>> emit) {
     final errorLogCache = ErrorLogCache();
-    errorLogCache.cacheError(error: event.error, fileName: 'LiveSupport_bloc');
+    errorLogCache.setError(error: event.error, fileName: 'LiveSupport_bloc');
     emit(LiveChatError<T>(event.error));
   }
 

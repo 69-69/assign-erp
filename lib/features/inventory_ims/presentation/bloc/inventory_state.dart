@@ -9,21 +9,21 @@ sealed class InventoryState<T> extends Equatable {
   List<Object?> get props => [];
 }
 
-class LoadingInventory<T> extends InventoryState<T> {}
+class LoadingInventories<T> extends InventoryState<T> {}
 
-class InventoryLoaded<T> extends InventoryState<T> {
+class InventoriesLoaded<T> extends InventoryState<T> {
   final List<T> data;
 
-  const InventoryLoaded(this.data);
+  const InventoriesLoaded(this.data);
 
   @override
   List<Object?> get props => [data];
 }
 
-class SingleInventoryLoaded<T> extends InventoryState<T> {
+class InventoryLoaded<T> extends InventoryState<T> {
   final T data;
 
-  const SingleInventoryLoaded(this.data);
+  const InventoryLoaded(this.data);
 
   @override
   List<Object?> get props => [data];

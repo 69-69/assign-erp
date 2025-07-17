@@ -1,7 +1,8 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/adaptive_layout.dart';
-import 'package:assign_erp/core/util/async_progress_dialog.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/widgets/adaptive_layout.dart';
+import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/dynamic_table.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
@@ -40,7 +41,7 @@ class _ListPOSOrdersState extends State<ListPOSOrders> {
       builder: (context, state) {
         return switch (state) {
           LoadingPOS<POSOrder>() => context.loader,
-          POSLoaded<POSOrder>(data: var results) =>
+          POSsLoaded<POSOrder>(data: var results) =>
             results.isEmpty
                 ? context.buildAddButton(
                     'Place an Order',
@@ -102,7 +103,7 @@ class _ListPOSOrdersState extends State<ListPOSOrders> {
           // Dispatch an event to refresh data
           onPressed: () {
             // Refresh POS-Orders data
-            context.read<POSOrderBloc>().add(RefreshPOS<POSOrder>());
+            context.read<POSOrderBloc>().add(RefreshPOSs<POSOrder>());
           },
         ),
         // final orderBloc = context.read<OrdersBloc>();
@@ -181,7 +182,7 @@ class _ListPOSOrdersState extends State<ListPOSOrders> {
   }
 
   Future<dynamic> _printout(List<POSOrder> orders, List<String> row) =>
-      Future.delayed(const Duration(seconds: 1), () async {
+      Future.delayed(wAnimateDuration, () async {
         // Simulate loading supplier and company info
         final getOrders = POSOrder.findOrdersById(
           orders,

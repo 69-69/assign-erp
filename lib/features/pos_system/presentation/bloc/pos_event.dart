@@ -9,14 +9,14 @@ sealed class POSEvent<T> extends Equatable {
   List<Object?> get props => [];
 }
 
-class GetPOS<T> extends POSEvent<T> {}
+class GetPOSs<T> extends POSEvent<T> {}
 
-class RefreshPOS<T> extends POSEvent<T> {}
+class RefreshPOSs<T> extends POSEvent<T> {}
 
-class GetMultiplePOSByIDs<T> extends POSEvent<T> {
+class GetPOSsByIds<T> extends POSEvent<T> {
   final List<String> documentIDs;
 
-  const GetMultiplePOSByIDs({required this.documentIDs});
+  const GetPOSsByIds({required this.documentIDs});
 
   @override
   List<Object?> get props => [documentIDs];
@@ -32,11 +32,11 @@ class GetPOSById<T> extends POSEvent<T> {
   List<Object?> get props => [documentId, field];
 }
 
-class GetAllPOSWithSameId<T> extends POSEvent<T> {
+class GetPOSsWithSameId<T> extends POSEvent<T> {
   final Object? field;
   final String documentId;
 
-  const GetAllPOSWithSameId({required this.documentId, this.field});
+  const GetPOSsWithSameId({required this.documentId, this.field});
 
   @override
   List<Object?> get props => [documentId, field];
@@ -58,8 +58,12 @@ class SearchPOS<T> extends POSEvent<T> {
   /// Third_Field_Name[auxField]
   final Object? auxField;
 
-  const SearchPOS(
-      {this.field, this.optField, this.auxField, required this.query});
+  const SearchPOS({
+    this.field,
+    this.optField,
+    this.auxField,
+    required this.query,
+  });
 
   @override
   List<Object?> get props => [field, optField, auxField, query];

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:assign_erp/core/constants/collection_type_enum.dart';
 import 'package:assign_erp/core/network/data_sources/local/cache_data_model.dart';
 import 'package:assign_erp/core/network/data_sources/local/error_logs_cache.dart';
-import 'package:assign_erp/core/util/debug_printify.dart';
 import 'package:assign_erp/features/agent/domain/repositories/agent_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
@@ -28,14 +27,15 @@ class AgentBloc<T> extends Bloc<AgentEvent, AgentState<T>> {
 
   AgentBloc({
     required FirebaseFirestore firestore,
+    CollectionType? collectionType,
     required String collectionPath,
     required this.fromFirestore,
     required this.toFirestore,
     required this.toCache,
   }) : _agentRepository = AgentRepository(
-         collectionType: CollectionType.clients,
          firestore: firestore,
          collectionPath: collectionPath,
+         collectionType: collectionType ?? CollectionType.clients,
        ),
        super(LoadingClients<T>()) {
     _initialize();
@@ -49,14 +49,16 @@ class AgentBloc<T> extends Bloc<AgentEvent, AgentState<T>> {
     on<RefreshClients<T>>(_onRefreshClients);
     on<LoadClients<T>>(_onLoadClients);
     on<LoadClientById<T>>(_onLoadClientById);
+    on<LoadAgentById<T>>(_onLoadAgentById);
     on<UpdateClient>(_onUpdateClient);
+    on<ResetAuthorizedDeviceIds>(_onResetAuthorizedDeviceIds);
     on<DeleteClient>(_onDeleteClient);
     on<_ClientsLoaded<T>>(_onClientsLoaded);
     on<_ClientLoaded<T>>(_onClientLoaded);
     on<_AgentError>(_onAgentError);
   }
 
-  Future<void> _onRefreshClients(
+  /*Future<void> _onRefreshClients(
     RefreshClients<T> event,
     Emitter<AgentState> emit,
   ) async {
@@ -78,6 +80,27 @@ class AgentBloc<T> extends Bloc<AgentEvent, AgentState<T>> {
       // Emit an error state in case of failure
       emit(AgentError<T>(e.toString()));
     }
+  }*/
+
+  Future<void> _onRefreshClients(
+    RefreshClients<T> event,
+    Emitter<AgentState> emit,
+  ) async {
+    emit(LoadingClients<T>());
+
+    try {
+      final workspaces = event.isSystemWide
+          ? await _agentRepository.getSystemWideWorkspaces()
+          : await _agentRepository.getClientWorkspacesByAgent();
+
+      final data = _toList(workspaces);
+
+      // Emit the loaded state with the refreshed data
+      emit(ClientsLoaded<T>(data));
+    } catch (e) {
+      // Emit an error state in case of failure
+      emit(AgentError<T>(e.toString()));
+    }
   }
 
   /// Load All Data Function [_onLoadClients]
@@ -88,11 +111,11 @@ class AgentBloc<T> extends Bloc<AgentEvent, AgentState<T>> {
     emit(LoadingClients<T>());
 
     try {
-      final clients = event.isDeveloper
-          ? await _agentRepository.getAllClientsWorkspaces()
+      final workspaces = event.isSystemWide
+          ? await _agentRepository.getSystemWideWorkspaces()
           : await _agentRepository.getClientWorkspacesByAgent();
 
-      final data = _toList(clients);
+      final data = _toList(workspaces);
 
       emit(ClientsLoaded<T>(data));
     } catch (e) {
@@ -119,6 +142,26 @@ class AgentBloc<T> extends Bloc<AgentEvent, AgentState<T>> {
     }
   }
 
+  Future<void> _onLoadAgentById(
+    LoadAgentById<T> event,
+    Emitter<AgentState<T>> emit,
+  ) async {
+    emit(LoadingClients<T>());
+    try {
+      final agentInfo = await _agentRepository.getAgentById(event.agentId);
+
+      if (agentInfo != null) {
+        final data = fromFirestore(agentInfo.data, agentInfo.id);
+
+        emit(AgentLoaded<T>(data));
+      } else {
+        emit(AgentError<T>('Document not found'));
+      }
+    } catch (e) {
+      emit(AgentError<T>(e.toString()));
+    }
+  }
+
   /// Note:: use Generic or Map data update
   Future<void> _onUpdateClient(
     UpdateClient event,
@@ -137,6 +180,34 @@ class AgentBloc<T> extends Bloc<AgentEvent, AgentState<T>> {
 
       // Update State: Notify that data updated
       emit(ClientUpdated<T>(message: 'data updated successfully'));
+    } catch (e) {
+      emit(AgentError<T>(e.toString()));
+    }
+  }
+
+  /// Dispatches an event to reset workspace authorized device IDs for the clients workspace.
+  ///
+  /// If a specific [did] (device ID) is provided, it will be removed from the
+  /// list of authorized devices. If [did] is null, the event will trigger
+  /// removal of all authorized device IDs.
+  Future<void> _onResetAuthorizedDeviceIds(
+    ResetAuthorizedDeviceIds event,
+    Emitter<AgentState<T>> emit,
+  ) async {
+    try {
+      // Reset Workspace Authorized Device Ids data from Firestore and update local storage
+      await _agentRepository.resetAuthorizedDeviceIds(
+        event.documentId,
+        authorizedDeviceId: event.data,
+      );
+
+      // Trigger LoadDataEvent to reload the data
+      add(LoadClients<T>());
+
+      // Update State: Notify that ids reset
+      emit(
+        ClientDeleted<T>(message: 'Authorized Device Ids reset successfully'),
+      );
     } catch (e) {
       emit(AgentError<T>(e.toString()));
     }
@@ -170,7 +241,7 @@ class AgentBloc<T> extends Bloc<AgentEvent, AgentState<T>> {
 
   void _onAgentError(_AgentError event, Emitter<AgentState<T>> emit) {
     final errorLogCache = ErrorLogCache();
-    errorLogCache.cacheError(error: event.error, fileName: 'Agent_bloc');
+    errorLogCache.setError(error: event.error, fileName: 'Agent_bloc');
     emit(AgentError<T>(event.error));
   }
 

@@ -1,5 +1,5 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/custom_snack_bar.dart';
+import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:flutter/material.dart';
 
 var _nowToday = DateTime.now();
@@ -36,8 +36,9 @@ class DatePicker extends StatefulWidget {
 
 /// RestorationProperty objects can be used because of RestorationMixin.
 class _DatePickerState extends State<DatePicker> with RestorationMixin {
-  late final _textController =
-      TextEditingController(text: widget.serverDate ?? '');
+  late final _textController = TextEditingController(
+    text: widget.serverDate ?? '',
+  );
 
   // In this example, the restoration ID for the mixin is passed in through
   // the [StatefulWidget]'s constructor.
@@ -49,14 +50,14 @@ class _DatePickerState extends State<DatePicker> with RestorationMixin {
   );
   late final RestorableRouteFuture<DateTime?> _restorableDatePickerRouteFuture =
       RestorableRouteFuture<DateTime?>(
-    onComplete: _selectDate,
-    onPresent: (NavigatorState navigator, Object? arguments) {
-      return navigator.restorablePush(
-        _datePickerRoute,
-        arguments: _selectedDate.value.millisecondsSinceEpoch,
+        onComplete: _selectDate,
+        onPresent: (NavigatorState navigator, Object? arguments) {
+          return navigator.restorablePush(
+            _datePickerRoute,
+            arguments: _selectedDate.value.millisecondsSinceEpoch,
+          );
+        },
       );
-    },
-  );
 
   @pragma('vm:entry-point')
   static Route<DateTime> _datePickerRoute(
@@ -79,7 +80,9 @@ class _DatePickerState extends State<DatePicker> with RestorationMixin {
   void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
     registerForRestoration(_selectedDate, 'selected_date');
     registerForRestoration(
-        _restorableDatePickerRouteFuture, 'date_picker_route_future');
+      _restorableDatePickerRouteFuture,
+      'date_picker_route_future',
+    );
   }
 
   void _selectDate(DateTime? newSelectedDate) {
@@ -87,7 +90,8 @@ class _DatePickerState extends State<DatePicker> with RestorationMixin {
       setState(() {
         _selectedDate.value = newSelectedDate;
 
-        var selectedDate = '${_selectedDate.value.day}/'
+        var selectedDate =
+            '${_selectedDate.value.day}/'
             '${_selectedDate.value.month}/'
             '${_selectedDate.value.year}';
 
@@ -152,9 +156,7 @@ class _DatePickerState extends State<DatePicker> with RestorationMixin {
         style: IconButton.styleFrom(shape: const RoundedRectangleBorder()),
       ),
       // contentPadding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 15.0),
-      hintStyle: const TextStyle(
-        fontWeight: FontWeight.normal,
-      ),
+      hintStyle: const TextStyle(fontWeight: FontWeight.normal),
     );
   }
 }
@@ -180,8 +182,9 @@ class TimePicker extends StatefulWidget {
 
 class _TimePickerState extends State<TimePicker> {
   TimeOfDay _selectedTime = TimeOfDay.now();
-  late final _textController =
-      TextEditingController(text: widget.serverTime ?? '');
+  late final _textController = TextEditingController(
+    text: widget.serverTime ?? '',
+  );
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
@@ -234,8 +237,10 @@ class _TimePickerState extends State<TimePicker> {
       enabledBorder: const UnderlineInputBorder(
         borderSide: BorderSide(/*color: kLightColor, */ width: 1.0),
       ),
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 5.0, vertical: 15.0),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 5.0,
+        vertical: 15.0,
+      ),
 
       suffixIcon: IconButton(
         icon: const Icon(Icons.access_time),

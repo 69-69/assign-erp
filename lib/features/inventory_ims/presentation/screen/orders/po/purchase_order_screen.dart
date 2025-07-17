@@ -17,10 +17,10 @@ class PurchaseOrderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<PurchaseOrderBloc>(
-      create: (context) => PurchaseOrderBloc(
-        firestore: FirebaseFirestore.instance,
-      )..add(GetInventory<PurchaseOrder>()),
-      child:  CustomScaffold(
+      create: (context) =>
+          PurchaseOrderBloc(firestore: FirebaseFirestore.instance)
+            ..add(GetInventories<PurchaseOrder>()),
+      child: CustomScaffold(
         title: purchaseOrderScreenTitle.toUpperCase(),
         body: _buildBody(),
         floatingActionButton: context.buildFloatingBtn(
@@ -39,10 +39,7 @@ class PurchaseOrderScreen extends StatelessWidget {
         {'label': 'POs', 'icon': Icons.shopping_cart},
         {'label': 'Approved POs', 'icon': Icons.approval},
       ],
-      children: [
-        ListPOByDate(),
-        ListApprovedPO(),
-      ],
+      children: [ListPOByDate(), ListApprovedPO()],
     );
   }
 }

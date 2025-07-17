@@ -1,4 +1,5 @@
 import 'package:assign_erp/core/constants/account_status.dart';
+import 'package:assign_erp/core/constants/hosting_type.dart';
 import 'package:assign_erp/core/network/data_sources/models/subscription_licenses_enum.dart';
 import 'package:assign_erp/core/network/data_sources/models/workspace_role.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
@@ -15,14 +16,15 @@ class Workspace extends Equatable {
   final String subscriptionFee;
   final String clientName;
   final String mobileNumber;
+  final HostingType hostingType;
 
   /// Assign Roles to Users [role]
   final WorkspaceRole role;
   final String email;
   final String status;
 
-  // Category of the Software; manufacturer, distributor, retailer, etc.
-  final String companyCategory;
+  // Workspace Category of the Software; manufacturer, distributor, retailer, etc.
+  final String workspaceCategory;
   final SubscriptionLicenses license;
 
   /// The maximum number of devices a user is allowed to install/use this software on,
@@ -38,17 +40,19 @@ class Workspace extends Equatable {
   final String updatedBy;
   final DateTime effectiveFrom;
   final DateTime expiresOn;
+  final DateTime createdAt;
 
   Workspace({
     this.id = '',
     this.username = '',
+    this.hostingType = HostingType.onPremise,
     required this.clientName,
     required this.workspaceName,
     required this.mobileNumber,
     required this.role,
     required this.email,
-    required this.companyCategory,
-    this.subscriptionFee = '0',
+    required this.workspaceCategory,
+    this.subscriptionFee = '',
     /** License Options:
      * 1- Full (Have access to all the Software packages)
      * 2- P.O.S Software,
@@ -59,31 +63,36 @@ class Workspace extends Equatable {
     required this.status,
     this.maxAllowedDevices = 1,
     this.authorizedDeviceIds = const [],
-    // agentID: The One who setup this Software up for your company/organization
+    // agentID: The ID of the individual(agent) that configured this software for your organization.
     required this.agentID,
     DateTime? effectiveFrom,
+    DateTime? createdAt,
     this.updatedBy = '',
     DateTime? expiresOn,
   }) : effectiveFrom = effectiveFrom ?? _today,
-       expiresOn = expiresOn ?? _today; // Set default value
+       expiresOn = expiresOn ?? _today,
+       createdAt = createdAt ?? _today; // Set default value
 
   static const String cacheKey = 'workspace_auth_cache';
 
   /// fromFirestore / fromJson Function [Workspace.fromMap]
   factory Workspace.fromMap(Map<String, dynamic> map, {String? id}) {
     return Workspace(
-      id: (id ?? map['id']) ?? '',
+      id: (map['id']) ?? id ?? '',
       email: map['email'] ?? '',
-      companyCategory: map['companyCategory'] ?? '',
+      hostingType: getHostingByString(
+        map['hostingType'] ?? HostingType.onPremise.label,
+      ),
+      workspaceCategory: map['workspaceCategory'] ?? '',
       workspaceName: map['workspaceName'] ?? '',
       clientName: map['clientName'] ?? '',
       mobileNumber: map['mobileNumber'] ?? '',
-      subscriptionFee: map['subscriptionFee'] ?? '0',
-      username: map['username'].toString().emailToUsername,
-      role: getRoleByString(map['role']),
+      subscriptionFee: map['subscriptionFee'] ?? '',
+      username: '${map['username']}'.emailToUsername,
+      role: getRoleByString(map['role'] ?? WorkspaceRole.subscriber.label),
       status: map['status'] ?? AccountStatus.disabled.label,
       license: getLicenseByString(
-        map['license'] ?? SubscriptionLicenses.unauthorized,
+        map['license'] ?? SubscriptionLicenses.unauthorized.name,
       ),
       maxAllowedDevices: map['maxAllowedDevices'] ?? 1,
       authorizedDeviceIds: List<String>.from(map['authorizedDeviceIds'] ?? []),
@@ -91,6 +100,7 @@ class Workspace extends Equatable {
       effectiveFrom: toDateTimeFn(map['effectiveFrom']),
       updatedBy: map['updatedBy'] ?? '',
       expiresOn: toDateTimeFn(map['expiresOn']),
+      createdAt: toDateTimeFn(map['createdAt']),
     );
   }
 
@@ -103,11 +113,12 @@ class Workspace extends Equatable {
   Map<String, dynamic> _mapTemp() => {
     'id': id,
     'agentID': agentID,
+    'hostingType': hostingType.label,
     'username': email.emailToUsername,
     // Convert enum to string
     'role': roleAsString(role),
     'email': email,
-    'companyCategory': companyCategory,
+    'workspaceCategory': workspaceCategory,
     'subscriptionFee': subscriptionFee,
     'workspaceName': workspaceName,
     'clientName': clientName,
@@ -119,6 +130,7 @@ class Workspace extends Equatable {
     'effectiveFrom': effectiveFrom,
     'updatedBy': updatedBy,
     'expiresOn': expiresOn,
+    'createdAt': createdAt,
   };
 
   /// Convert UserModel to a map for storing in Firestore [toMap]
@@ -126,6 +138,7 @@ class Workspace extends Equatable {
     var newMap = _mapTemp();
     newMap['effectiveFrom'] = effectiveFrom.toISOString;
     newMap['expiresOn'] = expiresOn.toISOString;
+    newMap['createdAt'] = createdAt.toISOString;
 
     return newMap;
   }
@@ -135,12 +148,14 @@ class Workspace extends Equatable {
     var newMap = _mapTemp();
     newMap['effectiveFrom'] = effectiveFrom.millisecondsSinceEpoch;
     newMap['expiresOn'] = expiresOn.millisecondsSinceEpoch;
+    newMap['createdAt'] = createdAt.millisecondsSinceEpoch;
 
     return {'id': cacheKey, 'data': newMap};
   }
 
   /// Formatted to Standard-DateTime in String [getEffectiveFrom]
   String get getEffectiveFrom => effectiveFrom.toStandardDT;
+  String get getCreatedAt => createdAt.toStandardDT;
 
   /// Formatted to Standard-DateTime in String [getExpiresOn]
   String get getExpiresOn => expiresOn.toStandardDT;
@@ -216,7 +231,8 @@ class Workspace extends Equatable {
   Workspace copyWith({
     String? id,
     String? username,
-    String? companyCategory,
+    HostingType? hostingType,
+    String? workspaceCategory,
     String? subscriptionFee,
     String? workspaceName,
     String? clientName,
@@ -231,11 +247,13 @@ class Workspace extends Equatable {
     String? updatedBy,
     DateTime? effectiveFrom,
     DateTime? expiresOn,
+    DateTime? createdAt,
   }) {
     return Workspace(
       id: id ?? this.id,
       username: username ?? this.username,
-      companyCategory: companyCategory ?? this.companyCategory,
+      hostingType: hostingType ?? this.hostingType,
+      workspaceCategory: workspaceCategory ?? this.workspaceCategory,
       subscriptionFee: subscriptionFee ?? this.subscriptionFee,
       workspaceName: workspaceName ?? this.workspaceName,
       clientName: clientName ?? this.clientName,
@@ -250,6 +268,7 @@ class Workspace extends Equatable {
       updatedBy: updatedBy ?? this.updatedBy,
       effectiveFrom: effectiveFrom ?? this.effectiveFrom,
       expiresOn: expiresOn ?? this.expiresOn,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 
@@ -259,7 +278,8 @@ class Workspace extends Equatable {
     username,
     role,
     email,
-    companyCategory,
+    hostingType,
+    workspaceCategory,
     workspaceName,
     mobileNumber,
     status,
@@ -271,21 +291,24 @@ class Workspace extends Equatable {
     effectiveFrom,
     updatedBy,
     expiresOn,
+    createdAt,
   ];
 
   /// ToList for PRODUCTS [itemAsList]
   List<String> itemAsList() => [
     username.toUppercaseFirstLetterEach,
     id,
-    companyCategory.toUppercaseFirstLetterEach,
+    license.name.toUppercaseAllLetter,
+    role.name.toUppercaseFirstLetterEach,
+    workspaceCategory.toUppercaseFirstLetterEach,
     workspaceName.toUppercaseFirstLetterEach,
     clientName.toUppercaseFirstLetterEach,
-    role.name.toUppercaseFirstLetterEach,
     mobileNumber,
     status.toUppercaseFirstLetterEach,
-    license.name.toUppercaseFirstLetterEach,
     subscriptionFee,
     '$maxAllowedDevices',
+    hostingType.name.toUppercaseAllLetter,
+    getCreatedAt,
     getEffectiveFrom,
     getExpiresOn,
   ];
@@ -293,15 +316,17 @@ class Workspace extends Equatable {
   static List<String> get dataTableHeader => const [
     'Username',
     'id',
+    'license',
+    'Role',
     'Business',
     'Workspace',
     'Client',
-    'Capacity',
     'Mobile number',
     'Status',
-    'license',
     'Subscription Fee',
-    'Devices',
+    'Max-Devices',
+    'Hosting type',
+    'Created At',
     'Effective Date',
     'Expiry Date',
   ];

@@ -9,14 +9,14 @@ sealed class SetupEvent<T> extends Equatable {
   List<Object?> get props => [];
 }
 
-class GetSetup<T> extends SetupEvent<T> {}
+class GetSetups<T> extends SetupEvent<T> {}
 
-class RefreshSetup<T> extends SetupEvent<T> {}
+class RefreshSetups<T> extends SetupEvent<T> {}
 
-class GetMultiSetupByIDs<T> extends SetupEvent<T> {
+class GetSetupsByIds<T> extends SetupEvent<T> {
   final List<String> documentIDs;
 
-  const GetMultiSetupByIDs({required this.documentIDs});
+  const GetSetupsByIds({required this.documentIDs});
 
   @override
   List<Object?> get props => [documentIDs];
@@ -32,11 +32,11 @@ class GetSetupById<T> extends SetupEvent<T> {
   List<Object?> get props => [documentId, field];
 }
 
-class GetAllSetupWithSameId<T> extends SetupEvent<T> {
+class GetSetupsWithSameId<T> extends SetupEvent<T> {
   final Object? field;
   final String documentId;
 
-  const GetAllSetupWithSameId({required this.documentId, this.field});
+  const GetSetupsWithSameId({required this.documentId, this.field});
 
   @override
   List<Object?> get props => [documentId, field];
@@ -58,8 +58,12 @@ class SearchSetup<T> extends SetupEvent<T> {
   /// Third_Field_Name[auxField]
   final Object? auxField;
 
-  const SearchSetup(
-      {this.field, this.optField, this.auxField, required this.query});
+  const SearchSetup({
+    this.field,
+    this.optField,
+    this.auxField,
+    required this.query,
+  });
 
   @override
   List<Object?> get props => [field, optField, auxField, query];

@@ -16,7 +16,7 @@ class CreateUserAccScreen extends StatelessWidget {
     return BlocProvider<EmployeeBloc>(
       create: (context) =>
           EmployeeBloc(firestore: FirebaseFirestore.instance)
-            ..add(GetSetup<Employee>()),
+            ..add(GetSetups<Employee>()),
       child: CustomScaffold(
         noAppBar: true,
         body: const ListEmployees(),
@@ -25,6 +25,7 @@ class CreateUserAccScreen extends StatelessWidget {
           icon: Icons.person_add,
           onPressed: () async => await context.openCreateEmployeeAcc(),
         ),
+        bottomNavigationBar: const SizedBox.shrink(),
       ),
     );
   }
