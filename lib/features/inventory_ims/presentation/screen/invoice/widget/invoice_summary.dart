@@ -80,12 +80,9 @@ class _InvoiceSummaryState extends State<InvoiceSummary> {
         ),
         ExpansionTile(
           dense: true,
-          title: Text(
-            widget.title.toUppercaseFirstLetterEach,
-            style: fTheme.titleLarge,
-          ),
+          title: Text(widget.title.toTitleCase, style: fTheme.titleLarge),
           subtitle: Text(
-            'see summary: $_getInvoiceID'.toUppercaseFirstLetterEach,
+            'see summary: $_getInvoiceID'.toTitleCase,
             style: fTheme.labelMedium?.copyWith(color: kDangerColor),
           ),
           childrenPadding: const EdgeInsets.only(bottom: 20.0),
@@ -111,7 +108,7 @@ class _InvoiceSummaryState extends State<InvoiceSummary> {
     return ListTile(
       dense: true,
       title: Text(
-        '${widget.data['orderType'] ?? '0000'}'.toUppercaseFirstLetterEach,
+        '${widget.data['orderType'] ?? '0000'}'.toTitleCase,
         textAlign: TextAlign.center,
         style: context.ofTheme.textTheme.titleLarge,
       ),
@@ -132,11 +129,11 @@ class _InvoiceSummaryState extends State<InvoiceSummary> {
               (data.key.contains('discountAmount')
                   ? '- '
                   : (data.key.contains('totalAmount') ? ghanaCedis : '')) +
-              '${data.value}'.toUppercaseFirstLetterEach;
+              '${data.value}'.toTitleCase;
 
           return DataRow(
             cells: [
-              _buildDataCell(data.key.separateWord.toUppercaseFirstLetterEach),
+              _buildDataCell(data.key.separateWord.toTitleCase),
               _buildDataCell(val),
             ],
           );

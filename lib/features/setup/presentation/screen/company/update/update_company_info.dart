@@ -1,10 +1,8 @@
-import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/setup/data/data_sources/local/printout_setup_cache_service.dart';
 import 'package:assign_erp/features/setup/data/models/company_info_model.dart';
@@ -17,71 +15,26 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 extension UpdateCompanyInfo<T> on BuildContext {
   Future<void> openUpdateCompanyInfo({required Company info}) =>
-      openBottomSheet(isExpand: false, child: _UpdateCompany(info: info));
+      openBottomSheet(
+        isExpand: false,
+        child: FormBottomSheet(
+          title: 'Edit Company Info',
+          subtitle: info.name.toTitleCase,
+          body: _UpdateCompanyForm(info: info),
+        ),
+      );
 }
 
-class _UpdateCompany extends StatelessWidget {
+class _UpdateCompanyForm extends StatefulWidget {
   final Company info;
 
-  const _UpdateCompany({required this.info});
+  const _UpdateCompanyForm({required this.info});
 
   @override
-  Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: _buildHeader(context),
-      child: BlocBuilder<CompanyBloc, SetupState<Company>>(
-        builder: (context, state) => _buildBody(context),
-      ),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: ListTile(
-        titleAlignment: ListTileTitleAlignment.center,
-        title: Text(
-          'Edit Company Info',
-          textAlign: TextAlign.center,
-          semanticsLabel: 'edit company info',
-          style: context.ofTheme.textTheme.titleLarge?.copyWith(
-            color: kGrayColor,
-          ),
-        ),
-        subtitle: Text(
-          info.name.toUpperCase(),
-          textAlign: TextAlign.center,
-          semanticsLabel: info.name.toUppercaseFirstLetterEach,
-          style: context.ofTheme.textTheme.titleMedium?.copyWith(
-            color: kGrayColor,
-          ),
-        ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
-      child: _UpdateCompanyBody(info: info),
-    );
-  }
+  State<_UpdateCompanyForm> createState() => _UpdateCompanyFormState();
 }
 
-class _UpdateCompanyBody extends StatefulWidget {
-  final Company info;
-
-  const _UpdateCompanyBody({required this.info});
-
-  @override
-  State<_UpdateCompanyBody> createState() => _UpdateCompanyBodyState();
-}
-
-class _UpdateCompanyBodyState extends State<_UpdateCompanyBody> {
+class _UpdateCompanyFormState extends State<_UpdateCompanyForm> {
   // final SetupPrintOut _setupPrintOut = SetupPrintOut();
   final PrintoutSetupCacheService _printoutService =
       PrintoutSetupCacheService();
@@ -134,7 +87,7 @@ class _UpdateCompanyBodyState extends State<_UpdateCompanyBody> {
 
       if (mounted) {
         context.showAlertOverlay(
-          '${_nameController.text.toUppercaseFirstLetterEach} successfully updated',
+          '${_nameController.text.toTitleCase} successfully updated',
         );
         Navigator.pop(context);
       }
@@ -202,7 +155,7 @@ class _UpdateCompanyBodyState extends State<_UpdateCompanyBody> {
           },
         ),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(onPressed: _onSubmit),
+        context.confirmableActionButton(onPressed: _onSubmit),
       ],
     );
   }

@@ -1,6 +1,6 @@
 import 'package:assign_erp/core/constants/app_db_collect.dart';
 import 'package:assign_erp/core/network/data_sources/local/cache_data_model.dart';
-import 'package:assign_erp/core/network/data_sources/models/workspace_model.dart';
+import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
 import 'package:assign_erp/features/setup/data/models/employee_model.dart';
 import 'package:hive/hive.dart';
 
@@ -23,7 +23,11 @@ class AuthCacheService {
 
   /// Clear & delete Cache/localStorage [_clearCache]
   Future<void> _clearCache(String key) async {
-    await Future.wait([_dataBox.clear(), _dataBox.delete(key)]);
+    await Future.wait([
+      _dataBox.clear(),
+      _dataBox.delete(key),
+      _dataBox.flush(),
+    ]);
   }
 
   Workspace? getWorkspace() {

@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 // All of our constant stuff
 
 const kTransparentColor = Colors.transparent;
-const kPrimaryColor = Color(0xff232b5a); //0xff041363 - 0xff232b5a - 0xFF673AB7
-const kPrimaryLightColor = Color(0xff4a5d8c);
-const kBrightPrimaryColor = Color(0xff1dd6ef);
-const kPrimaryAccentColor = Color(0xff3468ea);
+const kPrimaryColor = Color(0xFF232B5A); //0xff041363 - 0xff232b5a - 0xFF673AB7
+const kPrimaryLightColor = Color(0xFF4A5D8C);
+const kBrightPrimaryColor = Color(0xFF1DD6EF);
+const kPrimaryAccentColor = Color(0xFF3468EA);
 const kLightColor = Color(0xFFFFFFFF);
 const kGrayColor = Color(0xFFB1B3B8);
-const kLightGrayColor = Color(0xfffbf8ff);
+const kLightGrayColor = Color(0xFFFbF8FF);
 const kGrayBlueColor = Color(0xFF8793B2);
 const kTextColor = Color(0xFF757575);
 const kBgLightColor = Color(0xFD393636);
@@ -17,7 +17,7 @@ const kLightBlueColor = Color(0xFFC5D3F8);
 const kWarningColor = Color(0xFFFFA726);
 const kDarkWarningColor = Color(0xFFFF8102);
 const kOrangeColor = Color(0xFFE65100);
-const kLightOrangeColor = Color(0xFFF86516);
+const kLightOrangeColor = Color(0xFFF67952);
 const kGoldColor = Color(0xFFAA7706);
 const kSuccessColor = Color(0xFF44CA03);
 const kDangerColor = Color(0xFFEE3737);

@@ -2,7 +2,8 @@ import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/build_breadcrumbs.dart';
+import 'package:assign_erp/core/widgets/bread_crumbs.dart';
+import 'package:assign_erp/core/widgets/check_for_app_update.dart';
 import 'package:assign_erp/core/widgets/profile_menu_dropdown.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +63,14 @@ class _CustomScaffoldState extends State<CustomScaffold> {
           ? null
           : (widget.appBar ?? _buildAppBar(context, authState)),
       body: _buildBody(),
-      bottomNavigationBar: widget.bottomNavigationBar ?? BuildBreadcrumbs(),
+      bottomNavigationBar:
+          widget.bottomNavigationBar ??
+          Row(
+            children: [
+              Expanded(child: BuildBreadcrumbs()),
+              CheckForAppUpdate(),
+            ],
+          ),
       floatingActionButtonLocation: widget.floatingActionBtnLocation,
       floatingActionButton: widget.floatingActionButton,
       drawer: widget.drawer,
@@ -73,24 +81,25 @@ class _CustomScaffoldState extends State<CustomScaffold> {
     final uiBody = SafeArea(child: widget.body);
 
     return widget.isGradientBg
-        ? Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  /*kPrimaryColor,
-                    kPrimaryLightColor,
-                    kLightBlueColor,*/
-                  kPrimaryColor,
-                  kLightBlueColor,
-                  kLightBlueColor,
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-            child: uiBody,
-          )
+        ? Container(decoration: _linearGradientBg(), child: uiBody)
         : uiBody;
+  }
+
+  BoxDecoration _linearGradientBg() {
+    return const BoxDecoration(
+      gradient: LinearGradient(
+        colors: [
+          /*kPrimaryColor,
+                  kPrimaryLightColor,
+                  kLightBlueColor,*/
+          kPrimaryColor,
+          kLightBlueColor,
+          kLightBlueColor,
+        ],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ),
+    );
   }
 
   AppBar _buildAppBar(BuildContext context, AuthState authState) {
@@ -132,7 +141,7 @@ class _CustomScaffoldState extends State<CustomScaffold> {
       dense: true,
       titleAlignment: ListTileTitleAlignment.center,
       title: Text(
-        '${widget.title ?? appName}'.toUppercaseAllLetter,
+        '${widget.title ?? appName}'.toUpperCaseAll,
         textAlign: TextAlign.center,
         maxLines: 1,
         style: const TextStyle(
@@ -143,7 +152,7 @@ class _CustomScaffoldState extends State<CustomScaffold> {
         textScaler: TextScaler.linear(context.textScaleFactor),
       ),
       subtitle: Text(
-        (widget.subTitle ?? appSubName).toUppercaseAllLetter,
+        (widget.subTitle ?? appSubName).toUpperCaseAll,
         textAlign: TextAlign.center,
         maxLines: 1,
         style: context.ofTheme.textTheme.titleSmall?.copyWith(

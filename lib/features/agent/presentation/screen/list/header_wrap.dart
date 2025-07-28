@@ -16,7 +16,7 @@ class HeaderWrap extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 20),
           child: Text(
-            title.toUppercaseAllLetter,
+            title.toUpperCaseAll,
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: kPrimaryLightColor,

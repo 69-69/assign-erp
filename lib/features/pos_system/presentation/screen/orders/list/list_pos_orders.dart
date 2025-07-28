@@ -182,7 +182,7 @@ class _ListPOSOrdersState extends State<ListPOSOrders> {
   }
 
   Future<dynamic> _printout(List<POSOrder> orders, List<String> row) =>
-      Future.delayed(wAnimateDuration, () async {
+      Future.delayed(kRProgressDelay, () async {
         // Simulate loading supplier and company info
         final getOrders = POSOrder.findOrdersById(
           orders,

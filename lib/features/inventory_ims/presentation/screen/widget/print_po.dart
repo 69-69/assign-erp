@@ -66,7 +66,7 @@ class PrintPurchaseOrder {
       ),
       products: invoiceProducts,
       supplierEmail: supplier.email,
-      supplierName: _toCap(supplier.supplierName),
+      supplierName: _toCap(supplier.name),
       supplierAddress: _toCap(supplier.address),
       supplierPhone: supplier.phone,
       contactPerson: _toCap(supplier.contactPersonName),
@@ -78,7 +78,7 @@ class PrintPurchaseOrder {
     return await po.buildPdf(format);
   }
 
-  String _toCap(String i) => i.toUppercaseFirstLetterEach;
+  String _toCap(String i) => i.toTitleCase;
 }
 
 /*

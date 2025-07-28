@@ -1,3 +1,4 @@
+import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:flutter/material.dart';
 
@@ -120,7 +121,7 @@ class _AsyncProgressBarDialogState extends State<AsyncProgressBarDialog> {
     var loadSize = widget.size ?? context.screenWidth * 0.1;
     return widget.isDialog
         ? Dialog(
-            backgroundColor: Colors.transparent,
+            backgroundColor: kTransparentColor,
             elevation: 0,
             child: Opacity(
               opacity: widget.opacity,
@@ -188,7 +189,7 @@ class _AsyncProgressBarDialogState extends State<AsyncProgressBarDialog> {
             Navigator.pop(context);
           }
         },
-        style: IconButton.styleFrom(backgroundColor: Colors.transparent),
+        style: IconButton.styleFrom(backgroundColor: kTransparentColor),
         icon: const Icon(Icons.close, size: 16, color: Colors.black26),
       ),
     );

@@ -58,7 +58,7 @@ class AgentRepository extends FirestoreRepository {
   }
 
   /// Scope ID to restrict cache-data access to specific scope/context
-  String get scopeId {
+  String get _scopeId {
     final authCacheService = AuthCacheService();
     return (authCacheService.getWorkspace())?.id ?? '';
   }
@@ -92,27 +92,27 @@ class AgentRepository extends FirestoreRepository {
   /// Read/Get cache data by index position [_getCacheByIndex]
   CacheData? _getCacheByIndex(int i) => _cacheBox.getAt(i);
 
-  /// Add New BackUp Data to Remote-Server (Firestore) [_backupNewDataToFirestore]
-  Future<String> _backupNewDataToFirestore(CacheData item) async {
+  /// Add New BackUp Data to Remote-Server (Firestore) [_saveRemoteData]
+  Future<String> _saveRemoteData(CacheData item) async {
     final id = (await addData(item.data)).id;
     return id;
   }
 
-  /// Update BackUp Data to Remote-Server (Firestore) [_updateBackupDataToFirestore]
-  Future<void> _updateBackupDataToFirestore(CacheData item) async {
+  /// Update BackUp Data to Remote-Server (Firestore) [_updateRemoteData]
+  Future<void> _updateRemoteData(CacheData item) async {
     await updateById(item.id, data: item.data);
   }
 
-  /// Reset Authorized Device IDs [resetAuthorizedDeviceIds]
-  Future<void> resetAuthorizedDeviceIds(
+  /// Reset Authorized Device IDs [removeAuthorizedDeviceIds]
+  Future<void> removeAuthorizedDeviceIds(
     String id, {
     String? authorizedDeviceId,
   }) async {
-    final data = authorizedDeviceId != null
+    final did = authorizedDeviceId != null
         ? FieldValue.arrayRemove([authorizedDeviceId])
         : [];
 
-    await updateById(id, data: {'authorizedDeviceIds': data});
+    await updateById(id, data: {'authorizedDeviceIds': did});
 
     _emitDataToStream(); // Update the stream with the latest data
   }
@@ -179,7 +179,7 @@ class AgentRepository extends FirestoreRepository {
   }
 
   CacheData _fromMap(Map<String, dynamic> data, String id) =>
-      CacheData.fromMap(data, id: id, scopeId: scopeId);
+      CacheData.fromMap(data, id: id, scopeId: _scopeId);
 
   /// Update/Push to Cache / LocalStorage [_updateCacheWithData]
   void _updateCacheWithData(List<CacheData> data) {
@@ -193,10 +193,10 @@ class AgentRepository extends FirestoreRepository {
 
   /// Add/Create New Data Function [createData]
   Future<void> createData(Map<String, dynamic> data) async {
-    final cacheData = CacheData.fromCache(data, id: '', scopeId: scopeId);
+    final cacheData = CacheData.fromCache(data, id: '', scopeId: _scopeId);
 
     // Add to remote DB
-    final docId = await _backupNewDataToFirestore(cacheData);
+    final docId = await _saveRemoteData(cacheData);
     // Add to Cache/localStorage
     await _addToCache(docId, cacheData);
     // Update the stream with the latest data
@@ -204,11 +204,26 @@ class AgentRepository extends FirestoreRepository {
   }
 
   /// Update/Modify Data Function [updateData]
-  Future<void> updateData(String id, Map<String, dynamic> data) async {
-    final cacheData = CacheData.fromCache(data, id: id, scopeId: scopeId);
+  Future<void> updateData(
+    String id, {
+    bool? isPartial,
+    required Map<String, dynamic> data,
+  }) async {
+    var updates = data;
 
-    await _addToCache(cacheData.id, cacheData); // Add to Cache/localStorage
-    await _updateBackupDataToFirestore(cacheData); // Update to remote DB
+    // Only merge if this is its partial update & NOT a full model update
+    if (isPartial == true) {
+      final exist = _getCacheById(id);
+      if (exist == null) return;
+
+      // Merge field update into existing cached data
+      updates = {...exist.data, ...data};
+    }
+
+    final cacheData = CacheData.fromCache(updates, id: id, scopeId: _scopeId);
+
+    await _addToCache(cacheData.id, cacheData);
+    await _updateRemoteData(cacheData);
     _emitDataToStream(); // Update the stream with the latest data
   }
 
@@ -321,7 +336,7 @@ class AgentRepository extends FirestoreRepository {
           final data = CacheData.fromMap(
             doc.data(),
             id: doc.id,
-            scopeId: scopeId,
+            scopeId: _scopeId,
           );
           _addToCache(doc.id, data); // Add to cache
           return data;
@@ -339,6 +354,7 @@ class AgentRepository extends FirestoreRepository {
     return cached;
   }
 
+  /// [getClientWorkspacesByAgent] Get Client workspaces associated with Agent
   Future<List<CacheData>> getClientWorkspacesByAgent() async {
     final clientSnapshot = await findAllByParentId();
     if (clientSnapshot.size == 0) return [];
@@ -388,7 +404,7 @@ class AgentRepository extends FirestoreRepository {
       return snapshot.docs
           .map(
             (doc) =>
-                CacheData.fromMap(doc.data(), id: doc.id, scopeId: scopeId),
+                CacheData.fromMap(doc.data(), id: doc.id, scopeId: _scopeId),
           )
           .toList();
     });
@@ -414,7 +430,7 @@ class AgentRepository extends FirestoreRepository {
       final enriched = CacheData(
         id: workspaceId,
         data: enrichedMap,
-        scopeId: scopeId,
+        scopeId: _scopeId,
       );
       _addToCache(
         workspaceId,
@@ -432,7 +448,7 @@ class AgentRepository extends FirestoreRepository {
     return enrichedCacheData;
   }
 
-  // Get Agent workspace
+  /// [getAgentById]  Get Agent workspace
   Future<CacheData?> getAgentById(String agentId) async {
     // final snapshot = await _workspacesRef(isDeveloper: true);
     CacheData? data = _getCacheById(agentId);
@@ -450,12 +466,12 @@ class AgentRepository extends FirestoreRepository {
     }
   }
 
-  // Get all workspaces if current signedIn role is developer
+  /// [getSystemWideWorkspaces] Get all workspaces (Clients + Agents + Developers) if current signedIn role is developer
   Future<List<CacheData>> getSystemWideWorkspaces() async {
     final snapshot = await findAll();
 
     return snapshot.docs.map((doc) {
-      final data = CacheData.fromMap(doc.data(), id: doc.id, scopeId: scopeId);
+      final data = CacheData.fromMap(doc.data(), id: doc.id, scopeId: _scopeId);
       _addToCache(doc.id, data); // Add to cache
       return data;
     }).toList();

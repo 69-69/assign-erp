@@ -188,7 +188,7 @@ class _ListAwardedRequestForQuotationState
   }
 
   Future<dynamic> _printout(List<RequestForQuotation> rfq, List<String> row) =>
-      Future.delayed(wAnimateDuration, () async {
+      Future.delayed(kRProgressDelay, () async {
         // Simulate loading supplier and company info
         final quotes = RequestForQuotation.findRequestForQuotationById(
           rfq,

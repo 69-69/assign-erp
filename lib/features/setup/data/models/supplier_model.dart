@@ -6,7 +6,7 @@ var _today = DateTime.now();
 
 class Supplier extends Equatable {
   final String id;
-  final String supplierName;
+  final String name;
   final String contactPersonName;
   final String phone;
   final String? email;
@@ -18,7 +18,7 @@ class Supplier extends Equatable {
 
   Supplier({
     this.id = '',
-    required this.supplierName,
+    required this.name,
     this.phone = '',
     this.email,
     required this.address,
@@ -34,7 +34,7 @@ class Supplier extends Equatable {
   factory Supplier.fromMap(Map<String, dynamic> data, String documentId) {
     return Supplier(
       id: documentId,
-      supplierName: data['supplierName'] ?? '',
+      name: data['name'] ?? '',
       phone: data['phone'] ?? '',
       email: data['email'] ?? '',
       address: data['address'] ?? '',
@@ -49,7 +49,7 @@ class Supplier extends Equatable {
   // map template
   Map<String, dynamic> _mapTemp() => {
     'id': id,
-    'supplierName': supplierName,
+    'name': name,
     'phone': phone,
     'email': email,
     'address': address,
@@ -97,10 +97,10 @@ class Supplier extends Equatable {
         dt.day == _today.day;
   }
 
-  String get itemAsString => supplierName.toUppercaseFirstLetterEach;
+  String get itemAsString => name.toTitleCase;
 
   static get notFound => Supplier(
-    supplierName: 'No Data',
+    name: 'No Data',
     address: 'No Data',
     contactPersonName: 'No Data',
     createdBy: 'No Data',
@@ -108,7 +108,7 @@ class Supplier extends Equatable {
 
   /// Filter Search
   bool filterByAny(String filter) =>
-      supplierName.contains(filter) ||
+      name.contains(filter) ||
       contactPersonName.contains(filter) ||
       address.contains(filter) ||
       phone.contains(filter);
@@ -122,7 +122,7 @@ class Supplier extends Equatable {
   /// copyWith method
   Supplier copyWith({
     String? id,
-    String? supplierName,
+    String? name,
     String? phone,
     String? address,
     String? contactPersonName,
@@ -134,7 +134,7 @@ class Supplier extends Equatable {
   }) {
     return Supplier(
       id: id ?? this.id,
-      supplierName: supplierName ?? this.supplierName,
+      name: name ?? this.name,
       phone: phone ?? this.phone,
       email: email ?? this.email,
       address: address ?? this.address,
@@ -149,7 +149,7 @@ class Supplier extends Equatable {
   @override
   List<Object?> get props => [
     id,
-    supplierName,
+    name,
     phone,
     address,
     contactPersonName,
@@ -163,14 +163,14 @@ class Supplier extends Equatable {
   /// ToList for Product-Supplier address [toListL]
   List<String> toListL() => [
     id,
-    supplierName.toUppercaseFirstLetterEach,
-    contactPersonName.toUppercaseFirstLetterEach,
+    name.toTitleCase,
+    contactPersonName.toTitleCase,
     phone,
-    (email ?? 'none').toUppercaseFirstLetterEach,
-    address.toUppercaseFirstLetterEach,
-    createdBy.toUppercaseFirstLetterEach,
+    (email ?? 'none').toTitleCase,
+    address.toTitleCase,
+    createdBy.toTitleCase,
     getCreatedAt,
-    updatedBy.toUppercaseFirstLetterEach,
+    updatedBy.toTitleCase,
     getUpdatedAt,
   ];
 

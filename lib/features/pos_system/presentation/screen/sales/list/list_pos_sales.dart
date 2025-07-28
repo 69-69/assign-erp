@@ -188,7 +188,7 @@ class _ListPOSSalesState extends State<ListPOSSales> {
   }
 
   Future<dynamic> _printout(List<POSSale> sales, List<String> row) =>
-      Future.delayed(wAnimateDuration, () async {
+      Future.delayed(kRProgressDelay, () async {
         // Simulate loading supplier and company info
         final getSales = POSSale.findSaleById(
           sales,

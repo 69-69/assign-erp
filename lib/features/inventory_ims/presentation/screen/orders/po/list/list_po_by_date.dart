@@ -185,7 +185,7 @@ class _ListPOByDateState extends State<ListPOByDate> {
   }
 
   Future<dynamic> _printout(List<PurchaseOrder> po, List<String> row) =>
-      Future.delayed(wAnimateDuration, () async {
+      Future.delayed(kRProgressDelay, () async {
         // Simulate loading supplier and company info
         final orders = PurchaseOrder.findPurchaseOrderById(
           po,
@@ -199,7 +199,7 @@ class _ListPOByDateState extends State<ListPOByDate> {
 
   Future<void> _onEditTap(List<PurchaseOrder> orders, List<String> row) async {
     final po = PurchaseOrder.findPurchaseOrderById(orders, row.first).first;
-    await context.openUpdatePurchaseOrder(rfq: po);
+    await context.openUpdatePurchaseOrder(po: po);
   }
 
   Future<void> _onDeleteTap(

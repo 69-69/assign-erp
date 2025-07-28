@@ -22,6 +22,9 @@ class DynamicDataTable extends StatefulWidget {
   /// Add Widget to DataTable Top [anyWidget]
   final Widget? anyWidget;
 
+  /// Any Widget Alignment [anyWidgetAlignment]
+  final WrapAlignment anyWidgetAlignment;
+
   /// Edit / Update button icon [editIcon]
   final IconData? editIcon;
 
@@ -82,6 +85,7 @@ class DynamicDataTable extends StatefulWidget {
     this.onOptButtonTap,
     this.onChecked,
     this.onAllChecked,
+    this.anyWidgetAlignment = WrapAlignment.start,
   });
 
   @override
@@ -248,6 +252,7 @@ class _DynamicDataTableState extends State<DynamicDataTable> {
     return CustomScrollBar(
       controller: _verScrollController,
       child: Wrap(
+        alignment: widget.anyWidgetAlignment,
         children: [
           widget.anyWidget ?? const SizedBox.shrink(),
           _SearchTextField(
@@ -613,12 +618,19 @@ class _EditButton extends StatelessWidget {
     return _buildEditBtn(context);
   }
 
-  OutlinedButton _buildEditBtn(BuildContext context) {
-    return OutlinedButton.icon(
-      icon: Icon(icon ?? Icons.edit),
+  ElevatedButton _buildEditBtn(BuildContext context) {
+    return ElevatedButton.icon(
+      icon: Icon(icon ?? Icons.edit, color: kPrimaryAccentColor),
+      style: ElevatedButton.styleFrom(
+        shape: const RoundedRectangleBorder(
+          side: BorderSide(color: kPrimaryAccentColor),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+      ),
       onPressed: onTap,
       label: Text(
         label ?? 'Edit',
+        style: const TextStyle(color: kPrimaryAccentColor),
         // textScaler: TextScaler.linear(context.textScaleFactor),
       ),
     );

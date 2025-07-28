@@ -1,9 +1,9 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
-import 'package:assign_erp/core/network/data_sources/models/workspace_model.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
+import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/live_support/data/models/live_chat_model.dart';
 import 'package:assign_erp/features/live_support/presentation/bloc/chat/chat_bloc.dart';

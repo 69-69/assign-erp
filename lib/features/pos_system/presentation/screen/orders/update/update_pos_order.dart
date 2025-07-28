@@ -2,14 +2,13 @@ import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/calculate_extras.dart';
 import 'package:assign_erp/core/util/generate_new_uid.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/barcode_scanner.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/product_model.dart';
 import 'package:assign_erp/features/pos_system/data/models/pos_order_model.dart';
@@ -20,70 +19,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 extension UpdateOrderForm on BuildContext {
-  Future openUpdatePOSOrder({required POSOrder order}) =>
-      openBottomSheet(isExpand: false, child: _UpdateOrder(order: order));
+  Future openUpdatePOSOrder({required POSOrder order}) => openBottomSheet(
+    isExpand: false,
+    child: FormBottomSheet(
+      title: 'Edit Order',
+      subtitle: order.orderNumber.toUpperCase(),
+      body: _UpdateOrderForm(order: order),
+    ),
+  );
 }
 
-class _UpdateOrder extends StatelessWidget {
+class _UpdateOrderForm extends StatefulWidget {
   final POSOrder order;
 
-  const _UpdateOrder({required this.order});
+  const _UpdateOrderForm({required this.order});
 
   @override
-  Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: _buildHeader(context),
-      child: _buildBody(context),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: ListTile(
-        dense: true,
-        title: Text(
-          'Edit Order',
-          semanticsLabel: 'edit order',
-          textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.titleLarge?.copyWith(
-            color: kGrayColor,
-          ),
-        ),
-        subtitle: Text(
-          order.orderNumber.toUpperCase(),
-          semanticsLabel: order.orderNumber,
-          textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.titleMedium?.copyWith(
-            color: kGrayColor,
-          ),
-        ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
-      child: _UpdateOrderBody(order: order),
-    );
-  }
+  State<_UpdateOrderForm> createState() => _UpdateOrderFormState();
 }
 
-class _UpdateOrderBody extends StatefulWidget {
-  final POSOrder order;
-
-  const _UpdateOrderBody({required this.order});
-
-  @override
-  State<_UpdateOrderBody> createState() => _UpdateOrderBodyState();
-}
-
-class _UpdateOrderBodyState extends State<_UpdateOrderBody> {
+class _UpdateOrderFormState extends State<_UpdateOrderForm> {
   POSOrder get _order => widget.order;
 
   // Updates the product details in the Form by setting the unit price,
@@ -247,7 +202,7 @@ class _UpdateOrderBodyState extends State<_UpdateOrderBody> {
         style: context.ofTheme.textTheme.titleLarge,
       ),
       subtitle: Text(
-        'ID ${_order.id}'.toUppercaseAllLetter,
+        'ID ${_order.id}'.toUpperCaseAll,
         textAlign: TextAlign.center,
       ),
       childrenPadding: const EdgeInsets.only(bottom: 20.0),
@@ -332,7 +287,7 @@ class _UpdateOrderBodyState extends State<_UpdateOrderBody> {
           onPaymentChanged: (s) => setState(() => _selectedPaymentMethod = s),
         ),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(onPressed: _onSubmit),
+        context.confirmableActionButton(onPressed: _onSubmit),
         const SizedBox(height: 20.0),
       ],
     );

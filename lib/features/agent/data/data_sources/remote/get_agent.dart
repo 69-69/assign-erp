@@ -1,6 +1,6 @@
-import 'package:assign_erp/core/network/data_sources/models/workspace_model.dart';
 import 'package:assign_erp/features/agent/presentation/bloc/agent_bloc.dart';
-import 'package:assign_erp/features/agent/presentation/bloc/client/agent_clients_bloc.dart';
+import 'package:assign_erp/features/agent/presentation/bloc/system_wide/system_wide_bloc.dart';
+import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class GetAgent {

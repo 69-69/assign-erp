@@ -135,11 +135,12 @@ class CustomSearchDelegate<T> extends SearchDelegate<T?> {
         /// This Overrides the toString() in the Class-Models/Entities
         final toStr = result.toString();
         return ListTile(
+          dense: true,
           leading: Icon(
             isSuggest ? Icons.history : Icons.search,
             color: kGrayColor,
           ),
-          title: Text(toStr.toUppercaseFirstLetterEach),
+          title: Text(toStr.toTitleCase),
           onTap: () {
             // Set result
             _onSelected = result;

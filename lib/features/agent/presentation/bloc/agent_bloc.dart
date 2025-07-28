@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:assign_erp/core/constants/collection_type_enum.dart';
 import 'package:assign_erp/core/network/data_sources/local/cache_data_model.dart';
-import 'package:assign_erp/core/network/data_sources/local/error_logs_cache.dart';
 import 'package:assign_erp/features/agent/domain/repositories/agent_repository.dart';
+import 'package:assign_erp/features/trouble_shooting/data/data_sources/local/error_logs_cache.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,7 +51,7 @@ class AgentBloc<T> extends Bloc<AgentEvent, AgentState<T>> {
     on<LoadClientById<T>>(_onLoadClientById);
     on<LoadAgentById<T>>(_onLoadAgentById);
     on<UpdateClient>(_onUpdateClient);
-    on<ResetAuthorizedDeviceIds>(_onResetAuthorizedDeviceIds);
+    on<RemoveAuthorizedDeviceIds>(_onResetAuthorizedDeviceIds);
     on<DeleteClient>(_onDeleteClient);
     on<_ClientsLoaded<T>>(_onClientsLoaded);
     on<_ClientLoaded<T>>(_onClientLoaded);
@@ -168,12 +168,16 @@ class AgentBloc<T> extends Bloc<AgentEvent, AgentState<T>> {
     Emitter<AgentState<T>> emit,
   ) async {
     try {
-      // Update data in Firestore and update local storage
-      final data = event.mapData != null
-          ? {'data': event.mapData} // Create a toCache format
+      final isPartialUpdate = event.mapData?.isNotEmpty ?? false;
+      final data = isPartialUpdate
+          ? {'data': event.mapData}
           : toCache(event.data as T);
 
-      await _agentRepository.updateData(event.documentId, data);
+      await _agentRepository.updateData(
+        event.documentId,
+        data: data,
+        isPartial: isPartialUpdate, // true if not a full model update
+      );
 
       // Trigger LoadDataEvent to reload the data
       // add(LoadDataEvent<T>());
@@ -191,12 +195,12 @@ class AgentBloc<T> extends Bloc<AgentEvent, AgentState<T>> {
   /// list of authorized devices. If [did] is null, the event will trigger
   /// removal of all authorized device IDs.
   Future<void> _onResetAuthorizedDeviceIds(
-    ResetAuthorizedDeviceIds event,
+    RemoveAuthorizedDeviceIds event,
     Emitter<AgentState<T>> emit,
   ) async {
     try {
-      // Reset Workspace Authorized Device Ids data from Firestore and update local storage
-      await _agentRepository.resetAuthorizedDeviceIds(
+      // Remove Workspace Authorized Device Ids data from Firestore and update local storage
+      await _agentRepository.removeAuthorizedDeviceIds(
         event.documentId,
         authorizedDeviceId: event.data,
       );
@@ -204,9 +208,9 @@ class AgentBloc<T> extends Bloc<AgentEvent, AgentState<T>> {
       // Trigger LoadDataEvent to reload the data
       add(LoadClients<T>());
 
-      // Update State: Notify that ids reset
+      // Update State: Notify that ids Remove
       emit(
-        ClientDeleted<T>(message: 'Authorized Device Ids reset successfully'),
+        ClientDeleted<T>(message: 'Authorized Device Id remove successfully'),
       );
     } catch (e) {
       emit(AgentError<T>(e.toString()));

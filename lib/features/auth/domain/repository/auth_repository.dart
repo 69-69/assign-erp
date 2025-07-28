@@ -4,19 +4,20 @@ import 'package:assign_erp/core/constants/account_status.dart';
 import 'package:assign_erp/core/constants/app_db_collect.dart';
 import 'package:assign_erp/core/constants/collection_type_enum.dart';
 import 'package:assign_erp/core/network/data_sources/models/subscription_licenses_enum.dart';
-import 'package:assign_erp/core/network/data_sources/models/workspace_model.dart';
-import 'package:assign_erp/core/network/data_sources/models/workspace_role.dart';
 import 'package:assign_erp/core/network/data_sources/remote/repository/firestore_helper.dart';
 import 'package:assign_erp/core/network/data_sources/remote/repository/firestore_repository.dart';
 import 'package:assign_erp/core/result/result.dart';
 import 'package:assign_erp/core/util/device_info_service.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
-import 'package:assign_erp/core/util/password_hashing.dart';
+import 'package:assign_erp/core/util/secret_hasher.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/features/auth/data/data_sources/local/auth_cache_service.dart';
+import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
+import 'package:assign_erp/features/auth/data/role/workspace_role.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_status_enum.dart';
 import 'package:assign_erp/features/index.dart';
 import 'package:assign_erp/features/setup/data/models/employee_model.dart';
+import 'package:assign_erp/features/setup/data/role/employee_role.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
@@ -51,7 +52,7 @@ class AuthRepository extends FirestoreRepository {
 
   /// Stream AuthStatus Changes [authStatusChanges]
   Stream<AuthStatus> get authStatusChanges async* {
-    await Future<void>.delayed(wAnimateDuration);
+    await Future<void>.delayed(kRProgressDelay);
 
     yield (firebaseUser?.uid ?? '').isNotEmpty
         ? AuthStatus.authenticated
@@ -60,9 +61,9 @@ class AuthRepository extends FirestoreRepository {
     yield* _controller.stream;
   }
 
-  /// A temporary variable to hold newUser(WorkspaceID) & Agent ID
-  String _temporalNewWorkspaceID = '';
-  String _temporalAgentID = '';
+  /// A temporary variable to hold new-user's Workspace ID & Agent ID
+  String _newWorkspaceId = '';
+  String _registrarAgentId = '';
 
   Future<Workspace?> getWorkspace({String? uid}) async {
     try {
@@ -124,6 +125,30 @@ class AuthRepository extends FirestoreRepository {
   Workspace? _getWorkspaceCache() => _authCacheService.getWorkspace();
 
   Employee? _getEmployeeCache() => _authCacheService.getEmployee();
+
+  /// [assignWorkspaceRole] Determines the role for a "New Workspace Setup" based on the
+  /// currently signed-in user's role (cached workspace role).
+  ///
+  /// - NOTE: `WorkspaceRole.initialSetup` role is used as first-time login during initial APP or WorkSpace setup.
+  ///
+  /// Role Assignment Logic:
+  /// - If the currently signed-in user's role is:
+  ///   - `initialSetup`, assigns `WorkspaceRole.agentFranchise`.
+  ///   - `agentFranchise`, assigns `WorkspaceRole.subscriber`.
+  ///   - `developer`, retains `WorkspaceRole.developer`.
+  ///   - If the role is `null`, defaults to `WorkspaceRole.subscriber`.
+  ///
+  /// Used during the "Setup New Workspace" flow. [assignWorkspaceRole]
+  WorkspaceRole get assignWorkspaceRole {
+    Workspace? cacheWorkspace = _getWorkspaceCache();
+
+    return switch (cacheWorkspace?.role) {
+      WorkspaceRole.initialSetup => WorkspaceRole.agentFranchise,
+      WorkspaceRole.agentFranchise => WorkspaceRole.subscriber,
+      WorkspaceRole.developer => WorkspaceRole.developer,
+      _ => WorkspaceRole.subscriber,
+    };
+  }
 
   Future<void> _cacheWorkspace(Workspace workspace) async =>
       await _authCacheService.setWorkspace(workspace);
@@ -320,16 +345,17 @@ class AuthRepository extends FirestoreRepository {
       // Cache the employee data
       await _cacheEmployee(employeeUser);
 
-      /// Checks if the provided password/passcode matches the current temporal passcode.
-      /// If, so prompt the user to Create new password/passcode [isTemporalPasscode],
-      /// else route to Home-Dashboard
-      bool isTemporalPasscode = temporalWeakPasscode == passCode;
+      /// Determines whether the provided passcode is a Temporary passcode.
+      ///
+      /// If [isTemporaryPasscode] is `true`, the user should be prompted to create
+      /// a new permanent passcode. Otherwise, the user can be routed to the home dashboard.
+      bool isTemporaryPasscode = passCode.startsWith(kTemporaryPasscodePrefix);
 
       // Retrieve the workspace user details
       final workspaceUser = await getWorkspace(uid: workspace.uid);
 
-      final status = isTemporalPasscode
-          ? AuthStatus.hasTemporalPasscode
+      final status = isTemporaryPasscode
+          ? AuthStatus.hasTemporaryPasscode
           : AuthStatus.authenticated;
 
       _controller.add(status);
@@ -360,7 +386,7 @@ class AuthRepository extends FirestoreRepository {
   /// 2. Hashes the provided [newPasscode] using the `PasswordHash.hashPassword` method to ensure security.
   /// 3. Updates the employee with the hashed passcode.
   Future<({Employee? employee, Workspace? workspace})>
-  changeEmployeeTemporalPassCode({required String newPasscode}) async {
+  changeEmployeeTemporaryPassCode({required String newPasscode}) async {
     final invalid = (employee: null, workspace: null);
 
     try {
@@ -379,7 +405,7 @@ class AuthRepository extends FirestoreRepository {
 
       if (docRef.id.isNotEmpty) {
         // Hash the new passcode to enhance security and prevent it from being exposed
-        final hashPasscode = PasswordHash.hashPassword(newPasscode);
+        final hashPasscode = SecretHasher.hash(newPasscode);
 
         // Update the employee document with the hashed passcode
         await docRef.update({'passCode': hashPasscode});
@@ -418,18 +444,19 @@ class AuthRepository extends FirestoreRepository {
     required String password,
     required String mobileNumber,
     required String workspaceCategory,
+    required String employeeTemporaryPasscode,
   }) async {
     try {
-      // Store agent ID temporarily, so we don't loose it when newUser is created
-      _temporalAgentID = firebaseUser!.uid;
+      // Store  agent ID temporarily, so we don't loose it when newUser is created
+      _registrarAgentId = firebaseUser!.uid;
 
       // Create a new User via Firebase Authentication.
       final UserCredential userCredential = await _createUser(email, password);
       final User? newUser = userCredential.user;
 
-      if (newUser != null && newUser.uid != _temporalAgentID) {
+      if (newUser != null && newUser.uid != _registrarAgentId) {
         // Store user ID temporarily, so we don't loose it when signOut
-        _temporalNewWorkspaceID = newUser.uid;
+        _newWorkspaceId = newUser.uid;
 
         // Send email verification to the new newUser.
         await _sendEmailVerification(newUser);
@@ -445,7 +472,7 @@ class AuthRepository extends FirestoreRepository {
           mobileNumber: mobileNumber,
           workspaceName: workspaceName,
           workspaceCategory: workspaceCategory,
-          agentID: _temporalAgentID,
+          agentID: _registrarAgentId,
         );
 
         /* FOR COMPANY EMPLOYEE SIGN-IN:
@@ -454,13 +481,14 @@ class AuthRepository extends FirestoreRepository {
           email: email,
           fullName: fullName,
           mobileNumber: mobileNumber,
-          createdBy: _temporalAgentID,
+          createdBy: _registrarAgentId,
+          employeePasscode: employeeTemporaryPasscode,
         );
 
         // Link Agent to their Tenants/Clients
         await _linkAgentToClientWorkspace(
-          agentId: _temporalAgentID,
-          clientWorkspaceId: _temporalNewWorkspaceID,
+          agentId: _registrarAgentId,
+          clientWorkspaceId: _newWorkspaceId,
         );
 
         // SignOut current Workspace & Employee, if new Workspace setup was successfully
@@ -554,10 +582,10 @@ class AuthRepository extends FirestoreRepository {
     required String workspaceCategory,
     required String agentID,
   }) async {
-    final agentId = agentID.isNullOrEmpty ? _temporalAgentID : agentID;
+    final agentId = agentID.isNullOrEmpty ? _registrarAgentId : agentID;
 
     final workspace = Workspace(
-      id: _temporalNewWorkspaceID,
+      id: _newWorkspaceId,
       role: assignWorkspaceRole,
       status: '',
       email: email,
@@ -569,7 +597,7 @@ class AuthRepository extends FirestoreRepository {
       license: SubscriptionLicenses.unauthorized,
     );
 
-    await overrideDataById(_temporalNewWorkspaceID, data: workspace.toMap());
+    await overrideDataById(_newWorkspaceId, data: workspace.toMap());
   }
 
   /// Creates and saves employee data in Firestore.
@@ -585,32 +613,30 @@ class AuthRepository extends FirestoreRepository {
     required String fullName,
     required String mobileNumber,
     required String createdBy,
+    required String employeePasscode,
   }) async {
-    // final storeNumber = (await 'store'.getShortStr()) ?? 'STO-655-DDF7658';
-
     // Add a new document to the collection and get its reference
     final DocumentReference newEmpDocRef = _genericCollection(
       workspaceRole: assignWorkspaceRole.name,
-      workspaceId: _temporalNewWorkspaceID,
+      workspaceId: _newWorkspaceId,
     ).doc(); // Generates a new document reference with an auto-generated ID
 
     // Extract the document ID
     final String documentId = newEmpDocRef.id;
-
-    final by = createdBy.isNullOrEmpty ? _temporalAgentID : createdBy;
+    final byWho = await getEmployee();
 
     // Create an Employee instance with the document ID
     final Employee employee = Employee(
       id: documentId,
-      workspaceId: _temporalNewWorkspaceID,
+      workspaceId: _newWorkspaceId,
+      role: EmployeeRole.storeOwner,
       email: email,
       fullName: fullName,
-      role: EmployeeRole.manager,
       mobileNumber: mobileNumber,
       storeNumber: mainStore,
       status: AccountStatus.enabled.label,
-      createdBy: by,
-      passCode: PasswordHash.hashPassword(temporalWeakPasscode),
+      createdBy: byWho?.fullName ?? createdBy,
+      passCode: SecretHasher.hash(employeePasscode),
     );
 
     // Add the employee data to the Firestore collection
@@ -633,30 +659,6 @@ class AuthRepository extends FirestoreRepository {
     final cPath = collectionPath ?? employeesDBCollectionPath;
 
     return fireHelper.getCollectionRef(collectionType: collectionType, cPath);
-  }
-
-  /// Determines the role for a "New Workspace Setup" based on the
-  /// currently signed-in user's role (cached workspace role).
-  ///
-  /// - NOTE: `WorkspaceRole.initialSetup` role is used as first-time login during initial APP or WorkSpace setup.
-  ///
-  /// Role Assignment Logic:
-  /// - If the currently signed-in user's role is:
-  ///   - `initialSetup`, assigns `WorkspaceRole.agentFranchise`.
-  ///   - `agentFranchise`, assigns `WorkspaceRole.subscriber`.
-  ///   - `developer`, retains `WorkspaceRole.developer`.
-  ///   - If the role is `null`, defaults to `WorkspaceRole.subscriber`.
-  ///
-  /// Used during the "Setup New Workspace" flow. [assignWorkspaceRole]
-  WorkspaceRole get assignWorkspaceRole {
-    Workspace? cacheWorkspace = _getWorkspaceCache();
-
-    return switch (cacheWorkspace?.role) {
-      WorkspaceRole.initialSetup => WorkspaceRole.agentFranchise,
-      WorkspaceRole.agentFranchise => WorkspaceRole.subscriber,
-      WorkspaceRole.developer => WorkspaceRole.developer,
-      _ => WorkspaceRole.subscriber,
-    };
   }
 
   Future<bool> updateWorkspacePassword({required String newPassword}) async {
@@ -781,12 +783,9 @@ class AuthRepository extends FirestoreRepository {
     final storedHashPasscode = data['passCode'];
 
     // Compare the provided passCode with the stored hashed passCode
-    final isSame = PasswordHash.verifyPassword(
-      passCode,
-      hash: storedHashPasscode,
-    );
+    final isSame = SecretHasher.verify(passCode, hashed: storedHashPasscode);
     if (!isSame) {
-      return Failure(message: '$errorPrefix:Invalid passcode.');
+      return Failure(message: '$errorPrefix:Invalid Passcode.');
     }
 
     return Success(data: doc);

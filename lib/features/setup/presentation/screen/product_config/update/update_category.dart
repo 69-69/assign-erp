@@ -1,10 +1,8 @@
-import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/setup/data/models/index.dart';
 import 'package:assign_erp/features/setup/presentation/bloc/product_config/category_bloc.dart';
@@ -16,72 +14,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 extension UpdateCategory on BuildContext {
   Future openUpdateCategory({required Category category}) => openBottomSheet(
     isExpand: false,
-    child: _UpdateCategoryForm(category: category),
+    child: FormBottomSheet(
+      title: 'Edit Category',
+      subtitle: category.name.toTitleCase,
+      body: _UpdateCategoryForm(category: category),
+    ),
   );
 }
 
-class _UpdateCategoryForm extends StatelessWidget {
+class _UpdateCategoryForm extends StatefulWidget {
   final Category category;
 
   const _UpdateCategoryForm({required this.category});
 
   @override
-  Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: _buildHeader(context),
-      child: BlocBuilder<CategoryBloc, SetupState<Category>>(
-        builder: (context, state) => _buildBody(context),
-      ),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: ListTile(
-        title: Text(
-          'Edit Category',
-          semanticsLabel: 'edit Category',
-          textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.titleLarge?.copyWith(
-            color: kGrayColor,
-          ),
-        ),
-        subtitle: Text(
-          category.name.toUpperCase(),
-          semanticsLabel: category.name.toUppercaseFirstLetterEach,
-          textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.titleMedium?.copyWith(
-            color: kGrayColor,
-          ),
-        ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
-      child: _UpdateCategoryFormBody(category: category),
-    );
-  }
+  State<_UpdateCategoryForm> createState() => _UpdateCategoryFormState();
 }
 
-class _UpdateCategoryFormBody extends StatefulWidget {
-  final Category category;
-
-  const _UpdateCategoryFormBody({required this.category});
-
-  @override
-  State<_UpdateCategoryFormBody> createState() =>
-      _UpdateCategoryFormBodyState();
-}
-
-class _UpdateCategoryFormBodyState extends State<_UpdateCategoryFormBody> {
+class _UpdateCategoryFormState extends State<_UpdateCategoryForm> {
   Category get _category => widget.category;
 
   final _formKey = GlobalKey<FormState>();
@@ -95,24 +45,22 @@ class _UpdateCategoryFormBodyState extends State<_UpdateCategoryFormBody> {
 
   void _onSubmit() {
     if (_formKey.currentState!.validate()) {
-      if (_formKey.currentState!.validate()) {
-        final item = _category.copyWith(
-          name: _nameController.text,
-          createdBy: _category.createdBy,
-          updatedBy: context.employee!.fullName,
-        );
+      final item = _category.copyWith(
+        name: _nameController.text,
+        createdBy: _category.createdBy,
+        updatedBy: context.employee!.fullName,
+      );
 
-        /// Update Category
-        context.read<CategoryBloc>().add(
-          UpdateSetup<Category>(documentId: _category.id, data: item),
-        );
+      /// Update Category
+      context.read<CategoryBloc>().add(
+        UpdateSetup<Category>(documentId: _category.id, data: item),
+      );
 
-        context.showAlertOverlay(
-          '${_nameController.text.toUppercaseFirstLetterEach} successfully updated',
-        );
+      context.showAlertOverlay(
+        '${_nameController.text.toTitleCase} successfully updated',
+      );
 
-        Navigator.pop(context);
-      }
+      Navigator.pop(context);
     }
   }
 
@@ -137,7 +85,7 @@ class _UpdateCategoryFormBodyState extends State<_UpdateCategoryFormBody> {
           },
         ),
         const SizedBox(height: 10.0),
-        context.elevatedBtn(onPressed: _onSubmit),
+        context.confirmableActionButton(onPressed: _onSubmit),
       ],
     );
   }

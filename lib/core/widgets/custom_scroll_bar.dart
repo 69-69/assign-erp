@@ -9,6 +9,8 @@ class CustomScrollBar extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
   final ScrollController controller;
   final bool isAlwaysShown;
+  // show scroll to top button
+  final bool showScrollUpButton;
 
   const CustomScrollBar({
     super.key,
@@ -17,6 +19,7 @@ class CustomScrollBar extends StatefulWidget {
     this.scrollDirection,
     this.padding,
     this.isAlwaysShown = false, // always show the scrollbar
+    this.showScrollUpButton = true, // show scroll to top button
   });
 
   @override
@@ -81,7 +84,7 @@ class _CustomScrollBarState extends State<CustomScrollBar> {
               child: widget.child,
             ),
           ),
-          if (_isAtBottom)
+          if (_isAtBottom && widget.showScrollUpButton)
             Positioned(
               bottom: 20,
               right: 20,

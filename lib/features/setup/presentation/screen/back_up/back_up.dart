@@ -31,6 +31,7 @@ class _BackUpState extends State<BackUp> {
         padding: const EdgeInsets.symmetric(vertical: 20.0),
         child: _buildBody(),
       ),
+      bottomNavigationBar: const SizedBox.shrink(),
     );
   }
 
@@ -74,7 +75,7 @@ class _BackUpState extends State<BackUp> {
   }
 
   Future<void> _confirmBackupDialog(String label) async {
-    final title = '${label.toUppercaseFirstLetter} Backup';
+    final title = '${label.toUpperCaseFirst} Backup';
 
     final isConfirmed = await context.confirmAction(
       const Text('Would you like to continue with the BackUp?'),
@@ -99,7 +100,7 @@ class _BackUpState extends State<BackUp> {
   }
 
   Future<dynamic> _performBackup(String label) =>
-      Future.delayed(wAnimateDuration, () async {
+      Future.delayed(kRProgressDelay, () async {
         try {
           final zipResult = await DataBackupManager.startBackup(
             zipFileName: '$label-backup',

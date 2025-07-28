@@ -2,13 +2,12 @@ import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/calculate_extras.dart';
 import 'package:assign_erp/core/util/generate_new_uid.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/pos_system/data/models/pos_sale_model.dart';
 import 'package:assign_erp/features/pos_system/presentation/bloc/pos_bloc.dart';
@@ -18,68 +17,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 extension UpdatePOSSaleForm on BuildContext {
-  Future<void> openUpdatePOSSale({required POSSale sale}) =>
-      openBottomSheet(isExpand: false, child: _UpdateSale(sale: sale));
+  Future<void> openUpdatePOSSale({required POSSale sale}) => openBottomSheet(
+    isExpand: false,
+    child: FormBottomSheet(
+      title: 'Edit Sale',
+      subtitle: 'ID: ${sale.id}'.toUpperCase(),
+      body: _UpdateSaleForm(sale: sale),
+    ),
+  );
 }
 
-class _UpdateSale extends StatelessWidget {
+class _UpdateSaleForm extends StatefulWidget {
   final POSSale sale;
 
-  const _UpdateSale({required this.sale});
+  const _UpdateSaleForm({required this.sale});
 
   @override
-  Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: _buildHeader(context),
-      child: _buildBody(context),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: ListTile(
-        dense: true,
-        title: Text(
-          'Edit Sale',
-          textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.titleLarge?.copyWith(
-            color: kGrayColor,
-          ),
-        ),
-        subtitle: Text(
-          'ID: ${sale.id}'.toUppercaseAllLetter,
-          textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.titleSmall?.copyWith(
-            color: kGrayColor,
-          ),
-        ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
-      child: _UpdateSaleBody(sale: sale),
-    );
-  }
+  State<_UpdateSaleForm> createState() => _UpdateSaleFormState();
 }
 
-class _UpdateSaleBody extends StatefulWidget {
-  final POSSale sale;
-
-  const _UpdateSaleBody({required this.sale});
-
-  @override
-  State<_UpdateSaleBody> createState() => _UpdateSaleBodyState();
-}
-
-class _UpdateSaleBodyState extends State<_UpdateSaleBody> {
+class _UpdateSaleFormState extends State<_UpdateSaleForm> {
   POSSale get _sale => widget.sale;
 
   bool _isEnabledOrderNumber = false;
@@ -248,7 +205,7 @@ class _UpdateSaleBodyState extends State<_UpdateSaleBody> {
         style: context.ofTheme.textTheme.titleLarge,
       ),
       subtitle: Text(
-        'ID ${_sale.id}'.toUppercaseAllLetter,
+        'ID ${_sale.id}'.toUpperCaseAll,
         textAlign: TextAlign.center,
       ),
       childrenPadding: const EdgeInsets.only(bottom: 20.0),
@@ -339,7 +296,7 @@ class _UpdateSaleBodyState extends State<_UpdateSaleBody> {
           },
         ),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(onPressed: _onSubmit),
+        context.confirmableActionButton(onPressed: _onSubmit),
       ],
     );
   }

@@ -34,8 +34,7 @@ class SearchProducts extends StatelessWidget {
           var f = filter.isEmpty ? (serverValue ?? '') : filter;
           return product.filterByAny(f);
         },
-        itemAsString: (Product product) =>
-            product.toString().toUppercaseFirstLetterEach,
+        itemAsString: (Product product) => product.toString().toTitleCase,
         onChanged: (product) => onChanged!(product),
         validator: (product) =>
             product == null ? 'Please choose product' : null,

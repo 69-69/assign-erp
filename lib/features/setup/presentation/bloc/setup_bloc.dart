@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:assign_erp/core/network/data_sources/local/cache_data_model.dart';
-import 'package:assign_erp/core/network/data_sources/local/error_logs_cache.dart';
 import 'package:assign_erp/features/setup/domain/repository/setup_repository.dart';
+import 'package:assign_erp/features/trouble_shooting/data/data_sources/local/error_logs_cache.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,7 +27,7 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
   final T Function(Map<String, dynamic> data, String documentId) fromFirestore;
 
   // Set up the stream subscription
-  late StreamSubscription<List<CacheData>> _subscription;
+  StreamSubscription<List<CacheData>>? _subscription;
 
   SetupBloc({
     required FirebaseFirestore firestore,
@@ -115,13 +115,13 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
       );
 
       // Await for the subscription to be done (optional)
-      await _subscription.asFuture();
+      await _subscription?.asFuture();
     } catch (e) {
       emit(SetupError<T>('Error loading data: $e'));
     } finally {
       // Ensure to cancel the subscription when it's no longer needed
       // This could be in the dispose() method of a widget or BLoC
-      _subscription.cancel();
+      _subscription?.cancel();
     }
   }
 
@@ -255,12 +255,16 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
     Emitter<SetupState<T>> emit,
   ) async {
     try {
-      // Update data in Firestore and update local storage
-      final data = event.mapData != null
-          ? {'data': event.mapData} // Create a toCache format
+      final isPartialUpdate = event.mapData?.isNotEmpty ?? false;
+      final data = isPartialUpdate
+          ? {'data': event.mapData}
           : toCache(event.data as T);
 
-      await _setupRepository.updateData(event.documentId, data);
+      await _setupRepository.updateData(
+        event.documentId,
+        data: data,
+        isPartial: isPartialUpdate, // true if not a full model update
+      );
 
       // Trigger LoadDataEvent to reload the data
       // add(LoadDataEvent<T>());
@@ -345,6 +349,7 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
 
   @override
   Future<void> close() {
+    _subscription?.cancel();
     _setupRepository.cancelDataSubscription();
     return super.close();
   }

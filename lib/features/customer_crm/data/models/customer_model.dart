@@ -132,7 +132,7 @@ class Customer extends Equatable {
       ? name.toUpperCase()
       : isEmpty
       ? 'No Data'
-      : '$name - $customerId'.toUppercaseFirstLetterEach;
+      : '$name - $customerId'.toTitleCase;
 
   /// [findCustomerById]
   static Iterable<Customer> findCustomerById(
@@ -221,15 +221,15 @@ class Customer extends Equatable {
   List<String> itemAsList() => [
     customerId,
     storeNumber,
-    name.toUppercaseFirstLetterEach,
+    name.toTitleCase,
     phone,
     altPhone,
     email,
     getBirthDay,
-    address.toUppercaseFirstLetterEach,
-    companyName.toUppercaseFirstLetterEach,
-    createdBy.toUppercaseFirstLetterEach,
-    updatedBy.toUppercaseFirstLetterEach,
+    address.toTitleCase,
+    companyName.toTitleCase,
+    createdBy.toTitleCase,
+    updatedBy.toTitleCase,
     getUpdatedAt,
   ];
 

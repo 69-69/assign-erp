@@ -21,8 +21,7 @@ class SearchCategory extends StatelessWidget {
       onValueChange: (String? v) => onChanged,
     );*/
     return CustomDropdownSearch<Category>(
-      labelText:
-          (serverValue ?? 'Search Category...').toUppercaseFirstLetterEach,
+      labelText: (serverValue ?? 'Search Category...').toTitleCase,
       asyncItems: (String filter, loadProps) async =>
           await GetProductCategory.load(),
       filterFn: (category, filter) {

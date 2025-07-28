@@ -1,6 +1,6 @@
 import 'package:assign_erp/config/routes/route_names.dart';
 import 'package:assign_erp/core/network/data_sources/models/dashboard_model.dart';
-import 'package:assign_erp/features/setup/data/models/employee_model.dart';
+import 'package:assign_erp/features/setup/data/role/employee_role.dart';
 import 'package:flutter/material.dart';
 
 /// Inventory Management System App(IMS) Dashboard tiles [InventoryTiles]
@@ -139,11 +139,10 @@ extension InventoryTiles on dynamic {
 
     // Role Based Access Control
     return {
-      EmployeeRole.user: [],
+      EmployeeRole.storeOwner: defaultTiles,
       EmployeeRole.manager: defaultTiles,
       EmployeeRole.sale: [salesTile],
       EmployeeRole.developer: defaultTiles,
-      EmployeeRole.administrator: [],
       EmployeeRole.cashier: [paymentTile],
       EmployeeRole.delivery: [deliveriesTile],
       EmployeeRole.stockControl: [productsTile],

@@ -85,5 +85,5 @@ class PrintPOSSalesReport {
     return await salesReport.buildPdf(format);
   }
 
-  String _toCap(String i) => i.toUppercaseFirstLetterEach;
+  String _toCap(String i) => i.toTitleCase;
 }

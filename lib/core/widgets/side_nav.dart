@@ -3,11 +3,11 @@ import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/constants/hosting_type.dart';
 import 'package:assign_erp/core/network/data_sources/models/dashboard_model.dart';
-import 'package:assign_erp/core/network/data_sources/models/workspace_model.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
+import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/setup/data/models/employee_model.dart';
@@ -133,8 +133,6 @@ class _SideNavState extends State<SideNav> with SingleTickerProviderStateMixin {
 
         const SizedBox(height: 10),
         Expanded(child: _buildNav(context)),
-        const SizedBox(height: 10),
-        _buildLogout(),
       ],
     );
   }
@@ -163,47 +161,52 @@ class _SideNavState extends State<SideNav> with SingleTickerProviderStateMixin {
     );
   }
 
-  /* Build the toggle button for the side navigation drawer
-  Widget _profileButton(BuildContext context) {
-    return TextButton.icon(
-      style: _btnStyle(context),
-      icon: _workspace != null
-          ? Icon(Icons.workspaces, color: _iconColor)
-          : Image.asset(
-              appLogoWithBG,
-              scale: 24,
-              alignment: Alignment.centerLeft,
-            ),
-      onPressed: () => context.goNamed(RouteNames.swicthStoresAccount),
-      label: Text(
-        (_workspace?.workspaceName ?? appName).toUpperCase(),
-        style: context.ofTheme.textTheme.titleMedium?.copyWith(
-          color: kLightBlueColor,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-    );
-  }*/
+  bool _shouldShowDashboardTile(BuildContext cxt) =>
+      cxt.routeFromUri != '/${RouteNames.mainDashboard}';
 
-  // Build the navigation links list
+  List<DashboardTile> _buildTiles(BuildContext cxt) {
+    final List<DashboardTile> tiles = [];
+
+    if (_shouldShowDashboardTile(cxt)) {
+      tiles.add(
+        DashboardTile(
+          icon: Icons.dashboard,
+          label: 'Dashboard',
+          action: RouteNames.mainDashboard,
+          description: 'Access to dashboard',
+        ),
+      );
+    }
+
+    tiles.addAll(widget.tiles);
+    return tiles;
+  }
+
   Widget _buildNav(BuildContext context) {
+    final tiles = _buildTiles(context);
+
     return SingleChildScrollView(
       primary: true,
       padding: EdgeInsets.zero,
       scrollDirection: Axis.vertical,
       physics: const BouncingScrollPhysics(),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ...widget.tiles.map(
-            (s) => Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: _buildLinks(context, tile: s),
-            ),
+      child: _buildTileList(tiles),
+    );
+  }
+
+  Widget _buildTileList(List<DashboardTile> tiles) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ...tiles.map(
+          (tile) => Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: _buildLinks(context, tile: tile),
           ),
-        ],
-      ),
+        ),
+        _buildLogout(),
+      ],
     );
   }
 
@@ -222,7 +225,7 @@ class _SideNavState extends State<SideNav> with SingleTickerProviderStateMixin {
       },
       label: Text(
         softWrap: false,
-        tile.label.toUppercaseAllLetter,
+        tile.label.toUpperCaseAll,
         style: context.ofTheme.textTheme.bodySmall?.copyWith(
           color: kLightColor,
           overflow: TextOverflow.ellipsis,
@@ -272,7 +275,7 @@ class _SideNavState extends State<SideNav> with SingleTickerProviderStateMixin {
         }
       },
       label: Text(
-        'Sign out',
+        'SIGN OUT',
         style: context.ofTheme.textTheme.bodySmall?.copyWith(
           color: kLightColor,
           overflow: TextOverflow.ellipsis,
@@ -328,6 +331,7 @@ class _WorkspaceInfoCard extends StatelessWidget {
   }
 
   Column _buildCard(BuildContext context) {
+    final miniScreen = context.screenHeight <= 600;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -353,7 +357,7 @@ class _WorkspaceInfoCard extends StatelessWidget {
                 ),
           onTap: () => context.goNamed(RouteNames.switchStoresAccount),
         ),
-        if (isDrawerOpen) ...[
+        if (isDrawerOpen && !miniScreen) ...[
           Divider(thickness: 6),
           _buildListTile(
             context,
@@ -362,13 +366,14 @@ class _WorkspaceInfoCard extends StatelessWidget {
           ),
           _buildListTile(
             context,
-            title: 'MULTI-LOCATION: ${workspace!.maxAllowedDevices > 1}',
+            title:
+                "Multi-Location: ${workspace!.maxAllowedDevices > 1 ? 'On' : 'Off'}",
             subtitle: 'Max-Devices: ${workspace?.maxAllowedDevices}',
           ),
           _buildListTile(
             context,
             title: 'Hosting: ${workspace!.hostingType.label}',
-            subtitle: 'Store No.: ${employee?.storeNumber}',
+            subtitle: 'Store Location: ${employee?.storeNumber}',
           ),
         ],
       ],
@@ -385,14 +390,14 @@ class _WorkspaceInfoCard extends StatelessWidget {
       contentPadding: EdgeInsets.zero,
       mouseCursor: SystemMouseCursors.click,
       title: Text(
-        title.toUppercaseAllLetter,
+        title.toUpperCaseAll,
         style: context.ofTheme.textTheme.bodySmall?.copyWith(
           color: kLightColor,
           overflow: TextOverflow.ellipsis,
         ),
       ),
       subtitle: Text(
-        subtitle.toUppercaseFirstLetterEach,
+        subtitle.toTitleCase,
         style: context.ofTheme.textTheme.labelSmall?.copyWith(
           color: kLightColor,
           overflow: TextOverflow.ellipsis,
@@ -403,3 +408,63 @@ class _WorkspaceInfoCard extends StatelessWidget {
     );
   }
 }
+
+/* Build the toggle button for the side navigation drawer
+  Widget _profileButton(BuildContext context) {
+    return TextButton.icon(
+      style: _btnStyle(context),
+      icon: _workspace != null
+          ? Icon(Icons.workspaces, color: _iconColor)
+          : Image.asset(
+              appLogoWithBG,
+              scale: 24,
+              alignment: Alignment.centerLeft,
+            ),
+      onPressed: () => context.goNamed(RouteNames.swicthStoresAccount),
+      label: Text(
+        (_workspace?.workspaceName ?? appName).toUpperCase(),
+        style: context.ofTheme.textTheme.titleMedium?.copyWith(
+          color: kLightBlueColor,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    );
+  }*/
+
+/*// Build the navigation links list
+  Widget _buildNav2(BuildContext context) {
+    // Check if we're not on the main dashboard route
+    final isNotOnDashboard = context.routeFromUri != RouteNames.mainDashboard;
+
+    // Build the dashboard tile conditionally
+    final List<DashboardTile> tiles = [
+      if (isNotOnDashboard)
+        DashboardTile(
+          icon: Icons.dashboard,
+          label: 'Dashboard',
+          action: RouteNames.mainDashboard,
+          description: 'Access to dashboard',
+        ),
+      ...widget.tiles,
+    ];
+
+    return SingleChildScrollView(
+      primary: true,
+      padding: EdgeInsets.zero,
+      scrollDirection: Axis.vertical,
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ...tiles.map(
+            (s) => Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: _buildLinks(context, tile: s),
+            ),
+          ),
+          _buildLogout(),
+        ],
+      ),
+    );
+  }*/

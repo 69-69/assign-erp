@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
 // We use name route
 // To avoid delay in App load, by importing Screens/Pages with Routes
 // we use the static Route String Name to access Named Routes
@@ -13,7 +16,7 @@ abstract class RouteNames {
   static const workspaceSignIn = 'workspace_sign_in';
   static const employeeSignIn = 'employee_sign_in';
   static const verifyWorkspaceEmail = 'verify_workspace_email';
-  static const changeTemporalPasscode = 'change_temporal_passcode';
+  static const changeTemporaryPasscode = 'change_temporary_passcode';
   static const wForgotPassword = 'forgot_password';
   static const wUpdatePassword = 'update_password';
   static const wAddMissingSocialAuthInfo = 'add_missing_social_auth_info';
@@ -60,7 +63,7 @@ abstract class RouteNames {
   static const posSales = 'pos_sales_screen';
   static const posReceipt = 'invoice_screen'; // Consider renaming for clarity
 
-  /// ───────────────────────── 👥 Customers Module ─────────────────────────
+  /// ───────────────────────── 👥 CRM Module ─────────────────────────
   static const createCustomer = 'create_customer_screen';
 
   /// ─────────────────────── 🏢 Warehouse Module ───────────────────────
@@ -69,21 +72,48 @@ abstract class RouteNames {
   static const warehouseDeliveries = 'warehouse_deliveries_screen';
   static const warehouseSales = 'warehouse_sales_screen';
 
-  /// ─────────────────────── ⚙️ Setup / Settings ───────────────────────
-  static const switchStoresAccount = 'switch_stores_account_screen';
-  static const createUserAccount = 'create_user_account_screen';
-  static const manageUserAccount = 'manage_user_account_screen';
-  static const checkForUpdate = 'check_for_update_screen';
-  static const licenseRenewal = 'license_renewal_screen';
-  static const backup = 'backup_screen';
+  /// ─────────────────────── ⚙️ Setup / Settings Module ───────────────────────
+  // static const switchStoresAccount = 'switch_stores_account_screen';
   static const companyInfo = 'company_info_screen';
+  static const staffAccount = 'staff_account_screen';
+  static const manageRoles = 'manage_roles_screen';
   static const productConfig = 'product_config_screen';
+  static const backup = 'backup_screen';
+  static const licenseRenewal = 'license_renewal_screen';
+  // static const manageUserAccount = 'manage_user_account_screen';
+
+  /// ───────────────────────── 🔄 Switch/Change Store/Shop Locations ─────────────────────────
+  static const switchStoresAccount = 'switch_store_locations_screen';
 
   /// ───────────────────────── 📡 CRM / Agent ─────────────────────────
   static const agent = 'agent_clientele_screen';
 
   /// ───────────────────────── 🛑 Errors / Fallback ─────────────────────────
   // static const notFoundScreen = 'content_not_found';
+}
+
+/// Extension on [BuildContext] to simplify access to GoRouter-related properties.
+extension GoRouterContextExtensions on BuildContext {
+  /// [routePath] Returns the matched location from the current [GoRouterState].
+  ///
+  /// Example: `/users/123/profile`
+  String get routePath => GoRouter.of(this).state.matchedLocation;
+
+  /// Alternative way to get the current path from the config's URI.
+  ///
+  /// [routeFromUri] Functionally similar to [routePath], but uses the structured [Uri] object.
+  String get routeFromUri => routeConfig.uri.path;
+
+  /// [delegate] Returns the [GoRouterDelegate] associated with the current context.
+  ///
+  /// This delegate manages the navigation stack and route configuration.
+  GoRouterDelegate get delegate => GoRouter.of(this).routerDelegate;
+
+  /// [currentRouteConfig] Returns the current route configuration as a [RouteMatchList].
+  ///
+  /// This provides access to the list of matched routes in the current configuration,
+  /// which can be useful for custom navigation logic or breadcrumbs.
+  RouteMatchList get routeConfig => delegate.currentConfiguration;
 }
 
 /*extension MyWork on String {

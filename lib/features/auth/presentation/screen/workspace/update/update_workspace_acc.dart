@@ -1,15 +1,17 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/hosting_type.dart';
 import 'package:assign_erp/core/network/data_sources/models/subscription_licenses_enum.dart';
-import 'package:assign_erp/core/network/data_sources/models/workspace_model.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/core/widgets/bottom_sheet_header.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
+import 'package:assign_erp/core/widgets/custom_dialog.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/agent/presentation/bloc/agent_bloc.dart';
-import 'package:assign_erp/features/agent/presentation/bloc/client/agent_clients_bloc.dart';
-import 'package:assign_erp/features/auth/presentation/screen/widget/form_inputs.dart';
+import 'package:assign_erp/features/agent/presentation/bloc/system_wide/system_wide_bloc.dart';
+import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
+import 'package:assign_erp/features/auth/presentation/screen/widget/workspace_form_inputs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,7 +21,7 @@ extension UpdateWorkspacePopUp on BuildContext {
         context: this,
         isDismissible: true,
         isScrollControlled: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: kTransparentColor,
         builder: (_) => WorkspaceScreen(workspace: workspace),
       );
 }
@@ -34,7 +36,7 @@ class WorkspaceScreen extends StatefulWidget {
 }
 
 class _WorkspaceScreenState extends State<WorkspaceScreen> {
-  Workspace get _workspace => widget.workspace;
+  late Workspace _workspace;
 
   String? _selectedPackage;
   String? _hostingType;
@@ -59,6 +61,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     maxAllowedDevices: int.tryParse(_totalDevicesController.text) ?? 1,
   );
 
+  @override
+  void initState() {
+    super.initState();
+    _workspace = widget.workspace;
+  }
+
   void _onSubmit() {
     if (_formKey.currentState!.validate()) {
       final item = _workspaceData;
@@ -76,7 +84,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
   void _toastMsg(String title) {
     context.showAlertOverlay(
-      '${_workspace.workspaceName.toUppercaseFirstLetterEach} $title updated',
+      label: 'Success Message',
+      '${_workspace.workspaceName.toTitleCase} $title updated',
     );
   }
 
@@ -111,58 +120,47 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   ///
   /// If a specific [did] (device ID) is provided, it will be removed from the
   /// list of authorized devices. If [did] is null, the event will trigger
-  /// removal of all authorized device IDs. [_resetAuthorizedDeviceIds]
-  void _resetAuthorizedDeviceIds({String? did}) {
+  /// removal of all authorized device IDs. [_removeAuthorizedDeviceId]
+  void _removeAuthorizedDeviceId({String? did}) {
     context.read<SystemWideBloc>().add(
-      ResetAuthorizedDeviceIds<String>(documentId: _workspace.id, data: did),
+      RemoveAuthorizedDeviceIds<String>(documentId: _workspace.id, data: did),
+    );
+
+    setState(() {
+      final updatedDeviceIds = did != null
+          ? _workspace.authorizedDeviceIds.where((id) => id != did).toList()
+          : <String>[];
+
+      _workspace = _workspace.copyWith(authorizedDeviceIds: updatedDeviceIds);
+    });
+
+    _toastMsg(
+      did != null
+          ? 'Device ID "$did" has been removed.'
+          : 'Authorized device IDs have been cleared.',
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      scrollable: true,
-      icon: Align(
-        alignment: Alignment.topRight,
-        child: IconButton(
-          style: IconButton.styleFrom(
-            backgroundColor: kLightColor.withAlpha((0.4 * 255).toInt()),
-          ),
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.close, color: kTextColor),
-        ),
+    return CustomDialog(
+      title: DialogTitle(
+        title: _workspace.workspaceName.toTitleCase,
+        subtitle: 'Workspace Role & Status',
       ),
-      iconPadding: const EdgeInsets.only(right: 5, top: 5),
-      backgroundColor: kLightColor.withAlpha((0.8 * 255).toInt()),
-      content: Form(
+      body: Form(
         key: _formKey,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: _buildForm(context),
       ),
+      actions: const [],
     );
   }
 
   _buildForm(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        ListTile(
-          dense: true,
-          titleAlignment: ListTileTitleAlignment.center,
-          title: Text(
-            _workspace.workspaceName.toUppercaseFirstLetterEach,
-            textAlign: TextAlign.center,
-            style: context.ofTheme.textTheme.titleLarge?.copyWith(
-              color: kPrimaryLightColor,
-            ),
-          ),
-          subtitle: Text(
-            'Workspace Role & Status',
-            textAlign: TextAlign.center,
-            style: context.ofTheme.textTheme.bodySmall,
-          ),
-        ),
-        const SizedBox(height: 20.0),
+      children: [
         WorkspaceRoleAndStatus(
           key: const Key('edit-workspace-role-status'),
           serverRole: _workspace.role.name,
@@ -172,6 +170,16 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           onStatusChanged: (v) =>
               v.isNullOrEmpty ? null : _updateWorkspaceStatus(v!),
         ),
+
+        if (_workspace.authorizedDeviceIds.isNotEmpty) ...[
+          const SizedBox(height: 10.0),
+          Text(
+            'Authorized Devices Ids',
+            textAlign: TextAlign.center,
+            style: context.ofTheme.textTheme.bodyLarge,
+          ),
+          SizedBox(height: 60, child: _buildAuthorizedDevicesChips()),
+        ],
         divLine,
         _formBody(),
       ],
@@ -190,21 +198,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         ),
       ),
       subtitle: Text(
-        _workspace.workspaceName.toUppercaseFirstLetterEach,
+        _workspace.workspaceName.toTitleCase,
         textAlign: TextAlign.center,
         style: context.ofTheme.textTheme.bodySmall,
       ),
       childrenPadding: const EdgeInsets.only(bottom: 20.0),
       children: <Widget>[
-        if (_workspace.authorizedDeviceIds.isNotEmpty) ...[
-          const SizedBox(height: 5.0),
-          Text(
-            'Authorized Devices Ids',
-            textAlign: TextAlign.center,
-            style: context.ofTheme.textTheme.bodyLarge,
-          ),
-          SizedBox(height: 60, child: _buildAuthorizedDevicesChips()),
-        ],
         const SizedBox(height: 20.0),
         SubscribeFeeAndHostingType(
           serverHosting: _workspace.hostingType.label,
@@ -235,7 +234,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           onEffectiveChanged: (d) => setState(() => _selectedEffectiveDate = d),
         ),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(onPressed: _onSubmit),
+        context.confirmableActionButton(onPressed: _onSubmit),
       ],
     );
   }
@@ -245,10 +244,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        context.resetAuthorizedDevicesIdsButton(
-          onPressed: () => _resetAuthorizedDeviceIds(),
-        ),
         Expanded(child: _buildDeviceChips()),
+        context.resetAuthorizedDevicesIdsButton(
+          onPressed: () => _removeAuthorizedDeviceId(),
+        ),
       ],
     );
   }
@@ -258,10 +257,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     final deviceIds = _workspace.authorizedDeviceIds;
 
     return CustomScrollBar(
+      showScrollUpButton: false,
       controller: ScrollController(),
-      padding: EdgeInsets.only(top: 14),
+      padding: EdgeInsets.only(top: 15),
       scrollDirection: Axis.horizontal,
       child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: deviceIds.asMap().entries.map((entry) {
           return _buildChipCard(index: entry.key, deviceId: entry.value);
         }).toList(),
@@ -284,15 +286,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         deleteButtonTooltipMessage: 'Remove',
         backgroundColor: randomBgColors[index].withAlpha((0.3 * 255).toInt()),
         deleteIcon: const Icon(size: 16, Icons.clear, color: kTextColor),
-        onDeleted: () => _resetAuthorizedDeviceIds(did: deviceId),
+        onDeleted: () async {
+          final isConfirmed = await context.confirmUserActionDialog(
+            onAccept: 'Remove IDs',
+          );
+          if (isConfirmed) _removeAuthorizedDeviceId(did: deviceId);
+        },
       ),
     );
   }
 }
-
-/*
-git add .
-git commit -m "Completed Assign-Work also known as AssignERP"
-git branch -M main
-git push -u origin main
-* */

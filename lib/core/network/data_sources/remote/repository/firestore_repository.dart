@@ -50,12 +50,18 @@ class FirestoreRepository extends FirestoreHelper {
   /// - A [CollectionReference] pointing to the Firestore collection based on the given conditions.
   CollectionReference<Map<String, dynamic>> get _resolvedCollectionRef {
     if (_collectionRef != null) return _collectionRef;
-    prettyPrint('collection-Type', _collectionType.label);
 
-    return getCollectionRef(
+    final collectionRef = getCollectionRef(
       _collectionName ?? '',
       collectionType: _collectionType,
     );
+
+    prettyPrint(
+      'Collection-Type: $_collectionType\nCollection-Path',
+      collectionRef.path,
+    );
+
+    return collectionRef;
     /*return _useStoreRef
         ? getStoresCollectionRef(_collectionName ?? '')
         : getCollectionRef(_collectionName ?? '', useGlobalRef: _useGlobalRef);*/

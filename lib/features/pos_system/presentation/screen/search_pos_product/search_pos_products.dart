@@ -72,7 +72,7 @@ class SearchPosProducts extends StatelessWidget {
         direction: Axis.vertical,
         children: [
           Text(
-            product.name.toUppercaseFirstLetterEach,
+            product.name.toTitleCase,
             textAlign: TextAlign.start,
             style: context.ofTheme.textTheme.titleLarge,
           ),
@@ -82,23 +82,26 @@ class SearchPosProducts extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             text: TextSpan(
               text: 'Price ',
-              style:
-              context.ofTheme.textTheme.titleSmall,
+              style: context.ofTheme.textTheme.titleSmall,
               children: [
                 TextSpan(
                   text: '$ghanaCedis${product.sellingPrice}\n',
-                  style: context.ofTheme.textTheme.titleSmall?.copyWith(color: kTextColor),
+                  style: context.ofTheme.textTheme.titleSmall?.copyWith(
+                    color: kTextColor,
+                  ),
                 ),
                 TextSpan(
-                  text: product.category.toUppercaseFirstLetterEach,
-                  style: context.ofTheme.textTheme.titleSmall
-                      ?.copyWith(color: kTextColor),
+                  text: product.category.toTitleCase,
+                  style: context.ofTheme.textTheme.titleSmall?.copyWith(
+                    color: kTextColor,
+                  ),
                 ),
-                if(product.barcode.isNotEmpty)...{
+                if (product.barcode.isNotEmpty) ...{
                   TextSpan(
                     text: '\nCode: ${product.barcode}',
-                    style: context.ofTheme.textTheme.titleSmall
-                        ?.copyWith(color: kTextColor),
+                    style: context.ofTheme.textTheme.titleSmall?.copyWith(
+                      color: kTextColor,
+                    ),
                   ),
                 },
               ],

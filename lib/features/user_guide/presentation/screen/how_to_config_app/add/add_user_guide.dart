@@ -1,11 +1,10 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:assign_erp/features/user_guide/data/models/user_guide_model.dart';
 import 'package:assign_erp/features/user_guide/presentation/bloc/index.dart';
 import 'package:assign_erp/features/user_guide/presentation/bloc/user_guide_bloc.dart';
@@ -14,56 +13,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 extension AddGuideForm<T> on BuildContext {
-  Future<void> openAddGuide({String? category}) =>
-      openBottomSheet(isExpand: false, child: _AddGuide(category: category));
+  Future<void> openAddGuide({String? category}) => openBottomSheet(
+    isExpand: false,
+    child: FormBottomSheet(title: 'Create User Guide', body: _AddGuideForm()),
+  );
 }
 
-class _AddGuide extends StatelessWidget {
-  final String? category;
-
-  const _AddGuide({this.category});
+class _AddGuideForm extends StatefulWidget {
+  const _AddGuideForm();
 
   @override
-  Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: _buildHeader(context),
-      child: _buildBody(context),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: Text(
-        'Add User Guide',
-        semanticsLabel: 'add user guide',
-        style: context.ofTheme.textTheme.titleLarge?.copyWith(
-          color: kGrayColor,
-        ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
-      child: _AddGuideBody(),
-    );
-  }
+  State<_AddGuideForm> createState() => _AddGuideFormState();
 }
 
-class _AddGuideBody extends StatefulWidget {
-  const _AddGuideBody();
-
-  @override
-  State<_AddGuideBody> createState() => _AddGuideBodyState();
-}
-
-class _AddGuideBodyState extends State<_AddGuideBody> {
+class _AddGuideFormState extends State<_AddGuideForm> {
   final ScrollController _scrollController = ScrollController();
   bool isMultipleGuides = false;
   final List<UserGuide> _userGuides = [];
@@ -105,7 +68,7 @@ class _AddGuideBodyState extends State<_AddGuideBody> {
 
       _formKey.currentState!.reset();
       context.showAlertOverlay(
-        '${_titleController.text.toUppercaseFirstLetterEach} successfully created',
+        '${_titleController.text.toTitleCase} successfully created',
       );
 
       Navigator.of(context).pop();
@@ -119,7 +82,7 @@ class _AddGuideBodyState extends State<_AddGuideBody> {
       _userGuides.add(_guideData);
 
       context.showAlertOverlay(
-        '${_titleController.text.toUppercaseFirstLetterEach} added to batch',
+        '${_titleController.text.toTitleCase} added to batch',
       );
       _clearFields();
     }
@@ -169,7 +132,7 @@ class _AddGuideBodyState extends State<_AddGuideBody> {
                   child: Chip(
                     padding: EdgeInsets.zero,
                     label: Text(
-                      o.title.toUppercaseFirstLetterEach,
+                      o.title.toTitleCase,
                       style: context.ofTheme.textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
@@ -222,7 +185,7 @@ class _AddGuideBodyState extends State<_AddGuideBody> {
           label: 'Add to List',
         ),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(
+        context.confirmableActionButton(
           label: isMultipleGuides ? 'Create All Guides' : 'Create Guide',
           onPressed: _onSubmit,
         ),

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:assign_erp/core/constants/collection_type_enum.dart';
 import 'package:assign_erp/core/network/data_sources/local/cache_data_model.dart';
-import 'package:assign_erp/core/network/data_sources/local/error_logs_cache.dart';
+import 'package:assign_erp/features/trouble_shooting/data/data_sources/local/error_logs_cache.dart';
 import 'package:assign_erp/features/user_guide/domain/repository/user_guide_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
@@ -189,12 +189,16 @@ class GuideBloc<T> extends Bloc<GuideEvent, GuideState<T>> {
     Emitter<GuideState<T>> emit,
   ) async {
     try {
-      // Update data in Firestore and update local storage
-      final data = event.mapData != null
-          ? {'data': event.mapData} // Create a toCache format
+      final isPartialUpdate = event.mapData?.isNotEmpty ?? false;
+      final data = isPartialUpdate
+          ? {'data': event.mapData}
           : toCache(event.data as T);
 
-      await _guideRepository.updateData(event.documentId, data);
+      await _guideRepository.updateData(
+        event.documentId,
+        data: data,
+        isPartial: isPartialUpdate, // true if not a full model update
+      );
 
       // Trigger LoadDataEvent to reload the data
       // add(LoadDataEvent<T>());

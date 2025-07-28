@@ -117,6 +117,7 @@ class _PrintoutColorPickerScreenState extends State<PrintoutColorPickerScreen> {
 
   ListTile _buildPaletteTitle(BuildContext context) {
     return ListTile(
+      dense: true,
       contentPadding: const EdgeInsets.all(10.0),
       titleAlignment: ListTileTitleAlignment.center,
       title: Wrap(

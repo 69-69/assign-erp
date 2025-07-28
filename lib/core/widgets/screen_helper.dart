@@ -4,6 +4,7 @@ import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/adaptive_layout.dart';
 import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
+import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:flutter/material.dart';
@@ -23,14 +24,11 @@ extension ScreenHelper on BuildContext {
       heroTag: Key(tooltip ?? label),
       isExtended: label.isNotEmpty,
       backgroundColor: bgColor ?? colorScheme.error,
-      tooltip: (tooltip ?? label).toUppercaseFirstLetterEach,
+      tooltip: (tooltip ?? label).toTitleCase,
       shape: shape,
       label: label.isEmpty
           ? const SizedBox.shrink()
-          : Text(
-              label.toUppercaseFirstLetterEach,
-              style: const TextStyle(color: kLightColor),
-            ),
+          : Text(label.toTitleCase, style: const TextStyle(color: kLightColor)),
       icon: Icon(icon ?? Icons.add, color: kLightColor),
       onPressed: onPressed,
     );
@@ -67,7 +65,7 @@ extension ScreenHelper on BuildContext {
   reloadAppIconButton({VoidCallback? onPressed}) {
     return actionIconButton(
       icon: Icons.refresh,
-      confirmMessage: 'Refresh App',
+      confirmMessage: 'Refresh Workspace',
       onConfirmed: onPressed,
       padding: const EdgeInsets.all(1),
       size: 18,
@@ -78,7 +76,7 @@ extension ScreenHelper on BuildContext {
   resetAuthorizedDevicesIdsButton({VoidCallback? onPressed}) {
     return actionIconButton(
       icon: Icons.reset_tv,
-      confirmMessage: 'Reset Authorized Device IDs',
+      confirmMessage: 'Remove IDs',
       onConfirmed: onPressed,
       padding: EdgeInsets.all(15),
       size: 18,
@@ -115,7 +113,7 @@ extension ScreenHelper on BuildContext {
     String onAccept = 'Delete',
     String? msg,
   }) async => await confirmAction(
-    Text(msg ?? 'Are you sure?'),
+    Text(msg ?? 'Would you like to proceed?'),
     title: "Confirm $onAccept",
     onAccept: onAccept,
     onReject: "Cancel",
@@ -239,8 +237,8 @@ extension ScreenHelper on BuildContext {
   Center buildAddButton(String label, {required void Function()? onPressed}) =>
       Center(
         child: SizedBox(
-          width: (screenWidth - 100),
-          child: ElevatedButton(onPressed: onPressed, child: Text(label)),
+          width: (screenWidth - 160),
+          child: elevatedButton(label, onPressed: onPressed),
         ),
       );
 
@@ -273,9 +271,9 @@ extension ScreenHelper on BuildContext {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(desc.toUppercaseFirstLetterEach),
+                Text(desc.toTitleCase),
                 Text(
-                  label.toUppercaseFirstLetterEach,
+                  label.toTitleCase,
                   style: const TextStyle(color: kGrayBlueColor),
                 ),
               ],
@@ -342,7 +340,7 @@ class _RefreshButtonState extends State<RefreshButton>
           '${widget.tooltip.replaceAll('Refresh', 'Refreshing')}...',
         );
         // delay & run callback function(refresh data)
-        await Future.delayed(wAnimateDuration, () => widget.callback?.call());
+        await Future.delayed(kRProgressDelay, () => widget.callback?.call());
         controller.stop();
         controller.reset();
         if (context.mounted) {
@@ -420,7 +418,7 @@ class GenericCard extends StatelessWidget {
         ListTile(
           dense: true,
           title: Text(
-            title.toUppercaseFirstLetterEach,
+            title.toTitleCase,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
             style: textStyle?.copyWith(fontSize: 15, color: kTextColor),
@@ -466,7 +464,7 @@ class GenericCard extends StatelessWidget {
           style: textStyle?.copyWith(fontSize: 14, color: kTextColor),
           children: [
             TextSpan(
-              text: text.toUppercaseFirstLetterEach,
+              text: text.toTitleCase,
               style: textStyle?.copyWith(fontSize: 14, color: kDarkTextColor),
             ),
           ],

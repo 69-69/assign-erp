@@ -60,7 +60,7 @@ class PrintInvoice {
   String? get _validity =>
       products.map<String?>((p) => p.validityDate).reduce((a, b) => a ?? b);
 
-  String get _title => title.toUppercaseFirstLetterEach;
+  String get _title => title.toTitleCase;
 
   bool _isTrue(String s) => _title.toLowerCase().contains(s.toLowerCase());
 
@@ -639,7 +639,7 @@ class PrintInvoice {
       ),
       headers: List<String>.generate(
         tableHeaders.length,
-        (col) => tableHeaders[col].toUppercaseFirstLetterEach,
+        (col) => tableHeaders[col].toTitleCase,
       ),
       data: List<List<String>>.generate(
         products.length,

@@ -4,7 +4,7 @@ import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/setup/data/models/company_stores_model.dart';
 import 'package:assign_erp/features/setup/presentation/bloc/company/company_stores_bloc.dart';
 import 'package:assign_erp/features/setup/presentation/bloc/setup_bloc.dart';
-import 'package:assign_erp/features/setup/presentation/screen/company/add/add_store.dart';
+import 'package:assign_erp/features/setup/presentation/screen/company/add/add_shop_locations.dart';
 import 'package:assign_erp/features/setup/presentation/screen/company/update/update_store.dart';
 import 'package:assign_erp/features/setup/presentation/screen/company/widget/can_add_more_stores.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,7 +31,7 @@ class _ListCompanyStoresState extends State<ListCompanyStores> {
         floatingActionButton: context.canAddMoreStores
             ? context.buildFloatingBtn(
                 'Add Stores',
-                onPressed: () => context.openAddStore(),
+                onPressed: () => context.openAddShopLocations(),
               )
             : const SizedBox.shrink(),
         bottomNavigationBar: const SizedBox.shrink(),
@@ -48,7 +48,7 @@ class _ListCompanyStoresState extends State<ListCompanyStores> {
             results.isEmpty
                 ? context.buildAddButton(
                     'Add Stores',
-                    onPressed: () => context.openAddStore(),
+                    onPressed: () => context.openAddShopLocations(),
                   )
                 : _buildCard(results),
           SetupError<CompanyStores>(error: final error) => context.buildError(

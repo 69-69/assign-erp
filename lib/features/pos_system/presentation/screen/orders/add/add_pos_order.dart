@@ -2,7 +2,6 @@ import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/calculate_extras.dart';
 import 'package:assign_erp/core/util/generate_new_uid.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
 import 'package:assign_erp/core/widgets/barcode_scanner.dart';
@@ -10,9 +9,9 @@ import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/product_model.dart';
 import 'package:assign_erp/features/pos_system/data/models/pos_order_model.dart';
@@ -24,56 +23,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 extension AddPOSOrderForm on BuildContext {
-  Future<void> openAddPOSOrder({Widget? header}) =>
-      openBottomSheet(isExpand: false, child: _AddOrder(header: header));
+  Future<void> openAddPOSOrder({Widget? header}) => openBottomSheet(
+    isExpand: false,
+    child: FormBottomSheet(title: 'Create Order', body: _AddOrderForm()),
+  );
 }
 
-class _AddOrder extends StatelessWidget {
-  final Widget? header;
-
-  const _AddOrder({this.header});
+class _AddOrderForm extends StatefulWidget {
+  const _AddOrderForm();
 
   @override
-  Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: _buildHeader(context),
-      child: _buildBody(context),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: Text(
-        'Place an Order'.toUppercaseFirstLetterEach,
-        semanticsLabel: 'place an Order',
-        style: context.ofTheme.textTheme.titleLarge?.copyWith(
-          color: kGrayColor,
-        ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
-      child: _AddOrderBody(),
-    );
-  }
+  State<_AddOrderForm> createState() => _AddOrderFormState();
 }
 
-class _AddOrderBody extends StatefulWidget {
-  const _AddOrderBody();
-
-  @override
-  State<_AddOrderBody> createState() => _AddOrderBodyState();
-}
-
-class _AddOrderBodyState extends State<_AddOrderBody> {
+class _AddOrderFormState extends State<_AddOrderForm> {
   final ScrollController _scrollController = ScrollController();
   final _formKey = GlobalKey<FormState>();
 
@@ -279,7 +242,7 @@ class _AddOrderBodyState extends State<_AddOrderBody> {
                     padding: EdgeInsets.zero,
                     label: Text(
                       '${o.productName} - $ghanaCedis${o.unitPrice} x ${o.quantity}'
-                          .toUppercaseFirstLetterEach,
+                          .toTitleCase,
                       style: context.ofTheme.textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
@@ -436,7 +399,7 @@ class _AddOrderBodyState extends State<_AddOrderBody> {
           ],
         ),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(
+        context.confirmableActionButton(
           label: isMultipleOrders ? 'Create All Orders' : 'Create Order',
           onPressed: _onSubmit,
         ),
@@ -505,7 +468,7 @@ class _AddOrderBodyState extends State<_AddOrderBody> {
     }
   }
 
-  Future<dynamic> _printout() => Future.delayed(wAnimateDuration, () async {
+  Future<dynamic> _printout() => Future.delayed(kRProgressDelay, () async {
     if (mounted) {
       PrintPOSSalesReceipt(
         orders: _orders,

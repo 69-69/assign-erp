@@ -12,7 +12,6 @@ import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/refresh_entire_app.dart';
 import 'package:assign_erp/features/trouble_shooting/presentation/widget/restore_backup_preference_popup.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class UserDeviceSpecScreen extends StatefulWidget {
   const UserDeviceSpecScreen({super.key});
@@ -33,7 +32,7 @@ class _UserDeviceSpecScreenState extends State<UserDeviceSpecScreen> {
 
   // Function to copy text to clipboard
   void _copyToClipboard(String textToCopy) async {
-    await Clipboard.setData(ClipboardData(text: textToCopy));
+    await context.toClipboard(textToCopy);
     if (mounted) {
       context.showAlertOverlay('Copied to clipboard');
     }
@@ -107,7 +106,7 @@ class _UserDeviceSpecScreenState extends State<UserDeviceSpecScreen> {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4.0),
             child: Text(
-              '* ${(entry.key.separateWord).toUppercaseFirstLetterEach}: ${entry.value}',
+              '* ${(entry.key.separateWord).toTitleCase}: ${entry.value}',
               textAlign: TextAlign.start,
               style: context.ofTheme.textTheme.bodyLarge,
             ),

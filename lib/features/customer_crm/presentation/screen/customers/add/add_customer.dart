@@ -1,11 +1,10 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/generate_new_uid.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/customer_crm/data/models/customer_model.dart';
 import 'package:assign_erp/features/customer_crm/presentation/bloc/create_acc/customer_acc_bloc.dart';
@@ -15,46 +14,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 extension AddCustomerForm<T> on BuildContext {
-  Future<void> openAddCustomer({Widget? header}) =>
-      openBottomSheet(isExpand: false, child: _AddCustomer(header: header));
-}
-
-class _AddCustomer extends StatelessWidget {
-  final Widget? header;
-
-  const _AddCustomer({this.header});
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: header ?? _buildHeader(context),
-      child: _buildBody(context),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: Text(
-        'New Customer',
-        semanticsLabel: 'new Customer',
-        style: context.ofTheme.textTheme.titleLarge?.copyWith(
-          color: kGrayColor,
-        ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
-      child: _AddCustomerBody(),
-    );
-  }
+  Future<void> openAddCustomer({Widget? header}) => openBottomSheet(
+    isExpand: false,
+    child: FormBottomSheet(
+      title: 'New Customer',
+      body: const _AddCustomerBody(),
+    ),
+  );
 }
 
 class _AddCustomerBody extends StatefulWidget {
@@ -127,7 +93,7 @@ class _AddCustomerBodyState extends State<_AddCustomerBody> {
 
       _formKey.currentState!.reset();
       context.showAlertOverlay(
-        '${_nameController.text.toUppercaseFirstLetterEach} successfully created',
+        '${_nameController.text.toTitleCase} successfully created',
       );
 
       Navigator.of(context).pop();
@@ -195,7 +161,10 @@ class _AddCustomerBodyState extends State<_AddCustomerBody> {
           },
         ),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(label: 'Add New Customer', onPressed: _onSubmit),
+        context.confirmableActionButton(
+          label: 'Add New Customer',
+          onPressed: _onSubmit,
+        ),
       ],
     );
   }

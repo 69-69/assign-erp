@@ -33,14 +33,15 @@ final employeeAccountStatusList = [
 // 🔐 Authentication & Temporary Passcode
 // ---------------------------
 
-/// Current year used for passcode generation
-final _currentYear = DateTime.now().year;
-
-/// Temporary weak passcode (valid for 1 week).
-/// A temporary weak passcode used for initial sign-in (Employee SignIn only).
-/// When an employee signs in using [temporalWeakPasscode], they will be prompted
-/// to create a new, permanent passcode or password.
-final temporalWeakPasscode = 'Assign@$_currentYear';
+/// Temporary passcode used for initial employee sign-in.
+///
+/// This weak, time-limited passcode (valid for 1 week) is used only for
+/// first-time employee sign-ins after the organization's workspace sign-in.
+/// When an employee signs in using a passcode that begins
+/// with [kTemporaryPasscodePrefix], they will be required to
+/// create a new, permanent passcode.
+const kTemporaryPasscodePrefix = 'TEMP-';
+const int kTemporaryPasscodeLength = 5;
 
 /// 🏬 Default (Main) company store/shop ID for multi-stores locations
 const mainStore = 'main';

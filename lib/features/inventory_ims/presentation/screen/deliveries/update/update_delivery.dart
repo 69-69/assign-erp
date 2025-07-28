@@ -1,12 +1,11 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/barcode_scanner.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/delivery_model.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/bloc/delivery/delivery_bloc.dart';
@@ -19,49 +18,11 @@ extension UpdateDeliveryForm on BuildContext {
   Future<void> openUpdateDelivery({required Delivery delivery}) =>
       openBottomSheet(
         isExpand: false,
-        child: _UpdateDelivery(delivery: delivery),
-      );
-}
-
-class _UpdateDelivery extends StatelessWidget {
-  final Delivery delivery;
-
-  const _UpdateDelivery({required this.delivery});
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: _buildHeader(context),
-      child: _buildBody(context),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: ListTile(
-        dense: true,
-        title: Text(
-          'Edit Delivery',
-          textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.titleLarge?.copyWith(
-            color: kGrayColor,
-          ),
+        child: FormBottomSheet(
+          title: 'Edit Delivery',
+          body: _UpdateDeliveryBody(delivery: delivery),
         ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
-      child: _UpdateDeliveryBody(delivery: delivery),
-    );
-  }
+      );
 }
 
 class _UpdateDeliveryBody extends StatefulWidget {
@@ -193,7 +154,7 @@ class _UpdateDeliveryBodyState extends State<_UpdateDeliveryBody> {
         style: context.ofTheme.textTheme.titleLarge,
       ),
       subtitle: Text(
-        'ID ${_delivery.id}'.toUppercaseAllLetter,
+        'ID ${_delivery.id}'.toUpperCaseAll,
         textAlign: TextAlign.center,
       ),
       childrenPadding: const EdgeInsets.only(bottom: 20.0),
@@ -224,7 +185,7 @@ class _UpdateDeliveryBodyState extends State<_UpdateDeliveryBody> {
           onChanged: (t) => setState(() {}),
         ),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(onPressed: _onSubmit),
+        context.confirmableActionButton(onPressed: _onSubmit),
       ],
     );
   }

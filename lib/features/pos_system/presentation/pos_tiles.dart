@@ -1,6 +1,6 @@
 import 'package:assign_erp/config/routes/route_names.dart';
 import 'package:assign_erp/core/network/data_sources/models/dashboard_model.dart';
-import 'package:assign_erp/features/setup/data/models/employee_model.dart';
+import 'package:assign_erp/features/setup/data/role/employee_role.dart';
 import 'package:flutter/material.dart';
 
 /// POS Navigation Links [POSTiles]
@@ -73,11 +73,10 @@ extension POSTiles on dynamic {
     final posFinanceTiles = defaultTiles[5];
 
     return {
-      EmployeeRole.user: [],
+      EmployeeRole.storeOwner: defaultTiles,
       EmployeeRole.manager: defaultTiles,
       EmployeeRole.developer: defaultTiles,
       EmployeeRole.sale: [posSalesTiles],
-      EmployeeRole.administrator: [],
       EmployeeRole.cashier: [posPaymentTiles],
       EmployeeRole.procurement: [posOrdersTiles, posReceiptTiles],
       EmployeeRole.finance: [

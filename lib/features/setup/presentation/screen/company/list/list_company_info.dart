@@ -78,7 +78,7 @@ class _InfoCard extends StatelessWidget {
               _buildLogo(context),
               const SizedBox(height: 20),
               Text(
-                info.name.toUppercaseFirstLetterEach,
+                info.name.toTitleCase,
                 textAlign: TextAlign.start,
                 overflow: TextOverflow.ellipsis,
                 style: context.ofTheme.textTheme.displaySmall?.copyWith(
@@ -164,7 +164,7 @@ class _InfoCard extends StatelessWidget {
           ),
           children: [
             TextSpan(
-              text: text.toUppercaseFirstLetterEach,
+              text: text.toTitleCase,
               style: context.ofTheme.textTheme.titleLarge?.copyWith(
                 color: kDarkTextColor,
               ),

@@ -184,7 +184,7 @@ class _ListOrdersState extends State<ListOrders> {
   }
 
   Future<dynamic> _printout(List<Orders> orders, List<String> row) =>
-      Future.delayed(wAnimateDuration, () async {
+      Future.delayed(kRProgressDelay, () async {
         // Simulate loading supplier and company info
         final getOrders = Orders.findOrderById(orders, row.first).toList();
         final cus = await GetAllCustomers.byCustomerId(

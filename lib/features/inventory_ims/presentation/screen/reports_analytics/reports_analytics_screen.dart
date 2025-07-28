@@ -17,8 +17,7 @@ class ReportsAnalyticsScreen extends StatelessWidget {
     return BlocBuilder<ProductBloc, InventoryState<Product>>(
       builder: (context, state) => CustomScaffold(
         title: reportsAnalyticsScreenTitle.toUpperCase(),
-        subTitle:
-            'reports on inventory status, sales report, turnover rates, and forecasts',
+        subTitle: 'Inventory, sales, turnover, and forecast reports',
         body: const ReportScreen(),
         actions: const [],
       ),

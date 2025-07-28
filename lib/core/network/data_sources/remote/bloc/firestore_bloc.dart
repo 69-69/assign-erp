@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:assign_erp/core/network/data_sources/local/cache_data_model.dart';
-import 'package:assign_erp/core/network/data_sources/local/error_logs_cache.dart';
 import 'package:assign_erp/core/network/data_sources/remote/repository/data_repository.dart';
+import 'package:assign_erp/features/trouble_shooting/data/data_sources/local/error_logs_cache.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -303,12 +303,16 @@ class FirestoreBloc<T> extends Bloc<FirestoreEvent, FirestoreState<T>> {
     Emitter<FirestoreState<T>> emit,
   ) async {
     try {
-      // Update data in Firestore and update local storage
-      final data = event.mapData != null
-          ? {'data': event.mapData} // Create a toCache format
+      final isPartialUpdate = event.mapData?.isNotEmpty ?? false;
+      final data = isPartialUpdate
+          ? {'data': event.mapData}
           : toCache(event.data as T);
 
-      await _dataRepository.updateData(event.documentId, data);
+      await _dataRepository.updateData(
+        event.documentId,
+        data: data,
+        isPartial: isPartialUpdate, // true if not a full model update
+      );
 
       // Update State: Notify that data updated
       emit(DataUpdated<T>(message: 'data updated successfully'));

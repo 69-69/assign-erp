@@ -1,16 +1,15 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/generate_new_uid.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/orders/request_price_quotation_model.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/bloc/inventory_bloc.dart';
@@ -24,58 +23,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 extension AddOrderRequestForQuoteForm on BuildContext {
   Future<void> openAddRequestForQuotation({Widget? header}) => openBottomSheet(
     isExpand: false,
-    child: _AddRequestForQuotation(header: header),
+    child: FormBottomSheet(
+      title: 'Create Request For Quote',
+      body: _AddRequestForQuoteForm(),
+    ),
   );
 }
 
-class _AddRequestForQuotation extends StatelessWidget {
-  final Widget? header;
-
-  const _AddRequestForQuotation({this.header});
+class _AddRequestForQuoteForm extends StatefulWidget {
+  const _AddRequestForQuoteForm();
 
   @override
-  Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: _buildHeader(context),
-      child: _buildBody(context),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: Text(
-        'Request For Quotation'.toUppercaseFirstLetterEach,
-        semanticsLabel: 'Request For Quotation',
-        style: context.ofTheme.textTheme.titleLarge?.copyWith(
-          color: kGrayColor,
-        ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
-      child: _AddRequestForQuotationBody(),
-    );
-  }
+  State<_AddRequestForQuoteForm> createState() =>
+      _AddRequestForQuoteFormState();
 }
 
-class _AddRequestForQuotationBody extends StatefulWidget {
-  const _AddRequestForQuotationBody();
-
-  @override
-  State<_AddRequestForQuotationBody> createState() =>
-      _AddRequestForQuotationBodyState();
-}
-
-class _AddRequestForQuotationBodyState
-    extends State<_AddRequestForQuotationBody> {
+class _AddRequestForQuoteFormState extends State<_AddRequestForQuoteForm> {
   final ScrollController _scrollController = ScrollController();
   final _formKey = GlobalKey<FormState>();
   bool isMultipleQuotes = false;
@@ -193,8 +156,7 @@ class _AddRequestForQuotationBodyState
                   child: Chip(
                     padding: EdgeInsets.zero,
                     label: Text(
-                      '${o.productName} x ${o.quantity}'
-                          .toUppercaseFirstLetterEach,
+                      '${o.productName} x ${o.quantity}'.toTitleCase,
                       style: context.ofTheme.textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
@@ -288,7 +250,7 @@ class _AddRequestForQuotationBodyState
           label: 'Add to List',
         ),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(
+        context.confirmableActionButton(
           label: isMultipleQuotes ? 'Create All Quotes' : 'Create Quote',
           onPressed: _onSubmit,
         ),
@@ -318,7 +280,7 @@ class _AddRequestForQuotationBodyState
     }
   }
 
-  Future<dynamic> _printout() => Future.delayed(wAnimateDuration, () async {
+  Future<dynamic> _printout() => Future.delayed(kRProgressDelay, () async {
     // Simulate loading supplier and company info
     final sup = await GetSuppliers.bySupplierId(_quotes.first.supplierId);
     if (sup.isNotEmpty) {

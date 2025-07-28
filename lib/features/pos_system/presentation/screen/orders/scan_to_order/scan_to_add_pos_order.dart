@@ -5,11 +5,11 @@ import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
 import 'package:assign_erp/core/widgets/barcode_scanner.dart';
+import 'package:assign_erp/core/widgets/bottom_sheet_header.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/inventory_ims/data/data_sources/remote/get_products.dart';
 import 'package:assign_erp/features/pos_system/data/models/pos_order_model.dart';
@@ -133,10 +133,10 @@ class ScanToAddOrder extends StatelessWidget {
     }
   }
 
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
+  DialogHeader _buildHeader(BuildContext context) {
+    return DialogHeader(
       title: Text(
-        'Scan Product'.toUppercaseFirstLetterEach,
+        'Scan Product'.toTitleCase,
         semanticsLabel: 'Scan Product',
         style: context.ofTheme.textTheme.titleLarge?.copyWith(
           color: kGrayColor,
@@ -351,7 +351,7 @@ class _ScannedItemsState extends State<_ScannedItems> {
       minTileHeight: 48,
       title: Text(
         softWrap: true,
-        order.productName.toUppercaseFirstLetterEach,
+        order.productName.toTitleCase,
         style: context.ofTheme.textTheme.titleMedium,
       ),
       subtitle: Text(
@@ -379,7 +379,7 @@ class _ScannedItemsState extends State<_ScannedItems> {
       minTileHeight: 48,
       title: Text(
         softWrap: true,
-        order.productName.toUppercaseFirstLetterEach,
+        order.productName.toTitleCase,
         style: context.ofTheme.textTheme.titleMedium,
       ),
       subtitle: Text(
@@ -512,7 +512,7 @@ class _ScannedItemsState extends State<_ScannedItems> {
   }
 
   Future<void> _printout() async {
-    await Future.delayed(wAnimateDuration);
+    await Future.delayed(kRProgressDelay);
     if (mounted) {
       PrintPOSSalesReceipt(
         orders: _orders,

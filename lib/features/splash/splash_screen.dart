@@ -72,6 +72,18 @@ class _SplashScreenState extends State<SplashScreen> {
           ? _buildStack(context)
           : _buildCard(context, index: index),
     );
+    /*itemBuilder: (context, index) {
+      if (index < 3) {
+        final position = index % 3;
+        if (position == 0 || position == 2) {
+          return _buildStack(context);
+        } else {
+          return _buildCard(context, index: index);
+        }
+      } else {
+        return _buildCard(context, index: index);
+      }
+    }*/
   }
 
   _buildCard(BuildContext context, {int index = 0}) {
@@ -94,10 +106,11 @@ class _SplashScreenState extends State<SplashScreen> {
       child: GridTile(
         child: Center(
           child: ListTile(
+            dense: true,
             contentPadding: EdgeInsets.zero,
             titleAlignment: ListTileTitleAlignment.center,
             title: Text(
-              appName.toUppercaseAllLetter,
+              appName.split('.').first.toUpperCaseAll,
               textAlign: TextAlign.center,
               style: context.ofTheme.textTheme.titleLarge?.copyWith(
                 color: kPrimaryColor,

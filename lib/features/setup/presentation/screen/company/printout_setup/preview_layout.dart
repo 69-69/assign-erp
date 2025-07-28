@@ -1,8 +1,8 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/core/widgets/bottom_sheet_header.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
 extension PrintoutLayout on BuildContext {
@@ -32,8 +32,8 @@ class _Layout extends StatelessWidget {
     );
   }
 
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
+  DialogHeader _buildHeader(BuildContext context) {
+    return DialogHeader(
       isBackButton: false,
       title: ListTile(
         dense: true,
@@ -46,7 +46,7 @@ class _Layout extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          layoutName.toUppercaseFirstLetterEach,
+          layoutName.toTitleCase,
           textAlign: TextAlign.center,
           style: context.ofTheme.textTheme.titleMedium?.copyWith(
             color: kLightBlueColor,

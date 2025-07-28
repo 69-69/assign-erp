@@ -1,6 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+enum UIDType { numeric, alphanumeric }
 
 /// Check if value is empty or null [isNullOrEmpty]
 extension SanitizeExtensions on String? {
@@ -98,14 +101,23 @@ extension GetIndexPosition on List {
 }
 
 extension CaseSenitive on String {
-  // Helper function to generate a random number as a string
-  String get generateUID {
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  // USAGE: '10'.generateUID => Where 10 is the length of UID
+  // Generates a random UID of specified type and length (from string)
+  String generateUID({UIDType type = UIDType.alphanumeric}) {
+    final int? len = int.tryParse(this);
+    if (len == null || len <= 0) {
+      throw FormatException(
+        'String must be a positive integer to generate UID.',
+      );
+    }
+
+    final chars = switch (type) {
+      UIDType.numeric => '0123456789',
+      UIDType.alphanumeric => 'abcdefghijklmnopqrstuvwxyz0123456789',
+    };
+
     final rand = Random();
-    return List.generate(
-      length,
-      (index) => chars[rand.nextInt(chars.length)],
-    ).join();
+    return List.generate(len, (_) => chars[rand.nextInt(chars.length)]).join();
   }
 
   /// Create username from email address
@@ -133,12 +145,12 @@ extension CaseSenitive on String {
   /// print(TextTools.toUppercaseFirstLetter(text: 'name'));
   /// This will put the first letter in UpperCase, will print 'What Is Your Name'
   /// print(TextTools.toUppercaseFirstLetter(text: 'what is your name'));
-  String get toUppercaseFirstLetter =>
+  String get toUpperCaseFirst =>
       !isNullOrEmpty ? replaceFirst(this[0], this[0].toUpperCase()) : this;
 
   /// This will put the first letter in UpperCase, will print 'What Is Your Name'
   /// print(TextTools.toUppercaseFirstLetterEach('what is your name'));
-  String get toUppercaseFirstLetterEach => !isNullOrEmpty
+  String get toTitleCase => !isNullOrEmpty
       ? split(' ')
             .map(
               (word) => word.isNullOrEmpty
@@ -155,15 +167,14 @@ extension CaseSenitive on String {
 
   /// This will put the all letters in LowerCase, will print 'name'
   /// print(TextTools.toLowercaseFirstLetter(text: 'NAME'));
-  String get toLowercaseAllLetter => toLowerCase();
+  String get toLowercaseAll => toLowerCase();
 
   /// Convert All letters to UpperCase
-  String get toUppercaseAllLetter => toUpperCase();
+  String get toUpperCaseAll => toUpperCase();
 
   /// This will put the first letter in LowerCase, will print 'nAME'
   /// print(TextTools.toLowercaseFirstLetter(text: 'NAME'));
-  String get toLowercaseFirstLetter =>
-      replaceFirst(this[0], this[0].toLowerCase());
+  String get toLowerCaseFirst => replaceFirst(this[0], this[0].toLowerCase());
 
   /// This will put the letter in position 1 in LowerCase, will print 'NaME'
   /// print(TextTools.toLowercaseAnyLetter(text: 'NAME'));
@@ -175,6 +186,9 @@ extension CaseSenitive on String {
 extension CopyTextToClipboard on BuildContext {
   SelectionArea copyPasteText({String? str, Widget? child}) =>
       SelectionArea(child: child ?? Text(str ?? ''));
+
+  toClipboard(String text) async =>
+      await Clipboard.setData(ClipboardData(text: text));
 }
 
 /* USAGE:

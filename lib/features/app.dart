@@ -1,7 +1,6 @@
 import 'package:assign_erp/config/routes/route_names.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_status_enum.dart';
 import 'package:assign_erp/features/index.dart';
-import 'package:assign_erp/features/live_support/presentation/bloc/index.dart';
 import 'package:assign_erp/features/setup/data/models/company_info_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -27,12 +26,18 @@ class App extends StatelessWidget {
 
     final blocProviders = [
       // _bloc<AuthBloc>(() => AuthBloc(authRepository: _authRepo)),
-      _bloc<SignInBloc>(() => SignInBloc(authRepository: _authRepo)),
+      _bloc<WorkspaceSignInBloc>(
+        () => WorkspaceSignInBloc(authRepository: _authRepo),
+      ),
+      _bloc<EmployeeSignInBloc>(
+        () => EmployeeSignInBloc(authRepository: _authRepo),
+      ),
       _bloc<CompanyBloc>(
         () =>
             CompanyBloc(firestore: _fireStore)
               ..add(GetSetups<Company>()) /* Get Setup data on app startup */,
       ),
+      _bloc<RoleBloc>(() => RoleBloc(firestore: _fireStore)),
       _bloc<CompanyStoresBloc>(() => CompanyStoresBloc(firestore: _fireStore)),
       _bloc<CategoryBloc>(() => CategoryBloc(firestore: _fireStore)),
       _bloc<SupplierBloc>(() => SupplierBloc(firestore: _fireStore)),
@@ -61,6 +66,10 @@ class App extends StatelessWidget {
     ];
 
     // https://bloclibrary.dev/tutorials/flutter-login/
+    /*BlocProvider.value(
+      value: context.read<EmployeeSignInBloc>(), // <== Reuse existing bloc
+      child: ChangePasscodeScreen(),
+    ),*/
     return MultiRepositoryProvider(
       providers: [
         // RepositoryProvider.value(value: _authRepo),
@@ -149,8 +158,8 @@ class _AppView extends StatelessWidget {
         }
         return null;
 
-      case AuthStatus.hasTemporalPasscode:
-        return '/${RouteNames.changeTemporalPasscode}';
+      case AuthStatus.hasTemporaryPasscode:
+        return '/${RouteNames.changeTemporaryPasscode}';
 
       case AuthStatus.emailNotVerified:
         return '/${RouteNames.verifyWorkspaceEmail}';

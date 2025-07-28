@@ -41,8 +41,8 @@ class AuthState extends Equatable {
   const AuthState.unauthenticated()
     : this._(authStatus: AuthStatus.unauthenticated);
 
-  const AuthState.hasTemporalPasscode()
-    : this._(authStatus: AuthStatus.hasTemporalPasscode);
+  const AuthState.hasTemporaryPasscode()
+    : this._(authStatus: AuthStatus.hasTemporaryPasscode);
 
   const AuthState.hasError({String? error})
     : this._(authStatus: AuthStatus.hasError, error: error);

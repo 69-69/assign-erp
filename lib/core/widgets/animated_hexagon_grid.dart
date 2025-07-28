@@ -25,10 +25,8 @@ class _AnimatedHexagonGridState extends State<AnimatedHexagonGrid>
   void initState() {
     super.initState();
     // _startTimer();
-    _controller = AnimationController(
-      duration: kTenAnimateDuration,
-      vsync: this,
-    )..repeat(reverse: true);
+    _controller = AnimationController(duration: kTProgressDelay, vsync: this)
+      ..repeat(reverse: true);
   }
 
   @override

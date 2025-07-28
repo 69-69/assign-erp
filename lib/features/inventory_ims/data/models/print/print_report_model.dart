@@ -327,7 +327,7 @@ class PrintSReport {
       ),
       headers: List<String>.generate(
         tableHeaders.length,
-        (col) => tableHeaders[col].toUppercaseFirstLetterEach,
+        (col) => tableHeaders[col].toTitleCase,
       ),
       data: List<List<String>>.generate(
         sales.length,

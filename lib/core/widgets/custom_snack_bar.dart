@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
@@ -53,7 +54,7 @@ extension ScaffoldSnackBar on BuildContext {
     ScaffoldMessenger.of(this).showMaterialBanner(banner);
 
     // Automatically hide the banner after 3 seconds
-    Timer(wAnimateDuration, () {
+    Timer(kRProgressDelay, () {
       ScaffoldMessenger.of(this).hideCurrentMaterialBanner();
     });
   }
@@ -86,7 +87,7 @@ extension ScaffoldSnackBar on BuildContext {
         left: 20.0,
         right: 20.0,
         child: Material(
-          color: Colors.transparent,
+          color: kTransparentColor,
           child: Container(
             decoration: BoxDecoration(
               color: bgColor ?? Colors.green,
@@ -137,7 +138,7 @@ extension ScaffoldSnackBar on BuildContext {
   void showCustomSnackBar(
     String message, {
     Color? bgColor,
-    String? label,
+    String? buttonLabel,
     VoidCallback? onPressed,
   }) {
     final snackBar = SnackBar(
@@ -147,7 +148,7 @@ extension ScaffoldSnackBar on BuildContext {
       duration: const Duration(seconds: 4),
       margin: EdgeInsets.only(bottom: screenHeight - 200),
       action: SnackBarAction(
-        label: label ?? 'Close',
+        label: buttonLabel ?? 'Close',
         textColor: Colors.white,
         onPressed:
             onPressed ??
@@ -186,7 +187,7 @@ class _ShowToastState extends State<ShowToast> {
   }
 
   void _startTimer() {
-    Timer(wAnimateDuration, () {
+    Timer(kRProgressDelay, () {
       if (mounted) {
         setState(() => _isVisible = false);
       }

@@ -14,8 +14,7 @@ class SearchSuppliers extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomDropdownSearch<Supplier>(
-      labelText:
-          (serverValue ?? 'Search Suppliers...').toUppercaseFirstLetterEach,
+      labelText: (serverValue ?? 'Search Suppliers...').toTitleCase,
       asyncItems: (String filter, loadProps) async =>
           await GetSuppliers.byAnyTerm(filter),
       filterFn: (supplier, filter) {
@@ -23,7 +22,7 @@ class SearchSuppliers extends StatelessWidget {
         return supplier.filterByAny(f);
       },
       itemAsString: (supplier) => supplier.itemAsString,
-      onChanged: (supplier) => onChanged(supplier!.id, supplier.supplierName),
+      onChanged: (supplier) => onChanged(supplier!.id, supplier.name),
       validator: (supplier) => supplier == null ? 'Supplier is required' : null,
     );
   }

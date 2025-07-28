@@ -1,11 +1,10 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/setup/data/models/category_model.dart';
 import 'package:assign_erp/features/setup/presentation/bloc/product_config/category_bloc.dart';
@@ -15,58 +14,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 extension AddCategory<T> on BuildContext {
-  Future<void> openAddCategory({Widget? header}) =>
-      openBottomSheet(isExpand: false, child: _AddCategoryForm(header: header));
+  Future<void> openAddCategory({Widget? header}) => openBottomSheet(
+    isExpand: false,
+    child: FormBottomSheet(
+      title: 'Create Product Category',
+      body: _AddCategoryForm(),
+    ),
+  );
 }
 
-class _AddCategoryForm extends StatelessWidget {
-  final Widget? header;
-
-  const _AddCategoryForm({this.header});
+class _AddCategoryForm extends StatefulWidget {
+  const _AddCategoryForm();
 
   @override
-  Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: _buildHeader(context),
-      child: BlocBuilder<CategoryBloc, SetupState<Category>>(
-        builder: (context, state) => _buildBody(context),
-      ),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: Text(
-        'Add Product Categories',
-        semanticsLabel: 'Add Product Categories',
-        style: context.ofTheme.textTheme.titleLarge?.copyWith(
-          color: kGrayColor,
-        ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
-      child: _AddCategoryFormBody(),
-    );
-  }
+  State<_AddCategoryForm> createState() => _AddCategoryFormState();
 }
 
-class _AddCategoryFormBody extends StatefulWidget {
-  const _AddCategoryFormBody();
-
-  @override
-  State<_AddCategoryFormBody> createState() => _AddCategoryFormBodyState();
-}
-
-class _AddCategoryFormBodyState extends State<_AddCategoryFormBody> {
+class _AddCategoryFormState extends State<_AddCategoryForm> {
   final ScrollController _scrollController = ScrollController();
   bool isMultipleCategories = false;
   final List<Category> _categories = [];
@@ -110,19 +74,16 @@ class _AddCategoryFormBodyState extends State<_AddCategoryFormBody> {
       _categories.add(_categoryData);
 
       context.showAlertOverlay(
-        '${_nameController.text.toUppercaseFirstLetterEach} added to batch',
+        '${_nameController.text.toTitleCase} added to batch',
       );
       _clearFields();
     }
   }
 
-  void _clearFields() {
-    _nameController.clear();
-  }
+  void _clearFields() => _nameController.clear();
 
-  void _removeCategory(Category category) {
-    setState(() => _categories.remove(category));
-  }
+  void _removeCategory(Category category) =>
+      setState(() => _categories.remove(category));
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +117,7 @@ class _AddCategoryFormBodyState extends State<_AddCategoryFormBody> {
                   child: Chip(
                     padding: EdgeInsets.zero,
                     label: Text(
-                      o.name.toUppercaseFirstLetterEach,
+                      o.name.toTitleCase,
                       style: context.ofTheme.textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
@@ -194,7 +155,7 @@ class _AddCategoryFormBodyState extends State<_AddCategoryFormBody> {
           label: 'Add to List',
         ),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(
+        context.confirmableActionButton(
           label: isMultipleCategories
               ? 'Create All Categories'
               : 'Create Category',

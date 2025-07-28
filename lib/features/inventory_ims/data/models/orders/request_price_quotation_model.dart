@@ -267,8 +267,8 @@ class RequestForQuotation extends Equatable {
       storeNumber,
       rfqNumber,
       supplierId,
-      status.toUppercaseFirstLetterEach,
-      productName.toUppercaseFirstLetterEach,
+      status.toTitleCase,
+      productName.toTitleCase,
       '$ghanaCedis$unitPrice',
       '$quantity',
       '$discountPercent% = $ghanaCedis$discountAmt',
@@ -276,9 +276,9 @@ class RequestForQuotation extends Equatable {
       '$taxPercent% = $ghanaCedis$taxAmt',
       getDeadlineDate,
       getDeliveryDate,
-      createdBy.toUppercaseFirstLetterEach,
+      createdBy.toTitleCase,
       getCreatedAt,
-      updatedBy.toUppercaseFirstLetterEach,
+      updatedBy.toTitleCase,
       getUpdatedAt,
     ];
 

@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:assign_erp/core/constants/account_status.dart';
-import 'package:assign_erp/core/network/data_sources/local/error_logs_cache.dart';
-import 'package:assign_erp/core/network/data_sources/models/workspace_model.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/debug_printify.dart';
+import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
 import 'package:assign_erp/features/auth/domain/repository/auth_repository.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_status_enum.dart';
 import 'package:assign_erp/features/setup/data/models/employee_model.dart';
+import 'package:assign_erp/features/trouble_shooting/data/data_sources/local/error_logs_cache.dart';
 import 'package:async/async.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -76,6 +77,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     try {
+      await Future.delayed(kAnimateDuration);
       final user = _authRepository.firebaseUser;
 
       if (user == null) {
@@ -144,8 +146,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(const AuthState.hasError());
           break;
 
-        case AuthStatus.hasTemporalPasscode:
-          emit(const AuthState.hasTemporalPasscode());
+        case AuthStatus.hasTemporaryPasscode:
+          emit(const AuthState.hasTemporaryPasscode());
       }
     } catch (e /*, stackTrace*/) {
       _handleError(emit, 'Error during status change: $e');

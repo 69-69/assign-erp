@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:assign_erp/core/constants/collection_type_enum.dart';
 import 'package:assign_erp/core/network/data_sources/local/cache_data_model.dart';
 import 'package:assign_erp/core/network/data_sources/remote/repository/firestore_repository.dart';
+import 'package:assign_erp/core/util/debug_printify.dart';
 import 'package:assign_erp/features/auth/data/data_sources/local/auth_cache_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
@@ -89,14 +90,14 @@ class DataRepository extends FirestoreRepository {
   /// Read/Get cache data by index position [_getCacheByIndex]
   CacheData? _getCacheByIndex(int i) => _cacheBox.getAt(i);
 
-  /// Add New BackUp Data to Remote-Server (Firestore) [_backupNewDataToFirestore]
-  Future<String> _backupNewDataToFirestore(CacheData item) async {
+  /// Add New BackUp Data to Remote-Server (Firestore) [_saveRemoteData]
+  Future<String> _saveRemoteData(CacheData item) async {
     final id = (await addData(item.data)).id;
     return id;
   }
 
-  /// Update BackUp Data to Remote-Server (Firestore) [_updateBackupDataToFirestore]
-  Future<void> _updateBackupDataToFirestore(CacheData item) async {
+  /// Update BackUp Data to Remote-Server (Firestore) [_updateRemoteData]
+  Future<void> _updateRemoteData(CacheData item) async {
     await updateById(item.id, data: item.data);
   }
 
@@ -179,7 +180,7 @@ class DataRepository extends FirestoreRepository {
     final cacheData = CacheData.fromCache(data, id: '', scopeId: _scopeId);
 
     // Add to remote DB
-    final docId = await _backupNewDataToFirestore(cacheData);
+    final docId = await _saveRemoteData(cacheData);
     // Add to Cache/localStorage
     await _addToCache(docId, cacheData);
     // Update the stream with the latest data
@@ -187,18 +188,37 @@ class DataRepository extends FirestoreRepository {
   }
 
   /// Update/Modify Data Function [updateData]
-  Future<void> updateData(String id, Map<String, dynamic> data) async {
-    final cacheData = CacheData.fromCache(data, id: id, scopeId: _scopeId);
+  Future<void> updateData(
+    String id, {
+    bool? isPartial,
+    required Map<String, dynamic> data,
+  }) async {
+    var updates = data;
 
-    await _addToCache(cacheData.id, cacheData); // Add to Cache/localStorage
-    await _updateBackupDataToFirestore(cacheData); // Update to remote DB
+    // Only merge if this is its partial update & NOT a full model update
+    if (isPartial == true) {
+      final exist = _getCacheById(id);
+      if (exist == null) return;
+
+      // Merge field update into existing cached data
+      updates = {...exist.data, ...data};
+    }
+
+    final cacheData = CacheData.fromCache(updates, id: id, scopeId: _scopeId);
+
+    await _addToCache(cacheData.id, cacheData);
+    await _updateRemoteData(cacheData);
     _emitDataToStream(); // Update the stream with the latest data
   }
 
   /// Delete/Remove Data Function [deleteData]
   Future<void> deleteData(String id) async {
     await _cacheBox.delete(id); // Delete from cache
+    await _cacheBox.flush(); // Flush cache to disk
     await deleteById(id); // Delete from remote Firestore-DB
+
+    prettyPrint('cache-keys', _cacheBox.get(id)?.data.toString());
+
     _emitDataToStream(); // Update the stream with the latest data
   }
 

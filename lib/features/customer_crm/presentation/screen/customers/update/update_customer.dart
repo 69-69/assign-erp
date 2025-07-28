@@ -1,10 +1,7 @@
-import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/size_config.dart';
-import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/customer_crm/data/models/customer_model.dart';
 import 'package:assign_erp/features/customer_crm/presentation/bloc/create_acc/customer_acc_bloc.dart';
@@ -17,56 +14,12 @@ extension UpdateCustomerForm<T> on BuildContext {
   Future<void> openUpdateCustomer({required Customer customer}) =>
       openBottomSheet(
         isExpand: false,
-        child: _UpdateCustomer(customer: customer),
+        child: FormBottomSheet(
+          title: 'Edit Customer',
+          subtitle: customer.name,
+          body: _UpdateCustomerBody(customer: customer),
+        ),
       );
-}
-
-class _UpdateCustomer extends StatelessWidget {
-  final Customer customer;
-
-  const _UpdateCustomer({required this.customer});
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: _buildHeader(context),
-      child: _buildBody(context),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: ListTile(
-        dense: true,
-        title: Text(
-          'Edit Customer',
-          textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.titleLarge?.copyWith(
-            color: kGrayColor,
-          ),
-        ),
-        subtitle: Text(
-          customer.name.toUppercaseFirstLetterEach,
-          textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.titleMedium?.copyWith(
-            color: kGrayColor,
-          ),
-        ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
-      child: _UpdateCustomerBody(customer: customer),
-    );
-  }
 }
 
 class _UpdateCustomerBody extends StatefulWidget {
@@ -193,7 +146,7 @@ class _UpdateCustomerBodyState extends State<_UpdateCustomerBody> {
           },
         ),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(onPressed: _onSubmit),
+        context.confirmableActionButton(onPressed: _onSubmit),
       ],
     );
   }

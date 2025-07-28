@@ -9,6 +9,18 @@ class SetupApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /*final user = context.read<AuthBloc>().state.user;
+
+    // Assuming you extract the user's setup permissions from user.roles or user.permissions
+    final setupPermissions = user.permissions
+        .whereType<SetupPermission>()
+        .toList();
+
+    final filteredTiles = filterTilesByPermissions<SetupPermission>(
+      setupTiles, // your extension
+      setupPermissions,
+    );*/
+
     return CustomScaffold(
       isGradientBg: true,
       title: setupAppTitle,

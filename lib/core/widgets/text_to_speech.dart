@@ -134,7 +134,7 @@ class TextToSpeechState extends State<TextToSpeech> {
               key,
               style: context.ofTheme.textTheme.titleMedium?.copyWith(
                 color: kPrimaryColor,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w600,
                 overflow: TextOverflow.ellipsis,
               ),
             ),

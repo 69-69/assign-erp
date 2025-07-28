@@ -9,9 +9,9 @@ const int delayedAmount = 500;
 const _onBoardingButtonColors = [
   kDarkWarningColor,
   kBrightPrimaryColor,
-  kPrimaryLightColor,
+  Color(0xFF4F82C9),
   kLightOrangeColor,
-  kLightOrangeColor,
+  Color(0xFF5E9FEE),
 ];
 
 class OnBoardingContentView extends StatelessWidget {
@@ -59,8 +59,8 @@ class OnBoardingContentView extends StatelessWidget {
         onPressed: onPressedNext,
         style: ElevatedButton.styleFrom(
           backgroundColor: _onBoardingButtonColors[currentIndex],
-          // shape: const StadiumBorder(),
           padding: const EdgeInsets.all(10),
+          // shape: const StadiumBorder(),
         ),
         iconAlignment: IconAlignment.end,
         icon: Row(
@@ -68,7 +68,7 @@ class OnBoardingContentView extends StatelessWidget {
             currentIndex + 1,
             (index) => Icon(
               Icons.adaptive.arrow_forward,
-              color: currentIndex == index ? kLightColor : kGrayBlueColor,
+              color: currentIndex == index ? kLightColor : kLightBlueColor,
               size: 13,
             ),
           ),

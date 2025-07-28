@@ -34,6 +34,7 @@ class DeveloperInfo extends StatelessWidget {
         inApp: false,
       ),
       child: ListTile(
+        dense: true,
         title: Text.rich(
           textAlign: TextAlign.center,
           TextSpan(

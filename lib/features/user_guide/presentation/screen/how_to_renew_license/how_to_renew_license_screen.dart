@@ -1,7 +1,7 @@
-import 'package:assign_erp/core/network/data_sources/models/workspace_model.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/features/agent/data/data_sources/remote/get_agent.dart';
+import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/user_guide/presentation/screen/how_to_renew_license/widget/subscription_overview.dart';
 import 'package:flutter/material.dart';

@@ -1,10 +1,8 @@
-import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/setup/data/models/company_stores_model.dart';
 import 'package:assign_erp/features/setup/data/models/index.dart';
@@ -16,69 +14,26 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 extension UpdateStore<T> on BuildContext {
   Future<void> openUpdateStore({required CompanyStores store}) =>
-      openBottomSheet(isExpand: false, child: _UpdateStoreForm(store: store));
+      openBottomSheet(
+        isExpand: false,
+        child: FormBottomSheet(
+          title: 'Edit Store',
+          subtitle: store.name.toTitleCase,
+          body: _UpdateStoreForm(store: store),
+        ),
+      );
 }
 
-class _UpdateStoreForm extends StatelessWidget {
+class _UpdateStoreForm extends StatefulWidget {
   final CompanyStores store;
 
   const _UpdateStoreForm({required this.store});
 
   @override
-  Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: _buildHeader(context),
-      child: BlocBuilder<CompanyStoresBloc, SetupState<CompanyStores>>(
-        builder: (context, state) => _buildBody(context),
-      ),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: ListTile(
-        title: Text(
-          'Edit Store',
-          semanticsLabel: 'edit store',
-          textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.titleSmall?.copyWith(
-            color: kGrayColor,
-          ),
-        ),
-        subtitle: Text(
-          store.name.toUppercaseFirstLetterEach,
-          textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.titleSmall?.copyWith(
-            color: kGrayColor,
-          ),
-        ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
-      child: _UpdateStoreFormBody(store: store),
-    );
-  }
+  State<_UpdateStoreForm> createState() => _UpdateStoreFormState();
 }
 
-class _UpdateStoreFormBody extends StatefulWidget {
-  final CompanyStores store;
-
-  const _UpdateStoreFormBody({required this.store});
-
-  @override
-  State<_UpdateStoreFormBody> createState() => _UpdateStoreFormBodyState();
-}
-
-class _UpdateStoreFormBodyState extends State<_UpdateStoreFormBody> {
+class _UpdateStoreFormState extends State<_UpdateStoreForm> {
   CompanyStores get _store => widget.store;
 
   final _formKey = GlobalKey<FormState>();
@@ -97,27 +52,25 @@ class _UpdateStoreFormBodyState extends State<_UpdateStoreFormBody> {
 
   void _onSubmit() {
     if (_formKey.currentState!.validate()) {
-      if (_formKey.currentState!.validate()) {
-        final item = _store.copyWith(
-          name: _nameController.text,
-          phone: _phoneController.text,
-          location: _locationController.text,
-          remarks: _remarksController.text,
-          createdBy: _store.createdBy,
-          updatedBy: context.employee!.fullName,
-        );
+      final item = _store.copyWith(
+        name: _nameController.text,
+        phone: _phoneController.text,
+        location: _locationController.text,
+        remarks: _remarksController.text,
+        createdBy: _store.createdBy,
+        updatedBy: context.employee!.fullName,
+      );
 
-        /// Update store
-        context.read<CompanyStoresBloc>().add(
-          UpdateSetup<CompanyStores>(documentId: _store.id, data: item),
-        );
+      /// Update store
+      context.read<CompanyStoresBloc>().add(
+        UpdateSetup<CompanyStores>(documentId: _store.id, data: item),
+      );
 
-        context.showAlertOverlay(
-          '${_nameController.text.toUppercaseFirstLetterEach} successfully updated',
-        );
+      context.showAlertOverlay(
+        '${_nameController.text.toTitleCase} successfully updated',
+      );
 
-        Navigator.pop(context);
-      }
+      Navigator.pop(context);
     }
   }
 
@@ -153,7 +106,7 @@ class _UpdateStoreFormBodyState extends State<_UpdateStoreFormBody> {
         const SizedBox(height: 20.0),
         RemarksTextField(controller: _remarksController),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(onPressed: _onSubmit),
+        context.confirmableActionButton(onPressed: _onSubmit),
       ],
     );
   }

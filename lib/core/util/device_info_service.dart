@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:assign_erp/core/network/data_sources/local/device_info_cache.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/features/trouble_shooting/data/data_sources/local/device_info_cache.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 

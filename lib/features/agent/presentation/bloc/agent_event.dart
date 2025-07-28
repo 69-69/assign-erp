@@ -55,11 +55,11 @@ class UpdateClient<T> extends AgentEvent<T> {
   List<Object?> get props => [data, documentId];
 }
 
-class ResetAuthorizedDeviceIds<T> extends AgentEvent<T> {
+class RemoveAuthorizedDeviceIds<T> extends AgentEvent<T> {
   final T? data;
   final String documentId;
 
-  const ResetAuthorizedDeviceIds({required this.documentId, this.data});
+  const RemoveAuthorizedDeviceIds({required this.documentId, this.data});
 
   @override
   List<Object?> get props => [documentId, this.data];

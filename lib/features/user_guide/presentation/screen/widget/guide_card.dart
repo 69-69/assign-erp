@@ -99,7 +99,7 @@ class _CardContent extends StatelessWidget {
   }
 
   Widget _buildTitle(BuildContext context) => Text(
-    guide.title.toUppercaseFirstLetterEach,
+    guide.title.toTitleCase,
     style: _titleStyle.copyWith(fontWeight: FontWeight.bold),
     textScaler: TextScaler.linear(context.textScaleFactor),
   );

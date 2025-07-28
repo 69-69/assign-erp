@@ -1,12 +1,11 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/calculate_extras.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/orders/request_price_quotation_model.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/bloc/inventory_bloc.dart';
@@ -19,70 +18,24 @@ extension UpdateRequestForQuotationForm on BuildContext {
   Future openUpdateRequestForQuotation({required RequestForQuotation quote}) =>
       openBottomSheet(
         isExpand: false,
-        child: _UpdateRequestForQuotation(quote: quote),
+        child: FormBottomSheet(
+          title: 'Edit Request For Quote',
+          subtitle: quote.rfqNumber.toUpperCase(),
+          body: _UpdateRequestForQuote(quote: quote),
+        ),
       );
 }
 
-class _UpdateRequestForQuotation extends StatelessWidget {
+class _UpdateRequestForQuote extends StatefulWidget {
   final RequestForQuotation quote;
 
-  const _UpdateRequestForQuotation({required this.quote});
+  const _UpdateRequestForQuote({required this.quote});
 
   @override
-  Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: _buildHeader(context),
-      child: _buildBody(context),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: ListTile(
-        dense: true,
-        title: Text(
-          'Edit Request For Quotation',
-          textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.titleLarge?.copyWith(
-            color: kGrayColor,
-          ),
-        ),
-        subtitle: Text(
-          quote.rfqNumber,
-          textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.titleMedium?.copyWith(
-            color: kGrayColor,
-          ),
-        ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
-      child: _UpdateRequestForQuotationBody(quote: quote),
-    );
-  }
+  State<_UpdateRequestForQuote> createState() => _UpdateRequestForQuoteState();
 }
 
-class _UpdateRequestForQuotationBody extends StatefulWidget {
-  final RequestForQuotation quote;
-
-  const _UpdateRequestForQuotationBody({required this.quote});
-
-  @override
-  State<_UpdateRequestForQuotationBody> createState() =>
-      _UpdateRequestForQuotationBodyState();
-}
-
-class _UpdateRequestForQuotationBodyState
-    extends State<_UpdateRequestForQuotationBody> {
+class _UpdateRequestForQuoteState extends State<_UpdateRequestForQuote> {
   RequestForQuotation get _quote => widget.quote;
 
   String _subTotal = '';
@@ -231,7 +184,7 @@ class _UpdateRequestForQuotationBodyState
         style: context.ofTheme.textTheme.titleLarge,
       ),
       subtitle: Text(
-        'ID ${_quote.id}'.toUppercaseAllLetter,
+        'ID ${_quote.id}'.toUpperCaseAll,
         textAlign: TextAlign.center,
       ),
       childrenPadding: const EdgeInsets.only(bottom: 20.0),
@@ -293,7 +246,7 @@ class _UpdateRequestForQuotationBodyState
           onChanged: (t) => setState(() {}),
         ),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(onPressed: _onSubmit),
+        context.confirmableActionButton(onPressed: _onSubmit),
         const SizedBox(height: 20.0),
       ],
     );

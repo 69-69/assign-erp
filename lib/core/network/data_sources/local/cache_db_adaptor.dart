@@ -4,8 +4,8 @@ import 'package:hive_flutter/adapters.dart';
 
 // Define a list of box names for CacheData
 const cacheDataBoxes = [
-  workspaceUserDBCollectionPath,
   employeesDBCollectionPath,
+  rolesDBCollectionPath,
   companyStoreDBCollectionPath,
   companyInfoDBCollectionPath,
   supplierDBCollectionPath,
@@ -17,6 +17,7 @@ const cacheDataBoxes = [
   deliveryDBCollectionPath,
   ordersDBCollectionPath,
   miscOrdersDBCollectionPath,
+  workspaceUserDBCollectionPath, // Only for system-wide-bloc (to cache all workspaces)
   purchaseOrdersDBCollectionPath,
   requestPriceQuoteDBCollectionPath,
   posSalesDBCollectionPath,

@@ -1,11 +1,11 @@
 import 'package:assign_erp/config/routes/route_names.dart';
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/hosting_type.dart';
-import 'package:assign_erp/core/network/data_sources/models/workspace_model.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
+import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:assign_erp/features/refresh_entire_app.dart';
 import 'package:assign_erp/features/setup/data/models/employee_model.dart';
@@ -14,13 +14,232 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'horizontal_line.dart';
-
 class ProfileMenuDropdown extends StatelessWidget {
   final Workspace? workspace;
   final Employee? employee;
 
   const ProfileMenuDropdown({super.key, this.workspace, this.employee});
+
+  @override
+  Widget build(BuildContext context) {
+    final isLargeScreen = context.isLargeScreen;
+    final routePath = GoRouter.of(context).state.matchedLocation;
+
+    // Hide the profile menu on specific routes
+    if (routePath == RouteNames.workspaceSignIn ||
+        routePath.contains(RouteNames.employeeSignIn)) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      alignment: Alignment.center,
+      margin: const EdgeInsets.all(20),
+      child: PopupMenuButton<String>(
+        tooltip: 'Tap to open menu',
+        padding: EdgeInsets.zero,
+        offset: const Offset(0, 80),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        onSelected: (value) => _handleMenuAction(context, value),
+        itemBuilder: (context) => _buildMenuItems(context),
+        child: Tooltip(
+          message: 'Tap to open menu',
+          child: _buildProfileIcon(context, isLargeScreen),
+        ),
+      ),
+    );
+  }
+
+  _buildProfileIcon(BuildContext context, bool isLargeScreen) {
+    return Padding(
+      padding: EdgeInsets.all(2.0),
+      child: Wrap(
+        spacing: 10,
+        direction: Axis.vertical,
+        children: [
+          if (isLargeScreen) ...[
+            _buildUserDetails(context),
+            const SizedBox(width: 10),
+          ],
+          const CircleAvatar(
+            backgroundColor: kLightBlueColor,
+            child: Icon(Icons.person, color: kPrimaryColor),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserDetails(BuildContext context) {
+    final clientName = employee?.fullName.toTitleCase ?? '';
+    final roleName = employee?.role.name.toUpperCaseFirst ?? '';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          clientName,
+          style: context.ofTheme.textTheme.bodyMedium?.copyWith(
+            color: kLightBlueColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          roleName.separateWord,
+          style: context.ofTheme.textTheme.labelSmall?.copyWith(
+            color: kLightBlueColor,
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<PopupMenuEntry<String>> _buildMenuItems(BuildContext context) {
+    return [
+      PopupMenuItem(
+        value: 'dashboard',
+        child: ListTile(
+          dense: true,
+          mouseCursor: SystemMouseCursors.click,
+          leading: const Icon(Icons.dashboard),
+          title: const Text('Dashboard'),
+        ),
+      ),
+      PopupMenuItem(
+        value: 'refresh',
+        child: ListTile(
+          dense: true,
+          mouseCursor: SystemMouseCursors.click,
+          leading: const Icon(CupertinoIcons.refresh),
+          title: const Text('Refresh Workspace'),
+        ),
+      ),
+      PopupMenuItem(
+        value: 'sign-out',
+        child: ListTile(
+          dense: true,
+          mouseCursor: SystemMouseCursors.click,
+          leading: const Icon(Icons.logout),
+          title: Text(
+            'Sign out',
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
+          ),
+        ),
+      ),
+      if (workspace != null) ...[
+        PopupMenuItem(
+          enabled: false,
+          padding: EdgeInsets.zero,
+          child: _buildWorkspaceCard(context, workspace: workspace),
+        ),
+      ],
+    ];
+  }
+
+  void _handleMenuAction(BuildContext context, String value) async {
+    switch (value) {
+      case 'dashboard':
+        context.goNamed(RouteNames.mainDashboard);
+        break;
+      case 'refresh':
+        final isConfirmed = await context.confirmUserActionDialog(
+          onAccept: 'Refresh Workspace',
+        );
+        if (context.mounted && isConfirmed) {
+          RefreshEntireApp.restartApp(context);
+        }
+        break;
+      case 'sign-out':
+        _handleSignOut(context);
+        break;
+    }
+  }
+
+  Widget _buildWorkspaceCard(BuildContext context, {Workspace? workspace}) {
+    return Container(
+      padding: EdgeInsets.all(15),
+      margin: EdgeInsets.zero,
+      decoration: BoxDecoration(
+        color: kPrimaryLightColor,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(12),
+          bottomRight: Radius.circular(12),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            workspace!.workspaceName.toUpperCase(),
+            style: context.ofTheme.textTheme.bodyLarge?.copyWith(
+              color: kLightBlueColor,
+            ),
+          ),
+          const Divider(thickness: 4),
+          _buildListTile(
+            context,
+            title: 'SUBSCRIPTION: ${workspace.license.name}',
+            subtitle: 'Valid Until: ${workspace.expiresOn.toStandardDT}',
+          ),
+          _buildListTile(
+            context,
+            title:
+                "Multi-Location: ${workspace.maxAllowedDevices > 1 ? 'On' : 'Off'}",
+            subtitle: 'Max-Devices: ${workspace.maxAllowedDevices}',
+          ),
+          const Divider(thickness: 0.4),
+          _buildListTile(
+            context,
+            title: 'Hosting: ${workspace.hostingType.label}',
+            subtitle: 'Store Location: ${employee?.storeNumber}',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListTile(
+    BuildContext context, {
+    String title = '',
+    String subtitle = '',
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title.toUpperCaseAll,
+          style: context.ofTheme.textTheme.labelLarge?.copyWith(
+            color: kLightColor,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          subtitle.toTitleCase,
+          style: context.ofTheme.textTheme.labelMedium?.copyWith(
+            color: kLightGrayColor,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _handleSignOut(BuildContext context) async {
+    final isConfirmed = await context.confirmUserActionDialog(
+      onAccept: 'Sign Out',
+    );
+    if (context.mounted && isConfirmed) {
+      final authBloc = BlocProvider.of<AuthBloc>(context);
+      authBloc.add(AuthSignOutRequested());
+    }
+  }
+}
+
+/*class ProfileMenuDropdown2 extends StatelessWidget {
+  final Workspace? workspace;
+  final Employee? employee;
+
+  const ProfileMenuDropdown2({super.key, this.workspace, this.employee});
 
   @override
   Widget build(BuildContext context) {
@@ -147,14 +366,15 @@ class ProfileMenuDropdown extends StatelessWidget {
           ),
           _buildListTile(
             context,
-            title: 'MULTI-LOCATION: ${workspace.maxAllowedDevices > 1}',
+            title:
+                "Multi-Location: ${workspace.maxAllowedDevices > 1 ? 'On' : 'Off'}",
             subtitle: 'Max-Devices: ${workspace.maxAllowedDevices}',
           ),
           HorizontalLine(color: kGrayColor),
           _buildListTile(
             context,
             title: 'Hosting: ${workspace.hostingType.label}',
-            subtitle: 'Store No.: ${employee?.storeNumber}',
+            subtitle: 'Store Location: ${employee?.storeNumber}',
           ),
         ],
       ),
@@ -213,4 +433,4 @@ class ProfileMenuDropdown extends StatelessWidget {
       authBloc.add(AuthSignOutRequested());
     }
   }
-}
+}*/

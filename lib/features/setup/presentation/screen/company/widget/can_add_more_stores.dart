@@ -65,7 +65,7 @@ extension CompanyStoreX on BuildContext {
     try {
       final authCacheService = AuthCacheService();
       bool isSwitched = await authCacheService.switchStores(storeNumber);
-      await Future.delayed(wAnimateDuration);
+      await Future.delayed(kRProgressDelay);
 
       if (isSwitched) {
         if (mounted) RefreshEntireApp.restartApp(this);

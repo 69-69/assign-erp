@@ -3,10 +3,22 @@ import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:flutter/material.dart';
 
 extension Custombutton on BuildContext {
-  Widget elevatedBtn({
+  /// [confirmableActionButton] A customizable elevated button widget that optionally shows a confirmation dialog
+  /// before executing an action. Ideal for form submissions or critical updates.
+  ///
+  /// Parameters:
+  /// - [label]: The text shown on the button. If empty, a confirmation dialog will be shown before proceeding.
+  /// - [onPressed]: The callback function to execute when the button is pressed.
+  /// - [isDisabled]: Whether the button should appear disabled.
+  ///
+  /// Behavior:
+  /// - If the [label] is empty, the button shows a confirmation dialog before running [onPressed].
+  /// - If [isDisabled] is true, the button becomes non-interactive and lowers its opacity.
+  Widget confirmableActionButton({
     String label = 'Save Changes',
     VoidCallback? onPressed,
     bool isDisabled = false,
+    String? tooltip,
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -31,7 +43,14 @@ extension Custombutton on BuildContext {
               ),
               elevation: isDisabled ? const WidgetStatePropertyAll(0) : null,
             ),
-            child: Text(label, style: const TextStyle(color: kLightColor)),
+            child: Tooltip(
+              message: tooltip ?? label,
+              child: Text(
+                label,
+                style: const TextStyle(color: kLightColor),
+                semanticsLabel: label,
+              ),
+            ),
           ),
         ),
       ],
@@ -39,20 +58,60 @@ extension Custombutton on BuildContext {
   }
 
   Widget elevatedIconBtn(
-    IconData icon, {
+    dynamic icon, {
     String label = '',
     VoidCallback? onPressed,
+    Color? bgColor,
+    Color? color,
+    String? tooltip,
   }) {
     return ElevatedButton.icon(
       onPressed: onPressed,
-      style: ElevatedButton.styleFrom(backgroundColor: Colors.white70),
-      icon: Icon(icon),
-      label: Tooltip(message: label, child: Text(label)),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: bgColor ?? Colors.white70,
+      ),
+
+      icon: icon is IconData ? Icon(icon) : icon,
+      label: Tooltip(
+        message: tooltip ?? label,
+        child: Text(
+          label,
+          style: TextStyle(color: color),
+          semanticsLabel: label,
+        ),
+      ),
+    );
+  }
+
+  /// [elevatedButton] A customizable elevated button widget.
+  ///
+  Widget elevatedButton(
+    String label, {
+    VoidCallback? onPressed,
+    Color? bgColor,
+    Color? color,
+    String? tooltip,
+    EdgeInsetsGeometry? padding,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: bgColor ?? kLightGrayColor,
+        padding: padding,
+      ),
+      child: Tooltip(
+        message: tooltip ?? label,
+        child: Text(
+          label,
+          style: TextStyle(color: color),
+          semanticsLabel: label,
+        ),
+      ),
     );
   }
 
   Future<bool> _confirmUpdateDialog() async => await confirmAction(
-    const Text('Are you sure?'),
+    const Text('Would you like to proceed?'),
     title: "Confirm Changes",
     onAccept: "Save",
     onReject: "Cancel",

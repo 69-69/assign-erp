@@ -92,5 +92,5 @@ class PrintSalesReport {
     return await invoice.buildPdf(format);
   }
 
-  String _toCap(String i) => i.toUppercaseFirstLetterEach;
+  String _toCap(String i) => i.toTitleCase;
 }

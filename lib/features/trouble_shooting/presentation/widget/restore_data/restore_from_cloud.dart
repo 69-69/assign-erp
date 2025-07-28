@@ -22,7 +22,7 @@ class RestoreFromCloud extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          context.elevatedBtn(
+          context.confirmableActionButton(
             label: 'Restore From Cloud',
             onPressed: () async => await _confirmRestoreDialog(context),
           ),
@@ -54,7 +54,7 @@ class RestoreFromCloud extends StatelessWidget {
 
   /// Restore from cloud storage (e.g., Google Drive, Dropbox)
   Future<dynamic> _restoreFromCloud() =>
-      Future.delayed(wAnimateDuration, () async {
+      Future.delayed(kRProgressDelay, () async {
         try {
           throw Exception('Restoring failed');
         } catch (e) {

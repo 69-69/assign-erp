@@ -1,7 +1,7 @@
 /// HIVE BOX CACHE NAMES
 ///
-// Directory path for app-level cache files related to ERP assignment
-const appCacheDirectory = 'loc_os_assign_erp_cache_dir';
+// Base Directory path for app-level cache files related to ERP assignment
+const appCacheDirectory = 'loc_os_third_as_dir';
 
 // Caches device information such as model, OS version, and unique identifiers
 const deviceInfoCache = 'uos_device_info_cache_db';
@@ -26,6 +26,13 @@ const appErrorLogsCache = 'app_error_logs_cache_db';
 
 /// Firebase collection for workspace user authentication records
 const workspaceUserDBCollectionPath = 'workspace_auth_db';
+
+// ---------------------------
+// 🔐 Roles Collections
+// ---------------------------
+
+/// Firebase collection for employee's roles and permissions
+const rolesDBCollectionPath = 'roles_db';
 
 // ---------------------------
 // 📦 Inventory Management System (IMS) Collections

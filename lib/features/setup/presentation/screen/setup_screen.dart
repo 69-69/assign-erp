@@ -1,7 +1,4 @@
-import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
-import 'package:assign_erp/core/util/size_config.dart';
-import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/custom_tab.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
@@ -9,13 +6,13 @@ import 'package:assign_erp/features/auth/presentation/screen/workspace/update/up
 import 'package:assign_erp/features/setup/presentation/index.dart';
 import 'package:flutter/material.dart';
 
-const _sidetabs = [
-  {'label': 'company info', 'icon': Icons.info_outline},
+const _sideTabs = [
+  {'label': 'company', 'icon': Icons.info_outline},
   {'label': 'staff account', 'icon': Icons.manage_accounts},
+  {'label': 'manage roles', 'icon': Icons.admin_panel_settings},
   {'label': 'product config', 'icon': Icons.category},
   {'label': 'back up', 'icon': Icons.backup},
   {'label': 'renew license', 'icon': Icons.local_police},
-  {'label': 'app update', 'icon': Icons.update},
 ];
 
 class SetupScreen extends StatelessWidget {
@@ -28,7 +25,6 @@ class SetupScreen extends StatelessWidget {
     return CustomScaffold(
       title: setupAppTitle.toUpperCase(),
       body: _buildBody(context),
-      actions: const [],
       floatingActionBtnLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: context.buildFloatingBtn(
         'Change Workspace Password',
@@ -43,31 +39,17 @@ class SetupScreen extends StatelessWidget {
 
     return CustomTab(
       isVerticalTab: true,
+      isScrollable: true,
       openThisTab: openThisTab,
       length: 6,
-      tabs: _sidetabs,
+      tabs: _sideTabs,
       children: [
         const CompanyScreen(),
         const CreateUserAccScreen(),
+        const ManageRolesScreen(),
         const ProductConfigScreen(),
         const BackUp(),
         const LicenseRenewal(),
-        Container(
-          alignment: Alignment.center,
-          padding: EdgeInsets.symmetric(horizontal: context.screenWidth * 0.1),
-          child: Wrap(
-            runSpacing: 20,
-            alignment: WrapAlignment.center,
-            children: [
-              Text(
-                'All set! You have the latest update installed',
-                style: context.ofTheme.textTheme.titleLarge,
-                textScaler: TextScaler.linear(context.textScaleFactor),
-              ),
-              context.elevatedBtn(onPressed: () {}, label: 'Check for Updates'),
-            ],
-          ),
-        ),
       ],
     );
   }

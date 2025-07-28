@@ -6,6 +6,6 @@ enum AuthStatus {
   unauthenticated,
   emailNotVerified,
   workspaceAuthenticated,
-  hasTemporalPasscode,
+  hasTemporaryPasscode,
   hasError,
 }

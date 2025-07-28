@@ -1,9 +1,11 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/size_config.dart';
+import 'package:assign_erp/core/widgets/bottom_sheet_header.dart';
+import 'package:assign_erp/core/widgets/custom_dialog.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/features/auth/presentation/bloc/sign_in/sign_in_bloc.dart';
-import 'package:assign_erp/features/auth/presentation/screen/widget/form_inputs.dart';
+import 'package:assign_erp/features/auth/domain/repository/auth_repository.dart';
+import 'package:assign_erp/features/auth/presentation/bloc/sign_in/workspace/workspace_sign_in_bloc.dart';
+import 'package:assign_erp/features/auth/presentation/screen/widget/workspace_form_inputs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
@@ -13,7 +15,7 @@ extension CreateWorkspacePopUp on BuildContext {
     context: this,
     isDismissible: false,
     isScrollControlled: true,
-    backgroundColor: Colors.transparent,
+    backgroundColor: kTransparentColor,
     builder: (_) => const WorkspaceScreen(),
   );
 }
@@ -23,82 +25,32 @@ class WorkspaceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildAlertDialog(context);
-
-    /*MINE-STEVE
     return BlocProvider(
       create: (context) {
-        return SignInBloc(
+        return WorkspaceSignInBloc(
           authRepository: RepositoryProvider.of<AuthRepository>(context),
         );
       },
       child: _buildAlertDialog(context),
-    );*/
+    );
+    // return _buildAlertDialog(context);
   }
 
   _buildAlertDialog(BuildContext context) {
-    var wh = context.screenWidth * 0.06;
-
-    return AlertDialog(
-      scrollable: true,
-      icon: Align(
-        alignment: Alignment.topRight,
-        child: IconButton(
-          style: IconButton.styleFrom(
-            backgroundColor: kLightColor.withAlpha((0.4 * 255).toInt()),
-          ),
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.close, color: kTextColor),
-        ),
+    return CustomDialog(
+      title: DialogTitle(
+        title: 'Setup New Workspace'.toUpperCase(),
+        subtitle: "Create a new Workspace for your new Client.",
       ),
-      iconPadding: const EdgeInsets.only(right: 5, top: 5),
-      backgroundColor: kLightColor.withAlpha((0.8 * 255).toInt()),
-      title: _buildSignUpTitle(context, wh),
-      content: _buildFormBody(context),
+      body: _buildFormBody(context),
       actions: [SignUpButton(onPressed: (v) {})],
     );
   }
 
-  Column _buildSignUpTitle(BuildContext context, double wh) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildLogo(wh),
-        const SizedBox(height: 10),
-        ListTile(
-          title: Text(
-            'Setup New Workspace'.toUpperCase(),
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-            style: context.ofTheme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w500,
-              color: kPrimaryColor,
-            ),
-          ),
-          subtitle: Text(
-            "Create a new Workspace for your new Client.",
-            textAlign: TextAlign.center,
-            style: context.ofTheme.textTheme.titleSmall?.copyWith(
-              color: kTextColor,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Image _buildLogo(double wh) {
-    return Image.asset(
-      appLogo2,
-      fit: BoxFit.contain,
-      width: wh,
-      semanticLabel: appName,
-    );
-  }
-
-  BlocListener<SignInBloc, SignInState> _buildFormBody(BuildContext context) {
-    return BlocListener<SignInBloc, SignInState>(
+  BlocListener<WorkspaceSignInBloc, WorkspaceSignInState> _buildFormBody(
+    BuildContext context,
+  ) {
+    return BlocListener<WorkspaceSignInBloc, WorkspaceSignInState>(
       listenWhen: (oldState, newState) => oldState.status != newState.status,
       listener: (_, state) => _showSignUpAlert(state, context),
       child: Container(
@@ -110,7 +62,7 @@ class WorkspaceScreen extends StatelessWidget {
   }
 
   /// Shows the alert overlay if there is a failure state.
-  void _showSignUpAlert(SignInState state, BuildContext context) {
+  void _showSignUpAlert(WorkspaceSignInState state, BuildContext context) {
     if ((state.email.isValid && state.password.isValid) &&
         state.status.isFailure) {
       const msg = 'Something went wrong! Kindly try again...';
@@ -139,20 +91,21 @@ class CreateNewWorkspaceForm extends StatelessWidget {
   }
 
   Column _buildColumn(BuildContext context) {
-    return const Column(
+    return Column(
       children: [
-        WorkspaceCategory(),
-        SizedBox(height: 20),
-        WorkspaceNameInput(),
-        SizedBox(height: 20),
-        NameInput(),
-        SizedBox(height: 20),
-        MobileNumberInput(),
-        SizedBox(height: 20),
-        EmailInput(checkMobileNumber: true),
-        SizedBox(height: 20),
-        PasswordInput(label: 'New password'),
-        SizedBox(height: 20),
+        const WorkspaceCategory(),
+        const SizedBox(height: 20),
+        const WorkspaceNameInput(),
+        const SizedBox(height: 20),
+        const NameInput(),
+        const SizedBox(height: 20),
+        const MobileNumberInput(),
+        const SizedBox(height: 20),
+        const EmailInput(checkMobileNumber: true),
+        const SizedBox(height: 20),
+        const PasswordInput(label: 'Workspace password'),
+        TemporaryPasscodeInput(),
+        const SizedBox(height: 20),
       ],
     );
   }

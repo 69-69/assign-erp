@@ -1,12 +1,13 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
 extension LiveSupportBottomSheet<T> on BuildContext {
-  Future<void> openLiveSupportDialog() =>
-      openBottomSheet(isExpand: false, child: _LiveSupport());
+  Future<void> openLiveSupportDialog() => openBottomSheet(
+    isExpand: false,
+    child: FormBottomSheet(title: 'Live Chat', body: _LiveSupport()),
+  );
 }
 
 class _LiveSupport extends StatefulWidget {
@@ -29,29 +30,9 @@ class _LiveSupportState extends State<_LiveSupport> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: _buildHeader(context),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [_buildBody(context)],
-      ),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: Text(
-        'Live Chat',
-        semanticsLabel: 'live chat',
-        style: context.ofTheme.textTheme.titleLarge?.copyWith(
-          color: kGrayColor,
-        ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [_buildBody(context)],
     );
   }
 

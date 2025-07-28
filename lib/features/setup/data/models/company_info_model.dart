@@ -163,15 +163,15 @@ class Company extends Equatable {
   /// ToList for CompanyInfo [toListC]
   List<String> toListC() => [
     id,
-    name.toUppercaseFirstLetterEach,
+    name.toTitleCase,
     phone,
     altPhone,
     email,
-    address.toUppercaseFirstLetterEach,
+    address.toTitleCase,
     faxNumber,
-    createdBy.toUppercaseFirstLetterEach,
+    createdBy.toTitleCase,
     getCreatedAt,
-    updatedBy.toUppercaseFirstLetterEach,
+    updatedBy.toTitleCase,
     getUpdatedAt,
   ];
 

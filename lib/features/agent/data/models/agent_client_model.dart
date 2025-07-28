@@ -1,5 +1,5 @@
-import 'package:assign_erp/core/network/data_sources/models/workspace_model.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
+import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
 import 'package:equatable/equatable.dart';
 
 var _today = DateTime.now();

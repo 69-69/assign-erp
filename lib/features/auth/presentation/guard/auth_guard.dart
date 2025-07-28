@@ -1,5 +1,5 @@
 import 'package:assign_erp/config/routes/route_names.dart';
-import 'package:assign_erp/core/network/data_sources/models/workspace_model.dart';
+import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_status_enum.dart';
 import 'package:assign_erp/features/setup/data/models/employee_model.dart';

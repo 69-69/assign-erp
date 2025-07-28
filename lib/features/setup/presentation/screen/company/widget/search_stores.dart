@@ -14,7 +14,7 @@ class SearchStores extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomDropdownSearch<CompanyStores>(
-      labelText: (serverValue ?? 'Search Stores...').toUppercaseFirstLetterEach,
+      labelText: (serverValue ?? 'Search Stores...').toTitleCase,
       asyncItems: (String filter, loadProps) async =>
           await GetStores.byAnyTerm(filter),
       filterFn: (store, filter) {

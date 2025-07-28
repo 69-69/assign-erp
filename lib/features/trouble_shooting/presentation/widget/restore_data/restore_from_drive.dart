@@ -23,7 +23,7 @@ class RestoreFromDrive extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          context.elevatedBtn(
+          context.confirmableActionButton(
             label: 'Restore From Drive',
             onPressed: () async => await _confirmRestoreDialog(context),
           ),

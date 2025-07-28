@@ -1,9 +1,21 @@
-import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/network/data_sources/models/subscription_licenses_enum.dart';
-import 'package:assign_erp/core/widgets/custom_scaffold.dart';
-import 'package:assign_erp/core/widgets/text_to_speech.dart';
 import 'package:assign_erp/features/user_guide/data/models/subscription_model.dart';
-import 'package:flutter/material.dart';
+
+final List<Map<String, String>> subs = [
+  {'title': 'POS', 'description': 'Orders, Sales, Payment, Finance'},
+  {'title': 'Warehouse', 'description': 'Stocks, Supplies, Deliveries'},
+  {'title': 'Full', 'description': 'Complete ERP access'},
+  {'title': 'Agent', 'description': 'Account creation and management'},
+  {'title': 'Inventory', 'description': 'Order, Stock, Purchases, Sales'},
+  {'title': 'Setup', 'description': 'Workspace account setup'},
+  {'title': 'CRM', 'description': 'Customer Relationship Management'},
+  {'title': 'Dev', 'description': 'System maintenance and development'},
+];
+
+final String overview =
+    'This document provides a comprehensive overview of the different subscription licenses available in the ERP software, developed in Flutter. '
+    'Each subscription tier is designed to cater to specific business needs, ensuring that your enterprise is equipped with the appropriate tools for efficient operations. '
+    'The user guide also outlines onboarding processes and additional features included in all licenses.';
 
 final Map<SubscriptionLicenses, SubscriptionDetail> subscriptionDetails = {
   SubscriptionLicenses.pos: SubscriptionDetail.fromMap('pos', {
@@ -101,7 +113,7 @@ final Map<SubscriptionLicenses, SubscriptionDetail> subscriptionDetails = {
   }),
 };
 
-class OverviewDetails extends StatelessWidget {
+/*class OverviewDetails extends StatelessWidget {
   final String subscriptionName;
 
   const OverviewDetails({super.key, required this.subscriptionName});
@@ -160,4 +172,4 @@ class OverviewDetails extends StatelessWidget {
       return Text('No details available');
     }
   }
-}
+}*/

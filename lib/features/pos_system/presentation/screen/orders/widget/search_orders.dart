@@ -34,8 +34,7 @@ class SearchOrders extends StatelessWidget {
           var f = filter.isEmpty ? (serverValue ?? '') : filter;
           return order.filterByAny(f);
         },
-        itemAsString: (Orders o) =>
-            o.isEmpty ? '' : '$o'.toUppercaseFirstLetterEach,
+        itemAsString: (Orders o) => o.isEmpty ? '' : '$o'.toTitleCase,
         onChanged: (order) => onChanged!(order!.orderNumber, order.productName),
         validator: (order) => order == null ? 'Please choose an order' : null,
       );

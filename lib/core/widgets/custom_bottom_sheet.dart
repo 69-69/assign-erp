@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
     return showModalBottomSheet(
       context: this,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: kTransparentColor,
       constraints:
           isExpand ? BoxConstraints(maxWidth: screenWidth * num) : null,
       builder: (context) => child,
@@ -20,7 +20,11 @@ import 'package:flutter/material.dart';
 }*/
 
 extension ShowBottomSheet<T> on BuildContext {
-  Future<T?> openBottomSheet({required Widget child, bool isExpand = true}) {
+  Future<T?> openBottomSheet({
+    required Widget child,
+    bool isExpand = true,
+    bool showZoomIcon = true,
+  }) {
     // Initialize zoom level
     final ValueNotifier<double> zoomLevel = ValueNotifier<double>(
       isExpand ? 1.0 : 0.5,
@@ -31,14 +35,16 @@ extension ShowBottomSheet<T> on BuildContext {
       isScrollControlled: true,
       backgroundColor: kTransparentColor,
       constraints: BoxConstraints(maxWidth: screenWidth),
-      builder: (context) => _buildZoom(zoomLevel, child),
+      builder: (context) =>
+          _buildZoom(zoomLevel, child, showZoomIcon: showZoomIcon),
     );
   }
 
   ValueListenableBuilder<double> _buildZoom(
     ValueNotifier<double> zoomLevel,
-    Widget child,
-  ) {
+    Widget child, {
+    bool showZoomIcon = true,
+  }) {
     var isSmall = isMobile || isTablet;
 
     return ValueListenableBuilder<double>(
@@ -52,30 +58,8 @@ extension ShowBottomSheet<T> on BuildContext {
           ),
           child: Column(
             children: [
-              if (!isSmall) ...{
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: IconButton(
-                    style: IconButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      shape: LinearBorder.none,
-                      backgroundColor:
-                          (value > 1.0 ? kDangerColor : kGrayBlueColor)
-                              .withAlpha((0.4 * 255).toInt()),
-                    ),
-                    icon:
-                        Icon(
-                          size: 30,
-                          semanticLabel: 'zoom',
-                          color: context.surfaceColor,
-                          value > 1.0 ? Icons.zoom_out_map : Icons.zoom_in_map,
-                        ).addNeumorphism(
-                          topShadowColor: kDangerColor,
-                          offset: const Offset(1, 1),
-                        ),
-                    onPressed: () => zoomLevel.value = value > 1.0 ? 0.5 : 1.2,
-                  ),
-                ),
+              if (!isSmall && showZoomIcon) ...{
+                _buildZoomIcon(value, context, zoomLevel),
               },
               Expanded(child: child!),
             ],
@@ -83,6 +67,35 @@ extension ShowBottomSheet<T> on BuildContext {
         );
       },
       child: child,
+    );
+  }
+
+  Align _buildZoomIcon(
+    double value,
+    BuildContext context,
+    ValueNotifier<double> zoomLevel,
+  ) {
+    return Align(
+      alignment: Alignment.topCenter,
+      child: IconButton(
+        style: IconButton.styleFrom(
+          padding: EdgeInsets.zero,
+          shape: LinearBorder.none,
+          backgroundColor: (value > 1.0 ? kDangerColor : kGrayBlueColor)
+              .withAlpha((0.4 * 255).toInt()),
+        ),
+        icon:
+            Icon(
+              size: 30,
+              semanticLabel: 'zoom',
+              color: context.surfaceColor,
+              value > 1.0 ? Icons.zoom_out_map : Icons.zoom_in_map,
+            ).addNeumorphism(
+              topShadowColor: kDangerColor,
+              offset: const Offset(1, 1),
+            ),
+        onPressed: () => zoomLevel.value = value > 1.0 ? 0.5 : 1.2,
+      ),
     );
   }
 }

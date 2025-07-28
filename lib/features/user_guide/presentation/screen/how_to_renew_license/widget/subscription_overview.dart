@@ -1,26 +1,12 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/network/data_sources/models/workspace_model.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
+import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
 import 'package:assign_erp/features/user_guide/data/models/subscription_model.dart';
-import 'package:assign_erp/features/user_guide/presentation/screen/how_to_renew_license/widget/overview_details.dart';
+import 'package:assign_erp/features/user_guide/presentation/screen/how_to_renew_license/widget/subscription_details_dialog.dart';
 import 'package:flutter/material.dart';
 
-final List<Map<String, String>> subs = [
-  {'title': 'POS', 'description': 'Orders, Sales, Payment, Finance'},
-  {'title': 'Warehouse', 'description': 'Stocks, Supplies, Deliveries'},
-  {'title': 'Full', 'description': 'Complete ERP access'},
-  {'title': 'Agent', 'description': 'Account creation and management'},
-  {'title': 'Inventory', 'description': 'Order, Stock, Purchases, Sales'},
-  {'title': 'Setup', 'description': 'Workspace account setup'},
-  {'title': 'CRM', 'description': 'Customer Relationship Management'},
-  {'title': 'Dev', 'description': 'System maintenance and development'},
-];
-
-final String _overview =
-    'This document provides a comprehensive overview of the different subscription licenses available in the ERP software, developed in Flutter. '
-    'Each subscription tier is designed to cater to specific business needs, ensuring that your enterprise is equipped with the appropriate tools for efficient operations. '
-    'The user guide also outlines onboarding processes and additional features included in all licenses.';
+import 'overview_details.dart';
 
 class SubscriptionOverview extends StatelessWidget {
   final Workspace? myAgent;
@@ -36,7 +22,7 @@ class SubscriptionOverview extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _overview,
+            overview,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
           ),
           SizedBox(height: 20),
@@ -86,14 +72,15 @@ class OverviewCard extends StatelessWidget {
           ),
         ),
         subtitle: Text(sub.description),
-        onTap: () {
-          Navigator.push(
+        onTap: () async {
+          await context.openDetailsBottomSheet(sub.title);
+          /*Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) =>
                   OverviewDetails(subscriptionName: sub.title),
             ),
-          );
+          );*/
         },
       ),
     );

@@ -1,0 +1,134 @@
+import 'package:assign_erp/core/constants/app_colors.dart';
+import 'package:assign_erp/core/widgets/custom_button.dart';
+import 'package:assign_erp/core/widgets/dynamic_table.dart';
+import 'package:assign_erp/core/widgets/screen_helper.dart';
+import 'package:assign_erp/features/setup/data/models/role_model.dart';
+import 'package:assign_erp/features/setup/presentation/bloc/create_roles/role_bloc.dart';
+import 'package:assign_erp/features/setup/presentation/bloc/setup_bloc.dart';
+import 'package:assign_erp/features/setup/presentation/screen/manage_roles/add/create_role.dart';
+import 'package:assign_erp/features/setup/presentation/screen/manage_roles/update/update_role.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class ListRoles extends StatefulWidget {
+  const ListRoles({super.key});
+
+  @override
+  State<ListRoles> createState() => _ListRolesState();
+}
+
+class _ListRolesState extends State<ListRoles> {
+  bool? _isChecked;
+  Role? _selectedRole;
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildBody();
+  }
+
+  BlocBuilder<RoleBloc, SetupState<Role>> _buildBody() {
+    return BlocBuilder<RoleBloc, SetupState<Role>>(
+      builder: (context, state) {
+        return switch (state) {
+          LoadingSetup<Role>() => context.loader,
+          SetupsLoaded<Role>(data: var results) =>
+            results.isEmpty
+                ? context.buildAddButton(
+                    'Create Role',
+                    onPressed: () => context.openCreateNewRole(),
+                  )
+                : _buildCard(context, results),
+          SetupError<Role>(error: final error) => context.buildError(error),
+          _ => const SizedBox.shrink(),
+        };
+      },
+    );
+  }
+
+  _buildCard(BuildContext c, List<Role> roles) {
+    return DynamicDataTable(
+      skip: true,
+      skipPos: 1,
+      toggleHideID: true,
+      headers: Role.dataTableHeader,
+      anyWidget: Padding(
+        padding: EdgeInsets.fromLTRB(5, 20, 20, 0),
+        child: _buildAnyWidget(),
+      ),
+      anyWidgetAlignment: WrapAlignment.end,
+      rows: roles.map((d) => d.itemAsList()).toList(),
+      onEditTap: (List<String> row) async => _onEditTap(roles, row),
+      onDeleteTap: (List<String> row) async => _onDeleteTap(roles, row),
+      onChecked: (bool? isChecked, List<String> row) =>
+          _onChecked(roles, row.first, isChecked),
+    );
+  }
+
+  _buildAnyWidget() {
+    return Wrap(
+      spacing: 10.0,
+      runSpacing: 10.0,
+      runAlignment: WrapAlignment.end,
+      children: [
+        if (_isChecked == true) ...[
+          context.elevatedButton(
+            'Assign Permission',
+            onPressed: () async {
+              if (_selectedRole == null) return;
+
+              /// Assign permission to role
+              await context.openUpdateNewRole(
+                isAssign: true,
+                role: _selectedRole!,
+              );
+            },
+            bgColor: kGrayBlueColor,
+            color: kLightColor,
+          ),
+        ],
+        context.elevatedIconBtn(
+          Icon(Icons.admin_panel_settings, color: kLightColor),
+          label: 'Create Role',
+          onPressed: () async => await context.openCreateNewRole(),
+          bgColor: kDangerColor,
+          color: kLightColor,
+        ),
+      ],
+    );
+  }
+
+  // Handle onChecked orders
+  void _onChecked(List<Role> roles, String id, bool? isChecked) async {
+    final role = _findRole(id: id, roles: roles);
+    setState(() {
+      _isChecked = isChecked;
+
+      if (_isChecked == true) {
+        _selectedRole = role;
+      }
+    });
+  }
+
+  Role _findRole({required String id, required List<Role> roles}) =>
+      Role.findById(roles, id);
+
+  Future<void> _onEditTap(List<Role> roles, List<String> row) async {
+    Role role = _findRole(id: row.first, roles: roles);
+
+    /// Update specific role
+    await context.openUpdateNewRole(role: role);
+  }
+
+  Future<void> _onDeleteTap(List<Role> roles, List<String> row) async {
+    {
+      Role role = _findRole(id: row.first, roles: roles);
+
+      final isConfirmed = await context.confirmUserActionDialog();
+      if (mounted && isConfirmed) {
+        /// Delete specific role
+        context.read<RoleBloc>().add(DeleteSetup(documentId: role.id));
+        setState(() => roles.remove(role));
+      }
+    }
+  }
+}

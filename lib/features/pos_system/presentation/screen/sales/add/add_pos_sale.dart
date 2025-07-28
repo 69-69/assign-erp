@@ -2,10 +2,9 @@ import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/calculate_extras.dart';
 import 'package:assign_erp/core/util/generate_new_uid.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/pos_system/data/models/pos_sale_model.dart';
 import 'package:assign_erp/features/pos_system/presentation/bloc/pos_bloc.dart';
@@ -15,56 +14,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 extension AddPOSSaleForm<T> on BuildContext {
-  Future<void> openAddPOSSales({Widget? header}) =>
-      openBottomSheet(isExpand: false, child: _AddSales(header: header));
+  Future<void> openAddPOSSales({Widget? header}) => openBottomSheet(
+    isExpand: false,
+    child: FormBottomSheet(title: 'Add Sale', body: _AddSalesForm()),
+  );
 }
 
-class _AddSales extends StatelessWidget {
-  final Widget? header;
-
-  const _AddSales({this.header});
+class _AddSalesForm extends StatefulWidget {
+  const _AddSalesForm();
 
   @override
-  Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: header ?? _buildHeader(context),
-      child: _buildBody(context),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: Text(
-        'Add Sales',
-        semanticsLabel: 'add sales',
-        style: context.ofTheme.textTheme.titleLarge?.copyWith(
-          color: kGrayColor,
-        ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
-      child: _AddSalesBody(),
-    );
-  }
+  State<_AddSalesForm> createState() => _AddSalesFormState();
 }
 
-class _AddSalesBody extends StatefulWidget {
-  const _AddSalesBody();
-
-  @override
-  State<_AddSalesBody> createState() => _AddSalesBodyState();
-}
-
-class _AddSalesBodyState extends State<_AddSalesBody> {
+class _AddSalesFormState extends State<_AddSalesForm> {
   bool _isEnabledOrderNumber = false;
   bool _isEnabledProductId = false;
   double _discountAmount = 0.0;
@@ -252,7 +215,10 @@ class _AddSalesBodyState extends State<_AddSalesBody> {
           },
         ),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(label: 'Add Sales', onPressed: _onSubmit),
+        context.confirmableActionButton(
+          label: 'Add Sales',
+          onPressed: _onSubmit,
+        ),
       ],
     );
   }

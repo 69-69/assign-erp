@@ -1,5 +1,7 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
+import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/neumorphism.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +14,8 @@ class CustomTab extends StatefulWidget {
   final bool isScrollable;
   final bool isColoredTab;
   final bool isVerticalTab;
-  final int length;
+  final bool showScrollUpButton;
+  final int? length;
   final Function(int)? onTapChanged;
   final EdgeInsetsGeometry? padding;
 
@@ -23,7 +26,7 @@ class CustomTab extends StatefulWidget {
     super.key,
     this.controller,
     required this.tabs,
-    required this.length,
+    this.length,
     required this.children,
     this.isColoredTab = true,
     this.isScrollable = false,
@@ -32,6 +35,7 @@ class CustomTab extends StatefulWidget {
     this.indicatorWeight = 6.0,
     this.onTapChanged,
     this.padding,
+    this.showScrollUpButton = false,
   });
 
   @override
@@ -44,6 +48,7 @@ class _CustomTabState extends State<CustomTab>
   // late List<bool> _loadedTabs;
   Set<int> loadedTabs = {};
   bool _isNavigationRailVisible = true; // State variable for toggle
+  get _length => widget.length ?? widget.tabs.length;
 
   @override
   void initState() {
@@ -52,14 +57,14 @@ class _CustomTabState extends State<CustomTab>
         widget.controller ??
         TabController(
           vsync: this,
-          length: widget.length,
+          length: _length,
           initialIndex: widget.openThisTab,
         );
 
     // Ensure the initial tab content is loaded
     loadedTabs.add(widget.openThisTab);
     // Initialize loaded state for tabs
-    // _loadedTabs = List<bool>.generate(widget.length, (index) => false);
+    // _loadedTabs = List<bool>.generate(_length, (index) => false);
 
     // Listen to tab changes
     _listenToTabChanges();
@@ -101,7 +106,7 @@ class _CustomTabState extends State<CustomTab>
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: widget.length,
+      length: _length,
 
       // isVerticalTab = true: create a vertical tabs (side)  else create horizontal tabs
       child: widget.isVerticalTab
@@ -138,26 +143,33 @@ class _CustomTabState extends State<CustomTab>
   }
 
   // NavigationRail for vertical tabs
-  NavigationRail _buildSideNavRail() {
-    return NavigationRail(
-      indicatorColor: kLightBlueColor,
-      selectedIndex: _tabController.index,
-      onDestinationSelected: (index) {
-        _tabController.animateTo(index);
-        _handleTabTap(index);
-      },
-      labelType: NavigationRailLabelType.all,
-      // Set the visual properties for the selected destination
-      selectedLabelTextStyle: const TextStyle(
-        color: kPrimaryLightColor,
-        fontWeight: FontWeight.bold,
+  _buildSideNavRail() {
+    return CustomScrollBar(
+      controller: ScrollController(),
+      showScrollUpButton: widget.showScrollUpButton,
+      child: SizedBox(
+        height: context.screenHeight * 0.9,
+        child: NavigationRail(
+          indicatorColor: kLightBlueColor,
+          selectedIndex: _tabController.index,
+          onDestinationSelected: (index) {
+            _tabController.animateTo(index);
+            _handleTabTap(index);
+          },
+          labelType: NavigationRailLabelType.all,
+          // Set the visual properties for the selected destination
+          selectedLabelTextStyle: const TextStyle(
+            color: kPrimaryLightColor,
+            fontWeight: FontWeight.bold,
+          ),
+          destinations: widget.tabs.map<NavigationRailDestination>((t) {
+            return NavigationRailDestination(
+              icon: Icon(t['icon']),
+              label: Text(t['label'].toString().toTitleCase),
+            );
+          }).toList(),
+        ),
       ),
-      destinations: widget.tabs.map<NavigationRailDestination>((t) {
-        return NavigationRailDestination(
-          icon: Icon(t['icon']),
-          label: Text(t['label'].toString().toUppercaseFirstLetterEach),
-        );
-      }).toList(),
     );
   }
 
@@ -188,7 +200,7 @@ class _CustomTabState extends State<CustomTab>
     return TabBarView(
       controller: _tabController,
       children: List.generate(
-        widget.length,
+        _length,
         (index) => loadedTabs.contains(index)
             ? widget.children[index]
             : _loaderPlaceholder(index),
@@ -218,7 +230,6 @@ class _CustomTabState extends State<CustomTab>
       indicatorSize: TabBarIndicatorSize.tab,
       labelStyle: widget.isColoredTab
           ? context.ofTheme.textTheme.titleLarge?.copyWith(
-              // color: kPrimaryColor,
               fontWeight: FontWeight.w400,
             )
           : context.ofTheme.textTheme.titleSmall,
@@ -227,7 +238,7 @@ class _CustomTabState extends State<CustomTab>
       tabs: widget.tabs
           .map<Widget>(
             (t) => Tab(
-              text: t['label'].toString().toUppercaseFirstLetterEach,
+              text: t['label'].toString().toTitleCase,
               icon: Icon(t['icon']),
             ),
           )

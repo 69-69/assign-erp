@@ -1,6 +1,6 @@
 import 'package:assign_erp/config/routes/route_names.dart';
 import 'package:assign_erp/core/network/data_sources/models/dashboard_model.dart';
-import 'package:assign_erp/features/setup/data/models/employee_model.dart';
+import 'package:assign_erp/features/setup/data/role/employee_role.dart';
 import 'package:flutter/material.dart';
 
 /// Main-Dashboard containing individual Apps(Tiles) [HomeTiles]
@@ -36,21 +36,20 @@ extension HomeTiles on dynamic {
         .map((e) => DashboardTile.fromMap(e))
         .toList();
 
-    final guideSupportTiles = DashboardTile.filter(defaultTiles, [
+    final userGuideTiles = DashboardTile.filter(defaultTiles, [
       'setup',
     ], exclude: true);
 
     // Role Based Access Control
     return {
-      EmployeeRole.user: [],
-      EmployeeRole.manager: defaultTiles,
+      EmployeeRole.storeOwner: defaultTiles,
       EmployeeRole.developer: defaultTiles,
-      EmployeeRole.sale: guideSupportTiles,
-      EmployeeRole.cashier: guideSupportTiles,
-      EmployeeRole.finance: guideSupportTiles,
-      EmployeeRole.procurement: guideSupportTiles,
-      EmployeeRole.administrator: guideSupportTiles,
-      EmployeeRole.hrManager: guideSupportTiles,
+      EmployeeRole.sale: userGuideTiles,
+      EmployeeRole.cashier: userGuideTiles,
+      EmployeeRole.finance: userGuideTiles,
+      EmployeeRole.procurement: userGuideTiles,
+      EmployeeRole.manager: userGuideTiles,
+      EmployeeRole.hrManager: userGuideTiles,
     };
   }
 

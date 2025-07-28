@@ -49,9 +49,9 @@ class SetupUpdated<T> extends SetupState<T> {
 }
 
 class SetupDeleted<T> extends SetupState<T> {
-  final String? message;
+  final String message;
 
-  const SetupDeleted({this.message});
+  const SetupDeleted({required this.message});
 
   @override
   List<Object?> get props => [message];

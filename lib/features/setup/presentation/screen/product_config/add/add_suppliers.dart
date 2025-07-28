@@ -1,11 +1,10 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/setup/data/models/supplier_model.dart';
 import 'package:assign_erp/features/setup/presentation/bloc/product_config/suppliers_bloc.dart';
@@ -17,64 +16,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 extension AddSuppliers on BuildContext {
   Future openAddSuppliers({Widget? header}) => openBottomSheet(
     isExpand: false,
-    child: _AddSuppliersForm(header: header),
+    child: FormBottomSheet(title: 'Add Suppliers', body: _AddSuppliersForm()),
   );
 }
 
-class _AddSuppliersForm extends StatelessWidget {
-  final Widget? header;
-
-  const _AddSuppliersForm({this.header});
+class _AddSuppliersForm extends StatefulWidget {
+  const _AddSuppliersForm();
 
   @override
-  Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: _buildHeader(context),
-      child: BlocBuilder<SupplierBloc, SetupState<Supplier>>(
-        builder: (context, state) => _buildBody(context),
-      ),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: Text(
-        'Add Suppliers',
-        semanticsLabel: 'add Suppliers',
-        style: context.ofTheme.textTheme.titleLarge?.copyWith(
-          color: kGrayColor,
-        ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
-      child: _AddSuppliersFormBody(),
-    );
-  }
+  State<_AddSuppliersForm> createState() => _AddSuppliersFormState();
 }
 
-class _AddSuppliersFormBody extends StatefulWidget {
-  const _AddSuppliersFormBody();
-
-  @override
-  State<_AddSuppliersFormBody> createState() => _AddSuppliersFormBodyState();
-}
-
-class _AddSuppliersFormBodyState extends State<_AddSuppliersFormBody> {
+class _AddSuppliersFormState extends State<_AddSuppliersForm> {
   final ScrollController _scrollController = ScrollController();
   bool isMultipleSuppliers = false;
   final List<Supplier> _suppliers = [];
 
   final _formKey = GlobalKey<FormState>();
-  final _supplierNameController = TextEditingController();
+  final _nameController = TextEditingController();
   final _contactPersonNameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
@@ -83,14 +42,14 @@ class _AddSuppliersFormBodyState extends State<_AddSuppliersFormBody> {
   @override
   void dispose() {
     _phoneController.dispose();
-    _supplierNameController.dispose();
+    _nameController.dispose();
     _addressController.dispose();
     _emailController.dispose();
     super.dispose();
   }
 
   Supplier get _supplierData => Supplier(
-    supplierName: _supplierNameController.text,
+    name: _nameController.text,
     contactPersonName: _contactPersonNameController.text,
     phone: _phoneController.text,
     email: _emailController.text,
@@ -123,14 +82,14 @@ class _AddSuppliersFormBodyState extends State<_AddSuppliersFormBody> {
       _suppliers.add(_supplierData);
 
       context.showAlertOverlay(
-        '${_supplierNameController.text.toUppercaseFirstLetterEach} added to batch',
+        '${_nameController.text.toTitleCase} added to batch',
       );
       _clearFields();
     }
   }
 
   void _clearFields() {
-    _supplierNameController.clear();
+    _nameController.clear();
     _contactPersonNameController.clear();
     _phoneController.clear();
     _addressController.clear();
@@ -173,12 +132,12 @@ class _AddSuppliersFormBodyState extends State<_AddSuppliersFormBody> {
                   child: Chip(
                     padding: EdgeInsets.zero,
                     label: Text(
-                      o.supplierName.toUppercaseFirstLetterEach,
+                      o.name.toTitleCase,
                       style: context.ofTheme.textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    deleteButtonTooltipMessage: 'Remove ${o.supplierName}',
+                    deleteButtonTooltipMessage: 'Remove ${o.name}',
                     backgroundColor: kGrayColor.withAlpha((0.3 * 255).toInt()),
                     deleteIcon: const Icon(
                       size: 16,
@@ -199,7 +158,7 @@ class _AddSuppliersFormBodyState extends State<_AddSuppliersFormBody> {
       children: <Widget>[
         const SizedBox(height: 20.0),
         SupplierNameAndContactPersonNameInput(
-          supplierNameController: _supplierNameController,
+          supplierNameController: _nameController,
           contactPersonNameController: _contactPersonNameController,
           onSupplierNameChanged: (s) {
             if (_formKey.currentState!.validate()) setState(() {});
@@ -222,7 +181,7 @@ class _AddSuppliersFormBodyState extends State<_AddSuppliersFormBody> {
           label: 'Add to List',
         ),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(
+        context.confirmableActionButton(
           label: isMultipleSuppliers
               ? 'Create All Suppliers'
               : 'Create Supplier',

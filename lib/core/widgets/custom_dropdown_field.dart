@@ -48,7 +48,7 @@ class CustomDropdown extends StatelessWidget {
           inputDecoration ??
           InputDecoration(
             isDense: true,
-            labelText: '${labelText.toUppercaseFirstLetterEach} $helpText',
+            labelText: '${labelText.toTitleCase} $helpText',
             // helperText: helperText,
             labelStyle: const TextStyle(overflow: TextOverflow.ellipsis),
           ),
@@ -56,7 +56,7 @@ class CustomDropdown extends StatelessWidget {
         return DropdownMenuItem(
           value: e,
           child: Text(
-            e.toUppercaseFirstLetterEach,
+            e.toTitleCase,
             softWrap: true,
             overflow: TextOverflow.fade,
           ),
@@ -67,8 +67,8 @@ class CustomDropdown extends StatelessWidget {
       validator:
           validator ??
           (String? val) {
-            String v = val ?? ''.toLowercaseAllLetter;
-            String label = items.first.toLowercaseAllLetter;
+            String v = val ?? ''.toLowercaseAll;
+            String label = items.first.toLowercaseAll;
 
             if (v.isEmpty || v.contains(label)) {
               return 'Please enter $labelText';

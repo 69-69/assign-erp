@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/constants/app_colors.dart';
+import 'package:assign_erp/core/util/size_config.dart';
+import 'package:assign_erp/core/util/str_util.dart';
+import 'package:flutter/material.dart';
 
 extension ShowPopupDialog on BuildContext {
-
   /// open dialog [openDialog]
   Future<dynamic> openDialog({
     required Widget child,
@@ -29,9 +28,9 @@ extension ShowPopupDialog on BuildContext {
   Container _buildTitle({String title = ''}) {
     return Container(
       width: screenWidth,
-      padding: const EdgeInsets.fromLTRB(20.0,20.0,20.0,0.0),
+      padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 0.0),
       child: Text(
-        title.toUppercaseAllLetter,
+        title.toUpperCaseAll,
         textAlign: TextAlign.center,
         style: ofTheme.textTheme.headlineSmall?.copyWith(
           color: kPrimaryColor,

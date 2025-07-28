@@ -22,7 +22,7 @@ class GetSuppliers {
     return state.data.isEmpty ? [Supplier.notFound] : state.data;
   }
 
-  /// Get by either supplierName, phone, contactPersonName [byAnyTerm]
+  /// Get by either name, phone, contactPersonName [byAnyTerm]
   /// @Return: `List<Supplier>`
   static Future<List<Supplier>> byAnyTerm(term) async {
     final supplierBloc = SupplierBloc(firestore: FirebaseFirestore.instance);
@@ -30,7 +30,7 @@ class GetSuppliers {
     // Load all data initially to pass to the search delegate
     supplierBloc.add(
       SearchSetup<Supplier>(
-        field: 'supplierName',
+        field: 'name',
         optField: 'phone',
         auxField: 'contactPersonName',
         query: term,

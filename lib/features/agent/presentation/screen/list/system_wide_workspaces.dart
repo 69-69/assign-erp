@@ -1,12 +1,12 @@
 import 'package:assign_erp/config/routes/route_names.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
-import 'package:assign_erp/core/network/data_sources/models/workspace_model.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/dynamic_table.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/agent/presentation/bloc/agent_bloc.dart';
-import 'package:assign_erp/features/agent/presentation/bloc/client/agent_clients_bloc.dart';
+import 'package:assign_erp/features/agent/presentation/bloc/system_wide/system_wide_bloc.dart';
 import 'package:assign_erp/features/agent/presentation/screen/list/header_wrap.dart';
+import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
 import 'package:assign_erp/features/auth/presentation/screen/workspace/create/create_workspace_acc.dart';
 import 'package:assign_erp/features/auth/presentation/screen/workspace/update/update_workspace_acc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

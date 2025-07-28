@@ -8,9 +8,10 @@ const autoID = 'auto-id';
 
 /// Assign: is prefix error message to distinguish Generic (Firestore) error [errorPrefix]
 const errorPrefix = 'Assign';
-
+// rhoda= 172298 - steve = 60438
 /// APP NAME
 const _nChar = '⏺';
+// WORKSPACE, HEALTHSPACE, EDUSPACE
 const appName = 'ASSIGN.WORK';
 const appSubName =
     'A.I $_nChar P.O.S $_nChar Inventory $_nChar C.R.M $_nChar Warehouse $_nChar Reports $_nChar Cloud $_nChar Multi-Location';
@@ -49,7 +50,7 @@ const inventoryAppTitle = 'inventory - ims';
 const warehouseAppTitle = 'warehouse - wms';
 const customerAppTitle = 'customer - crm';
 const setupAppTitle = 'setup';
-const storeSwitcherAppTitle = 'store - switch';
+const storeSwitcherAppTitle = 'switch store locations';
 const userGuideAppTitle = 'user - guide';
 
 /// MANAGEMENT SUB-SCREENS TITLES
@@ -57,7 +58,7 @@ const liveSupportScreenTitle = 'live support';
 const allOrderScreenTitle = 'orders Management';
 const stocksScreenTitle = 'product management';
 const clienteleScreenTitle = 'clientele';
-const allWorkspacesScreenTitle = 'System Wide: All Workspaces';
+const allWorkspacesScreenTitle = 'system wide: all workspaces';
 const troubleshootScreenTitle = 'troubleshoot';
 const salesOrderScreenTitle = ' orders (so)';
 const purchaseOrderScreenTitle = 'purchase order (po)';
@@ -73,9 +74,9 @@ const posOrdersScreenTitle = 'p.o.s - orders';
 const guideToScreenTitle = 'Guide to...';
 
 const kAppBarHeight = 80.0;
-const wAnimateDuration = Duration(seconds: 3);
-const kFAnimateDuration = Duration(seconds: 5);
-const kTenAnimateDuration = Duration(seconds: 10);
+const kRProgressDelay = Duration(seconds: 3);
+const kFProgressDelay = Duration(seconds: 5);
+const kTProgressDelay = Duration(seconds: 10);
 const kAnimateDuration = Duration(milliseconds: 300);
 
 //RegExp
@@ -91,4 +92,8 @@ RegExp emailRegExp = RegExp(
 
 RegExp passwordRegExp = RegExp(
   r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[$!%*#@?&])[A-Za-z\d$!%*#@?&]{8,}$",
+);
+
+RegExp passcodeRegExp = RegExp(
+  r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[$!%*#@?&-])[A-Za-z\d$!%*#@?&-]{8,}$',
 );

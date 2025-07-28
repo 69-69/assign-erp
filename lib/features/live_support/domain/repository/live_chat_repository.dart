@@ -77,7 +77,7 @@ class LiveChatRepository extends FirestoreRepository {
 
   /// Read/Get all cache data [_getFromCache]
   List<CacheData> _getFromCache() {
-    return _cacheBox.values.toList();
+    return _cacheBox.values.where((v) => v.scopeId == _scopeId).toList();
   }
 
   /// Add New BackUp Data to Remote-Server (Firestore) [_backupNewDataToFirestore]

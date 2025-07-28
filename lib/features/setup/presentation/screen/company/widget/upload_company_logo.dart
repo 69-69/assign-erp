@@ -120,7 +120,7 @@ class _UploadCompanyLogoState extends State<UploadCompanyLogo> {
     // Show progress dialog while deleting data
     await context.progressBarDialog(
       request: Future.delayed(
-        wAnimateDuration,
+        kRProgressDelay,
         () async => await _saveImageToDirectory(pickedImg),
       ),
       onSuccess: (_) => context.showAlertOverlay('Logo successfully saved'),
@@ -169,7 +169,7 @@ class _UploadCompanyLogoState extends State<UploadCompanyLogo> {
     // Show progress dialog while deleting data
     await context.progressBarDialog(
       request: Future.delayed(
-        wAnimateDuration,
+        kRProgressDelay,
         () async => await _deleteImage(),
       ),
       onSuccess: (_) => context.showAlertOverlay('Logo successfully deleted'),

@@ -1,13 +1,14 @@
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:flutter/material.dart';
 
-class DashboardTile {
+class DashboardTile<T> {
   DashboardTile({
     required this.icon,
     required this.label,
     required this.action,
     this.param = const {},
     this.description,
+    this.permission,
   });
 
   final Map<String, String> param;
@@ -15,14 +16,21 @@ class DashboardTile {
   final String label;
   final dynamic icon;
   final dynamic action;
+  final T? permission;
 
-  factory DashboardTile.fromMap(Map<String, dynamic> json) {
-    return DashboardTile(
-      icon: json['icon'] as IconData,
-      label: json['label'] as String,
-      action: json['action'] as String,
-      param: createNewMap(json['param']),
-      description: json['description'] as String?,
+  factory DashboardTile.fromMap(
+    Map<String, dynamic> map, {
+    T? Function(String)? permissionResolver,
+  }) {
+    return DashboardTile<T>(
+      icon: map['icon'] as IconData,
+      label: map['label'] as String,
+      action: map['action'] as String,
+      param: createNewMap(map['param']),
+      description: map['description'] as String?,
+      permission: permissionResolver != null && map['permission'] != null
+          ? permissionResolver(map['permission'])
+          : null,
     );
   }
 
@@ -32,6 +40,7 @@ class DashboardTile {
     'action': action,
     'param': param,
     'description': description,
+    'permission': permission,
   };
 
   /*
@@ -61,6 +70,15 @@ class DashboardTile {
       ),
     );
   }
+}
+
+List<DashboardTile<T>> filterTilesByPermissions<T>(
+  List<DashboardTile<T>> tiles,
+  List<T> userPermissions,
+) {
+  return tiles.where((t) {
+    return t.permission == null || userPermissions.contains(t.permission);
+  }).toList();
 }
 
 class RoleBasedDashboardTile<T> {

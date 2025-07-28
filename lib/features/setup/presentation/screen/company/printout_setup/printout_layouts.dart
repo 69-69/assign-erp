@@ -88,6 +88,7 @@ class _PrintoutLayoutsState extends State<PrintoutLayouts> {
 
   ListTile _buildLayoutTitle(BuildContext context) {
     return ListTile(
+      dense: true,
       contentPadding: const EdgeInsets.all(10.0),
       titleAlignment: ListTileTitleAlignment.center,
       title: Wrap(
@@ -147,7 +148,8 @@ class _PrintoutLayoutsState extends State<PrintoutLayouts> {
             fit: BoxFit.contain,
           ),
         ),
-        child: RadioListTile(
+        child: RadioListTile.adaptive(
+          dense: true,
           value: index,
           groupValue: _selectedCardIndex,
           fillColor: const WidgetStatePropertyAll(kWarningColor),

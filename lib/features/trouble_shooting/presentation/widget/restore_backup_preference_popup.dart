@@ -1,8 +1,8 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/size_config.dart';
+import 'package:assign_erp/core/widgets/bottom_sheet_header.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_tab.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
 import 'package:assign_erp/features/trouble_shooting/presentation/widget/restore_data/index.dart';
 import 'package:flutter/material.dart';
 
@@ -25,9 +25,10 @@ class RestoreBackupPreference extends StatelessWidget {
     );
   }
 
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
+  DialogHeader _buildHeader(BuildContext context) {
+    return DialogHeader(
       title: ListTile(
+        dense: true,
         title: Text(
           'Data Restore Preference',
           textAlign: TextAlign.center,

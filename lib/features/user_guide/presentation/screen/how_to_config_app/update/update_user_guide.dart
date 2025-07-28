@@ -1,11 +1,11 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/core/widgets/bottom_sheet_header.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
 import 'package:assign_erp/features/user_guide/data/models/user_guide_model.dart';
 import 'package:assign_erp/features/user_guide/presentation/bloc/index.dart';
 import 'package:assign_erp/features/user_guide/presentation/bloc/user_guide_bloc.dart';
@@ -34,8 +34,8 @@ class _UpdateUserGuide extends StatelessWidget {
     );
   }
 
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
+  DialogHeader _buildHeader(BuildContext context) {
+    return DialogHeader(
       title: ListTile(
         dense: true,
         title: Text(
@@ -46,7 +46,7 @@ class _UpdateUserGuide extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          guide.title.toUppercaseFirstLetterEach,
+          guide.title.toTitleCase,
           textAlign: TextAlign.center,
           style: context.ofTheme.textTheme.titleMedium?.copyWith(
             color: kGrayColor,
@@ -166,7 +166,7 @@ class _UpdateUserGuideBodyState extends State<_UpdateUserGuideBody> {
           },
         ),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(onPressed: _onSubmit),
+        context.confirmableActionButton(onPressed: _onSubmit),
       ],
     );
   }

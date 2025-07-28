@@ -85,7 +85,7 @@ class DashboardMetrics extends StatelessWidget {
         textScaler: TextScaler.linear(context.textScaleFactor),
       ),
       subtitle: Text(
-        subtitle.toUppercaseFirstLetterEach,
+        subtitle.toTitleCase,
         style: context.ofTheme.textTheme.bodyLarge?.copyWith(
           color: kLightColor,
           fontWeight: FontWeight.normal,
@@ -134,7 +134,7 @@ class _MetricItem extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            label.toUppercaseFirstLetterEach,
+            label.toTitleCase,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 14),

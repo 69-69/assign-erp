@@ -122,6 +122,7 @@ class _PreviewPrintoutColorsState extends State<PreviewPrintoutColors> {
 
   ListTile _buildPreviewTitle(BuildContext context) {
     return ListTile(
+      dense: true,
       titleAlignment: ListTileTitleAlignment.center,
       title: _buildText(context, 'Preview:', color: kDarkTextColor),
       subtitle: Text(

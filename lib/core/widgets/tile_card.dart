@@ -2,16 +2,37 @@ import 'package:assign_erp/config/routes/route_names.dart';
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/network/data_sources/models/dashboard_model.dart';
-import 'package:assign_erp/core/network/data_sources/models/workspace_role.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/dashboard_metrics.dart';
 import 'package:assign_erp/core/widgets/delayed_tooltip.dart';
 import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/side_nav.dart';
+import 'package:assign_erp/features/auth/data/role/workspace_role.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+/*class PermissionService {
+  final Set<dynamic> userPermissions;
+
+  PermissionService(this.userPermissions);
+
+  bool has(dynamic permission) => userPermissions.contains(permission);
+}
+final permissionService = PermissionService(currentUser.permissions);
+final ps = context.read<PermissionService>();
+
+...
+
+if (ps.has(InventoryPermission.viewItems))
+  DashboardTile(
+    icon: Icons.inventory,
+    title: 'Inventory',
+    onTap: () => Navigator.push(...),
+  ),
+
+*/
 
 class TileCard extends StatefulWidget {
   final Color? bgColor;
@@ -39,10 +60,19 @@ class TileCard extends StatefulWidget {
 
 class _TileCardState extends State<TileCard> {
   late double maxCrossAxisExtent;
+  // late List<DashboardTile> _visibleTiles;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
+    /*final ps = context.read<PermissionService>();
+
+    _visibleTiles = widget.tiles.where((tile) {
+      if (tile.requiredPermission == null) return true;
+      return ps.has(tile.requiredPermission);
+    }).toList();*/
+
     _updateMaxCrossAxisExtent();
   }
 
@@ -90,6 +120,8 @@ class _TileCardState extends State<TileCard> {
   }
 
   GridView _buildGridView(BuildContext context, double pad) {
+    // List<DashboardTile> tiles = List.from(widget.tiles)..removeAt(0);
+
     return GridView.builder(
       primary: false,
       itemCount: widget.tiles.length,
@@ -160,7 +192,7 @@ class _TileCardState extends State<TileCard> {
           borderRadius: BorderRadius.circular(kBorderRadius),
         ),
         child: DelayedTooltip(
-          message: (tile.description ?? '').toUppercaseFirstLetterEach,
+          message: (tile.description ?? '').toTitleCase,
           child: context.isMiniMobile
               ? viewCard
               : _buildGridTile(tile, context, viewCard),
@@ -172,7 +204,7 @@ class _TileCardState extends State<TileCard> {
   GridTile _buildGridTile(DashboardTile tile, BuildContext context, viewCard) {
     return GridTile(
       header: Text(
-        tile.label.toUppercaseAllLetter,
+        tile.label.toUpperCaseAll,
         textAlign: TextAlign.center,
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(color: kLightColor),
@@ -181,7 +213,7 @@ class _TileCardState extends State<TileCard> {
       footer: context.isMobile
           ? null
           : Text(
-              (tile.description ?? '').toUppercaseFirstLetterEach,
+              (tile.description ?? '').toTitleCase,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(color: kLightColor),
@@ -270,9 +302,10 @@ class _TileCardState extends State<TileCard> {
 
   ListTile _buildListTile(String title, BuildContext context, String subTitle) {
     return ListTile(
+      dense: true,
       contentPadding: EdgeInsets.zero,
       title: Text(
-        title.toUppercaseAllLetter,
+        title.toUpperCaseAll,
         textAlign: TextAlign.center,
         style: context.ofTheme.textTheme.titleMedium?.copyWith(
           color: kLightBlueColor,
@@ -288,7 +321,7 @@ class _TileCardState extends State<TileCard> {
       subtitle: subTitle.isEmpty
           ? null
           : Text(
-              subTitle.toUppercaseAllLetter,
+              subTitle.toUpperCaseAll,
               textAlign: TextAlign.center,
               textScaler: TextScaler.linear(context.textScaleFactor),
             ),
@@ -309,7 +342,7 @@ class _TileCardState extends State<TileCard> {
         if (!context.isMobile) ...[
           const SizedBox(width: 10),
           Text(
-            tile.label.toUppercaseAllLetter,
+            tile.label.toUpperCaseAll,
             textAlign: TextAlign.center,
             style: context.ofTheme.textTheme.titleMedium?.copyWith(
               color: kLightColor,

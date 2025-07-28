@@ -153,7 +153,7 @@ class _ListDeliveriesState extends State<ListDeliveries> {
   }
 
   Future<dynamic> _printout(List<Delivery> deliveries, List<String> row) =>
-      Future.delayed(wAnimateDuration, () async {
+      Future.delayed(kRProgressDelay, () async {
         // Simulate loading supplier and company info
         final delivery = Delivery.findDeliveryById(deliveries, row.first).first;
 

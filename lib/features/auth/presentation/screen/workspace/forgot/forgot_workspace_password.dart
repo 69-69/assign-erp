@@ -1,8 +1,10 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/size_config.dart';
+import 'package:assign_erp/core/widgets/bottom_sheet_header.dart';
+import 'package:assign_erp/core/widgets/custom_dialog.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/features/auth/presentation/bloc/sign_in/sign_in_bloc.dart';
-import 'package:assign_erp/features/auth/presentation/screen/widget/form_inputs.dart';
+import 'package:assign_erp/features/auth/presentation/bloc/sign_in/workspace/workspace_sign_in_bloc.dart';
+import 'package:assign_erp/features/auth/presentation/screen/widget/workspace_form_inputs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
@@ -12,7 +14,7 @@ extension ForgotWorkspacePopUp on BuildContext {
     context: this,
     isDismissible: true,
     isScrollControlled: true,
-    backgroundColor: Colors.transparent,
+    backgroundColor: kTransparentColor,
     builder: (_) => const ForgotWorkspacePassword(),
   );
 }
@@ -36,48 +38,20 @@ class ForgotWorkspacePassword extends StatelessWidget {
   }
 
   _buildAlertDialog(BuildContext context) {
-    return AlertDialog(
-      scrollable: true,
-      icon: Align(
-        alignment: Alignment.topRight,
-        child: IconButton(
-          style: IconButton.styleFrom(
-            backgroundColor: kLightColor.withAlpha((0.4 * 255).toInt()),
-          ),
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.close, color: kTextColor),
-        ),
+    return CustomDialog(
+      title: DialogTitle(
+        title: 'Reset Workspace Password',
+        subtitle: "This is your Organization Workspace Password",
       ),
-      iconPadding: const EdgeInsets.only(right: 5, top: 5),
-      backgroundColor: kLightColor.withAlpha((0.8 * 255).toInt()),
-      title: _buildTitle(context),
-      content: _buildFormBody(context),
+      body: _buildFormBody(context),
       actions: const [ForgotWorkspacePasswordButton()],
     );
   }
 
-  _buildTitle(BuildContext context) {
-    return ListTile(
-      title: Text(
-        'Reset Workspace Password',
-        textAlign: TextAlign.center,
-        style: context.ofTheme.textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.w500,
-          color: kPrimaryColor,
-        ),
-      ),
-      subtitle: Text(
-        "This is your Organization Workspace Password",
-        textAlign: TextAlign.center,
-        style: context.ofTheme.textTheme.titleSmall?.copyWith(
-          color: kTextColor,
-        ),
-      ),
-    );
-  }
-
-  BlocListener<SignInBloc, SignInState> _buildFormBody(BuildContext context) {
-    return BlocListener<SignInBloc, SignInState>(
+  BlocListener<WorkspaceSignInBloc, WorkspaceSignInState> _buildFormBody(
+    BuildContext context,
+  ) {
+    return BlocListener<WorkspaceSignInBloc, WorkspaceSignInState>(
       listenWhen: (oldState, newState) => oldState.status != newState.status,
       listener: (_, state) => _showSignUpAlert(state, context),
       child: Container(
@@ -89,7 +63,7 @@ class ForgotWorkspacePassword extends StatelessWidget {
   }
 
   /// Shows the alert overlay if there is a failure state.
-  void _showSignUpAlert(SignInState state, BuildContext context) {
+  void _showSignUpAlert(WorkspaceSignInState state, BuildContext context) {
     if (state.password.isValid && state.status.isFailure) {
       const msg = 'Something went wrong! Kindly try again...';
 

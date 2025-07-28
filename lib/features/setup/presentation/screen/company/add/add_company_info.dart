@@ -1,10 +1,8 @@
-import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/setup/data/data_sources/local/printout_setup_cache_service.dart';
 import 'package:assign_erp/features/setup/data/models/company_info_model.dart';
@@ -18,59 +16,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 extension AddCompanyInfo<T> on BuildContext {
   Future<void> openAddCompanyInfo({Widget? header}) => openBottomSheet(
     isExpand: false,
-    child: _AddCompanyInfoForm(header: header),
+    child: FormBottomSheet(
+      title: 'Add Company Info',
+      body: _AddCompanyInfoForm(),
+    ),
   );
 }
 
-class _AddCompanyInfoForm extends StatelessWidget {
-  final Widget? header;
-
-  const _AddCompanyInfoForm({this.header});
+class _AddCompanyInfoForm extends StatefulWidget {
+  const _AddCompanyInfoForm();
 
   @override
-  Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: _buildHeader(context),
-      child: BlocBuilder<CompanyBloc, SetupState<Company>>(
-        builder: (context, state) => _buildBody(context),
-      ),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: Text(
-        'Add Company Info',
-        semanticsLabel: 'add company info',
-        style: context.ofTheme.textTheme.titleLarge?.copyWith(
-          color: kGrayColor,
-        ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
-      child: _AddCompanyInfoFormBody(),
-    );
-  }
+  State<_AddCompanyInfoForm> createState() => _AddCompanyInfoFormState();
 }
 
-class _AddCompanyInfoFormBody extends StatefulWidget {
-  const _AddCompanyInfoFormBody();
-
-  @override
-  State<_AddCompanyInfoFormBody> createState() =>
-      _AddCompanyInfoFormBodyState();
-}
-
-class _AddCompanyInfoFormBodyState extends State<_AddCompanyInfoFormBody> {
+class _AddCompanyInfoFormState extends State<_AddCompanyInfoForm> {
   String _uploadedLogoPath = '';
   final PrintoutSetupCacheService _printoutService =
       PrintoutSetupCacheService();
@@ -115,7 +75,7 @@ class _AddCompanyInfoFormBodyState extends State<_AddCompanyInfoFormBody> {
 
       if (mounted) {
         context.showAlertOverlay(
-          '${_nameController.text.toUppercaseFirstLetterEach} successfully created',
+          '${_nameController.text.toTitleCase} successfully created',
         );
         Navigator.pop(context);
       }
@@ -182,7 +142,10 @@ class _AddCompanyInfoFormBodyState extends State<_AddCompanyInfoFormBody> {
           },
         ),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(label: 'Create Info', onPressed: _onSubmit),
+        context.confirmableActionButton(
+          label: 'Create Info',
+          onPressed: _onSubmit,
+        ),
         const SizedBox(height: 20.0),
       ],
     );

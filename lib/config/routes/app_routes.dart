@@ -148,12 +148,12 @@ GoRoute _posRoute() {
 /// Setup App
 GoRoute _setupRoute() {
   final List<String> setupRoutes = [
-    RouteNames.createUserAccount,
-    RouteNames.manageUserAccount,
-    RouteNames.checkForUpdate,
-    RouteNames.licenseRenewal,
-    RouteNames.backup,
     RouteNames.companyInfo,
+    RouteNames.staffAccount,
+    RouteNames.manageRoles,
+    RouteNames.productConfig,
+    RouteNames.backup,
+    RouteNames.licenseRenewal,
   ];
 
   return GoRoute(
@@ -180,7 +180,7 @@ GoRoute _storesSwitcherRoute() {
     name: RouteNames.switchStoresAccount,
     path: RouteNames.switchStoresAccount,
     pageBuilder: (context, state) =>
-        _animateTransition(state, const SwitchStoreLocationsScreen()),
+        _animateTransition(state, const SwitchShopLocationsScreen()),
   );
 }
 
@@ -366,9 +366,9 @@ List<RouteBase> _routerConfig = <RouteBase>[
         },
       ),
       _configBaseRoute(
-        name: RouteNames.changeTemporalPasscode,
-        path: RouteNames.changeTemporalPasscode,
-        child: const ChangeEmployeeTemporalPasscodeScreen(),
+        name: RouteNames.changeTemporaryPasscode,
+        path: RouteNames.changeTemporaryPasscode,
+        child: const ChangeEmployeePasscodeScreen(),
       ),
       _configBaseRoute(
         name: RouteNames.verifyWorkspaceEmail,

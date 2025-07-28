@@ -7,6 +7,13 @@ extension UserGuideTiles on dynamic {
   List<DashboardTile> get userGuideTiles {
     final tilesData = [
       {
+        'label': 'Dashboard',
+        'icon': Icons.dashboard,
+        'action': RouteNames.mainDashboard,
+        'param': {},
+        'description': 'Access to dashboard',
+      },
+      {
         'label': 'guide to',
         'icon': Icons.how_to_reg,
         'action': RouteNames.howToConfigApp,

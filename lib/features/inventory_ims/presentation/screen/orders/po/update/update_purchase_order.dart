@@ -1,12 +1,11 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/calculate_extras.dart';
-import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
+import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
-import 'package:assign_erp/core/widgets/top_header_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/orders/purchase_order_model.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/bloc/inventory_bloc.dart';
@@ -16,69 +15,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 extension UpdatePurchaseOrderForm on BuildContext {
-  Future openUpdatePurchaseOrder({required PurchaseOrder rfq}) =>
-      openBottomSheet(isExpand: false, child: _UpdatePurchaseOrder(po: rfq));
+  Future openUpdatePurchaseOrder({required PurchaseOrder po}) =>
+      openBottomSheet(
+        isExpand: false,
+        child: FormBottomSheet(
+          title: 'Edit Purchase Order',
+          subtitle: po.poNumber.toUpperCase(),
+          body: _UpdatePurchaseOrderForm(po: po),
+        ),
+      );
 }
 
-class _UpdatePurchaseOrder extends StatelessWidget {
+class _UpdatePurchaseOrderForm extends StatefulWidget {
   final PurchaseOrder po;
 
-  const _UpdatePurchaseOrder({required this.po});
+  const _UpdatePurchaseOrderForm({required this.po});
 
   @override
-  Widget build(BuildContext context) {
-    return CustomBottomSheet(
-      padding: EdgeInsets.only(bottom: context.bottomInsetPadding),
-      initialChildSize: 0.90,
-      maxChildSize: 0.90,
-      header: _buildHeader(context),
-      child: _buildBody(context),
-    );
-  }
-
-  TopHeaderRow _buildHeader(BuildContext context) {
-    return TopHeaderRow(
-      title: ListTile(
-        dense: true,
-        title: Text(
-          'Edit Purchase Order',
-          textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.titleLarge?.copyWith(
-            color: kGrayColor,
-          ),
-        ),
-        subtitle: Text(
-          po.poNumber,
-          textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.titleMedium?.copyWith(
-            color: kGrayColor,
-          ),
-        ),
-      ),
-      btnText: 'Close',
-      onPress: () => Navigator.pop(context),
-    );
-  }
-
-  _buildBody(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
-      child: _UpdatePurchaseOrderBody(po: po),
-    );
-  }
+  State<_UpdatePurchaseOrderForm> createState() =>
+      _UpdatePurchaseOrderFormState();
 }
 
-class _UpdatePurchaseOrderBody extends StatefulWidget {
-  final PurchaseOrder po;
-
-  const _UpdatePurchaseOrderBody({required this.po});
-
-  @override
-  State<_UpdatePurchaseOrderBody> createState() =>
-      _UpdatePurchaseOrderBodyState();
-}
-
-class _UpdatePurchaseOrderBodyState extends State<_UpdatePurchaseOrderBody> {
+class _UpdatePurchaseOrderFormState extends State<_UpdatePurchaseOrderForm> {
   PurchaseOrder get _order => widget.po;
 
   bool _isEnabledTotalAmt = false;
@@ -145,11 +103,11 @@ class _UpdatePurchaseOrderBodyState extends State<_UpdatePurchaseOrderBody> {
   double _strToDouble(String s) => double.tryParse(s) ?? 0.0;
 
   PurchaseOrder get _orderData => PurchaseOrder(
+    orderType: 'purchase order',
     storeNumber: _order.storeNumber,
     status: _selectedPOStatus ?? _order.status,
     supplierId: _selectedSupplierId ?? _order.supplierId,
     productName: _productDescController.text,
-    orderType: 'purchase order',
     quantity: int.tryParse(_quantityController.text) ?? 0,
     unitPrice: _strToDouble(_unitPriceController.text),
     paymentTerms: _selectedPaymentTerms ?? '',
@@ -232,7 +190,7 @@ class _UpdatePurchaseOrderBodyState extends State<_UpdatePurchaseOrderBody> {
         style: context.ofTheme.textTheme.titleLarge,
       ),
       subtitle: Text(
-        'ID ${_order.id}'.toUppercaseAllLetter,
+        'ID ${_order.id}'.toUpperCaseAll,
         textAlign: TextAlign.center,
       ),
       childrenPadding: const EdgeInsets.only(bottom: 20.0),
@@ -311,7 +269,7 @@ class _UpdatePurchaseOrderBodyState extends State<_UpdatePurchaseOrderBody> {
           onChanged: (t) => setState(() {}),
         ),
         const SizedBox(height: 20.0),
-        context.elevatedBtn(onPressed: _onSubmit),
+        context.confirmableActionButton(onPressed: _onSubmit),
       ],
     );
   }
