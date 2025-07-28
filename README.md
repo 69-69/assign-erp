@@ -3,7 +3,7 @@
 
 git init
 git add .
-git commit -m "Major updates and refactoring"
+git commit -m "Change UI Tile and side_nav bg color"
 git branch -M main
 git push -u origin main
 
