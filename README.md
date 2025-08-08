@@ -3,7 +3,7 @@
 
 git init
 git add .
-git commit -m "Change UI Tile and side_nav bg color"
+git commit -m "refactored complete UI and BloC"
 git branch -M main
 git push -u origin main
 
