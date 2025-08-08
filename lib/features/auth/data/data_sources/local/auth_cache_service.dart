@@ -1,5 +1,6 @@
 import 'package:assign_erp/core/constants/app_db_collect.dart';
 import 'package:assign_erp/core/network/data_sources/local/cache_data_model.dart';
+import 'package:assign_erp/core/util/debug_printify.dart';
 import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
 import 'package:assign_erp/features/setup/data/models/employee_model.dart';
 import 'package:hive/hive.dart';
@@ -8,7 +9,7 @@ class AuthCacheService {
   static const String _empCacheKey = Employee.cacheKey;
   static const String _workCacheKey = Workspace.cacheKey;
 
-  final Box<CacheData> _dataBox;
+  Box<CacheData> _dataBox;
 
   AuthCacheService() : _dataBox = Hive.box<CacheData>(userAuthCache);
 
@@ -23,11 +24,22 @@ class AuthCacheService {
 
   /// Clear & delete Cache/localStorage [_clearCache]
   Future<void> _clearCache(String key) async {
-    await Future.wait([
-      _dataBox.clear(),
-      _dataBox.delete(key),
-      _dataBox.flush(),
-    ]);
+    try {
+      // Ensure the box isn't closed before performing any actions
+      if (!_dataBox.isOpen) {
+        // Open the box if it's not already open
+        _dataBox = await Hive.openBox<CacheData>(userAuthCache);
+      }
+
+      await Future.wait([
+        _dataBox.clear(),
+        _dataBox.delete(key),
+        _dataBox.flush(),
+      ]);
+      prettyPrint('Cache cleared', 'successfully');
+    } catch (e) {
+      prettyPrint('Error clearing cache', '$e');
+    }
   }
 
   Workspace? getWorkspace() {

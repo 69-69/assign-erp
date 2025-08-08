@@ -30,7 +30,7 @@ final _tabContent = [
 ];
 
 class LicenseCard extends StatelessWidget {
-  final void Function(Set<License> licenses) onSelectedFunc;
+  final void Function(Set<License>, String) onSelectedFunc;
   final Set<License>? initialLicenses;
 
   const LicenseCard({
@@ -71,7 +71,7 @@ class LicenseCard extends StatelessWidget {
         entitlements: tab.licenses,
         initialEntitlements: initialLicenses,
         toValue: (access) => _toValue(access),
-        onSelected: (licenses) => onSelectedFunc(licenses),
+        onSelected: (licenses, module) => onSelectedFunc(licenses, module),
         sectionColor: kPrimaryAccentColor,
         restrictedAccess: tab.restrictedAccess,
       );

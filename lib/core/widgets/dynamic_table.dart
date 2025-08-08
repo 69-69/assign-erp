@@ -16,7 +16,8 @@ class DynamicDataTable extends StatefulWidget {
   final bool skip;
 
   /// The LIST Position to skip in row [skipPos]
-  /// Especially, if you don't need to show ID field
+  /// Especially, if you don't need to render a field-vale in the UI (e.g.: ID)
+  /// The value will be skipped in the UI, but available in the code
   final int skipPos;
 
   /// Show or Hide Sensitive ID [showIDToggle]

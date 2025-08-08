@@ -97,6 +97,7 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
     emit(LoadingSetup<T>());
 
     try {
+      // _subscription?.cancel(); // Prevent multiple subscriptions
       _subscription = _setupRepository.getAllCacheData().listen(
         (snapshot) async {
           final data = _toList(snapshot);

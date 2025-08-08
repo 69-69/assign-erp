@@ -12,7 +12,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 
 class AgentRepository extends FirestoreRepository {
-  late final Box<CacheData> _cacheBox;
+  late Box<CacheData> _cacheBox;
 
   final CollectionType? collectionType;
 
@@ -64,12 +64,14 @@ class AgentRepository extends FirestoreRepository {
   }
 
   /// Emit Data / Add Event to Stream [_emitDataToStream]
-  void _emitDataToStream() {
+  void _emitDataToStream({bool isDelete = false}) {
     if (!_isDataControllerClosed) {
       final data = _getFromCache();
-      // Emit only if data has changed to avoid duplicate entries in the UI
-      if (!listEquals(data, _lastEmittedData)) {
-        _dataController.add(data);
+
+      // Emit only if 'data has changed or is delete operation' to avoid duplicate entries in the UI
+      if (isDelete || data.isEmpty || !listEquals(data, _lastEmittedData)) {
+        _dataController.add(data); // Use the new list reference
+        // Update the last emitted data to prevent re-emit
         _lastEmittedData = data;
       }
     }

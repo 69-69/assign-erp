@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 class EntitlementSelector<T> extends StatefulWidget {
   final List<AccessControl> entitlements;
   final Set<T>? initialEntitlements;
-  final void Function(Set<T>) onSelected;
+  final void Function(Set<T>, String module) onSelected;
   final String displayName;
   final Color? sectionColor;
   final bool selectAllByDefault;
@@ -58,7 +58,7 @@ class _EntitlementSelectorState<T> extends State<EntitlementSelector<T>> {
 
     _initFilter();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.onSelected(_getSelectedValues());
+      widget.onSelected(_getSelectedValues(), '');
     });
   }
 
@@ -144,7 +144,7 @@ class _EntitlementSelectorState<T> extends State<EntitlementSelector<T>> {
             setState(() {
               _mode = value!;
               _updateAllEntitlements(true);
-              widget.onSelected(_getSelectedValues());
+              widget.onSelected(_getSelectedValues(), '');
             });
           },
         ),
@@ -156,7 +156,7 @@ class _EntitlementSelectorState<T> extends State<EntitlementSelector<T>> {
             setState(() {
               _mode = value!;
               _updateAllEntitlements(false);
-              widget.onSelected(_getSelectedValues());
+              widget.onSelected(_getSelectedValues(), '');
             });
           },
         ),
@@ -198,7 +198,7 @@ class _EntitlementSelectorState<T> extends State<EntitlementSelector<T>> {
                         if (!shouldProceed) return;
 
                         setState(() => _selectedStates[index] = value);
-                        widget.onSelected(_getSelectedValues());
+                        widget.onSelected(_getSelectedValues(), item.module);
                         // _printLicenses(); // ✅ log current state
                       }
                     : null,

@@ -1,11 +1,12 @@
 import 'package:assign_erp/core/constants/app_db_collect.dart';
 import 'package:assign_erp/core/network/data_sources/local/cache_data_model.dart';
+import 'package:assign_erp/core/util/debug_printify.dart';
 import 'package:assign_erp/features/trouble_shooting/data/models/error_logs_model.dart';
 import 'package:hive/hive.dart';
 
 /// A service for caching the App Error Logs using Hive local storage.
 class ErrorLogCache {
-  final Box<CacheData> _dataBox;
+  Box<CacheData> _dataBox;
 
   ErrorLogCache() : _dataBox = Hive.box<CacheData>(appErrorLogsCache);
 
@@ -45,10 +46,26 @@ class ErrorLogCache {
     return await _addToCache(cacheKey, cacheData);
   }
 
+  /// Clear & delete Cache/localStorage [_clearCache]
+  Future<void> _clearCache() async {
+    try {
+      // Ensure the box isn't closed before performing any actions
+      if (!_dataBox.isOpen) {
+        // Open the box if it's not already open
+        _dataBox = await Hive.openBox<CacheData>(userAuthCache);
+      }
+
+      await Future.wait([_dataBox.clear(), _dataBox.flush()]);
+      prettyPrint('Cache cleared', 'successfully');
+    } catch (e) {
+      prettyPrint('Error clearing cache', '$e');
+    }
+  }
+
   /// Clears the stored Error Log by ID.
   /// [id] is same as cacheKey
   Future<void> clearById(String id) async => await _dataBox.delete(id);
 
   /// Clears the stored Error Logs from local storage.
-  Future<void> clearLogs() async => await _dataBox.clear();
+  Future<void> clearLogs() async => await _clearCache();
 }

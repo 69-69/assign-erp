@@ -118,6 +118,60 @@ class AccessControlCubit extends Cubit<AccessControlState> {
 }
 
 extension AccessControlCubitExtensions on BuildContext {
+  // Watch version (reactive) [_watchAcCubit]
+  AccessControlCubit _watchAcCubit() => watch<AccessControlCubit>();
+
+  // Read version (one-time, non-reactive) [_readAcCubit]
+  AccessControlCubit _readAcCubit() => read<AccessControlCubit>();
+
+  /// Reactive methods (using watch)
+  String get getRoleName => _watchAcCubit().roleName ?? 'employee';
+
+  String get getSubscriptionName =>
+      _watchAcCubit().subscriptionName ?? 'unsubscribed';
+
+  Set<String> get getPermissions => _watchAcCubit().state.permissions;
+
+  Set<String> get getLicenses => _watchAcCubit().state.licenses;
+
+  bool Function(String) get hasPermission => _watchAcCubit().has;
+
+  bool Function(Set<String>) get hasAllPermissions => _watchAcCubit().hasAll;
+
+  bool Function(Set<String>) get hasAnyPermissions => _watchAcCubit().hasAny;
+
+  bool Function(String) get isLicensed => _watchAcCubit().isLicensed;
+
+  bool Function(Set<String>) get isLicensedAny => _watchAcCubit().isLicensedAny;
+
+  bool Function(Set<String>) get isLicensedAll => _watchAcCubit().isLicensedAll;
+
+  /// Non-reactive methods (using read)
+  String get readRoleName => _readAcCubit().roleName ?? 'employee';
+
+  String get readSubscriptionName =>
+      _readAcCubit().subscriptionName ?? 'unsubscribed';
+
+  Set<String> get readPermissions => _readAcCubit().state.permissions;
+
+  Set<String> get readLicenses => _readAcCubit().state.licenses;
+
+  bool Function(String) get readHasPermission => _readAcCubit().has;
+
+  bool Function(Set<String>) get readHasAllPermissions => _readAcCubit().hasAll;
+
+  bool Function(Set<String>) get readHasAnyPermissions => _readAcCubit().hasAny;
+
+  bool Function(String) get readIsLicensed => _readAcCubit().isLicensed;
+
+  bool Function(Set<String>) get readIsLicensedAny =>
+      _readAcCubit().isLicensedAny;
+
+  bool Function(Set<String>) get readIsLicensedAll =>
+      _readAcCubit().isLicensedAll;
+}
+
+/*extension AccessControlCubitExtensions2 on BuildContext {
   AccessControlCubit get _acCubit => read<AccessControlCubit>();
 
   // AccessControlCubit get _acCubit => watch<AccessControlCubit>();
@@ -143,7 +197,7 @@ extension AccessControlCubitExtensions on BuildContext {
   bool Function(Set<String>) get isLicensedAny => _acCubit.isLicensedAny;
 
   bool Function(Set<String>) get isLicensedAll => _acCubit.isLicensedAll;
-}
+}*/
 
 /* NEW:
 class AccessControlCubit extends Cubit<Set<String>> {

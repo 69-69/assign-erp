@@ -90,14 +90,15 @@ class Attendance {
     return {'id': cacheKey, 'data': newMap};
   }
 
-  static Attendance findById(List<Attendance> attendances, String userId) =>
-      attendances.firstWhere((attendance) => attendance.userId == userId);
+  static Attendance findById(List<Attendance> attendances, String id) =>
+      attendances.firstWhere((attendance) => attendance.id == id);
 
   /// Formatted to Standard-DateTime in String [getCreatedAt]
   String get getCreatedAt => createdAt.toStandardDT;
 
   List<String> itemAsList() => [
     userId,
+    id,
     type.toTitleCase,
     name.toTitleCase,
     ip ?? '',
@@ -109,6 +110,7 @@ class Attendance {
 
   static List<String> get dataTableHeader => const [
     'employee id',
+    'id',
     'type',
     'name',
     'ip',

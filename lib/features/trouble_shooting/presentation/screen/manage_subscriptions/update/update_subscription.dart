@@ -1,5 +1,4 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/util/debug_printify.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
@@ -88,8 +87,6 @@ class _UpdateSubscriptionFormState extends State<_UpdateSubscriptionForm> {
         updatedBy: context.employee?.fullName ?? 'unknown',
       );
 
-      prettyPrint('CURRENT-LICENSES', '$_assignedLicenses');
-      // prettyPrint('Updating Subscription', updatedSubscription.toMap());
       context.read<SubscriptionBloc>().add(
         OverrideTenant<Subscription>(
           documentId: _subscription.id,
@@ -157,15 +154,18 @@ class _UpdateSubscriptionFormState extends State<_UpdateSubscriptionForm> {
     );
   }
 
-  void _onSelectedFunc(Set<License> licenses) {
-    // Find all modules involved in this license set
-    final touchedModules = licenses.map((p) => p.module).toSet();
-
+  void _onSelectedFunc(Set<License> licenses, String module) {
+    /*// Find all modules involved in this license set
+    final touchedModules = licenses.map((l) => l.module).toSet();
     // Remove all licenses that belong to any of these modules
-    _assignedLicenses.removeWhere((p) => touchedModules.contains(p.module));
+    _assignedLicenses.removeWhere((l) => touchedModules.contains(l.module));*/
+
+    _assignedLicenses.removeWhere((f) => f.module == module);
 
     // Add newly selected licenses (can be empty if all toggled off)
-    _assignedLicenses.addAll(licenses);
+    if (licenses.isNotEmpty) {
+      _assignedLicenses.addAll(licenses);
+    }
   }
 
   @override
@@ -175,3 +175,10 @@ class _UpdateSubscriptionFormState extends State<_UpdateSubscriptionForm> {
     super.dispose();
   }
 }
+
+/* RULE FOR WORKSPACE LICENSE:
+match /workspace_auth_db/{workspaceId} {
+  allow read: if request.auth != null &&
+                 exists(/databases/$(database)/documents/workspace_auth_db/$(workspaceId)/$(request.auth.uid)) &&
+                 get(/databases/$(database)/documents/workspace_auth_db/$(workspaceId)/$(workspace.subscriptionId)).data.licenses.hasAny(['pos']);
+*/

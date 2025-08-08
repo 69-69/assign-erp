@@ -11,7 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 
 class DataRepository extends FirestoreRepository {
-  late final Box<CacheData> _cacheBox;
+  late Box<CacheData> _cacheBox;
 
   final CollectionType? collectionType;
 
@@ -63,16 +63,20 @@ class DataRepository extends FirestoreRepository {
   }
 
   /// Emit Data / Add Event to Stream [_emitDataToStream]
-  void _emitDataToStream() {
+  void _emitDataToStream({bool isDelete = false}) {
     if (!_isDataControllerClosed) {
       final data = _getFromCache();
-      // Emit only if data has changed to avoid duplicate entries in the UI
-      if (!listEquals(data, _lastEmittedData)) {
-        _dataController.add(data);
+
+      // Emit only if 'data has changed or is delete operation' to avoid duplicate entries in the UI
+      if (isDelete || data.isEmpty || !listEquals(data, _lastEmittedData)) {
+        _dataController.add(data); // Use the new list reference
+        // Update the last emitted data to prevent re-emit
         _lastEmittedData = data;
       }
     }
   }
+
+  // stephen.aryee69@gmail.com
 
   /// Add to Cache/localStorage [_addToCache]
   /// [key] - The ID of the document to be added to the cache.
@@ -240,9 +244,9 @@ class DataRepository extends FirestoreRepository {
     await _cacheBox.flush(); // Flush cache to disk
     await deleteById(id); // Delete from remote Firestore-DB
 
-    prettyPrint('cache-keys', _cacheBox.get(id)?.data.toString());
+    prettyPrint('steve-cache-keys', _cacheBox.get(id)?.data.toString());
 
-    _emitDataToStream(); // Update the stream with the latest data
+    _emitDataToStream(isDelete: true); // Update the stream with the latest data
   }
 
   /// Get All Data from Cache [getAllCacheData]

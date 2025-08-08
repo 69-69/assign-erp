@@ -38,6 +38,16 @@ extension ConvertDateTime on dynamic {
     return DateFormat.yMEd().format(dt);
   }
 
+  /// Get time only from datetime: Fri, 8/8/2025 12:54:30
+  /// Convert microsecondsSinceEpoch to DateTime object [timeOnly]
+  String get timeOnly {
+    if (this == null || this == "" || this == "null" || this == "null null") {
+      return '00:00:00';
+    }
+    var dt = this is String ? toDateTimeFn(this) : this;
+    return DateFormat.jm().format(dt);
+  }
+
   /// Convert DateTime object to microsecondsSinceEpoch String [toISOString]
   String get toISOString {
     if (this == null || this == "" || this == "null" || this == "null null") {

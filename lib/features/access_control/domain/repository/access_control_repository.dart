@@ -2,7 +2,6 @@ import 'package:assign_erp/core/constants/app_db_collect.dart';
 import 'package:assign_erp/core/constants/collection_type_enum.dart';
 import 'package:assign_erp/core/network/data_sources/remote/repository/firestore_helper.dart';
 import 'package:assign_erp/core/result/result_data.dart';
-import 'package:assign_erp/core/util/debug_printify.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AccessControlRepository {
@@ -31,15 +30,10 @@ class AccessControlRepository {
 
     final licenses = rawLicenses
         // .whereType<Map<String, String>>() // Optional extra safe typecast
-        .map((e) {
-          prettyPrint('one-license', '${e['license']}');
-          return e['license'] as String;
-        })
+        .where((e) => e['license'] != null)
+        .map((e) => e['license'] as String)
         .whereType<String>()
         .toSet();
-    // 7aWSYccafliZawzlbUJ3
-    prettyPrint('subscription-name-only', subscriptionName);
-    prettyPrint('licenses-only', '$rawLicenses');
 
     return LoadResult<String>(meta: subscriptionName, data: licenses);
     // return List<String>.from(data['licenses']).toSet();
@@ -72,12 +66,10 @@ class AccessControlRepository {
 
     final permissions = rawPermissions
         // .whereType<Map<String, dynamic>>() // Optional extra safe typecast
+        .where((e) => e['permission'] != null)
         .map((e) => e['permission'] as String)
         .whereType<String>()
         .toSet();
-
-    prettyPrint('role-name-only', roleName);
-    prettyPrint('permissions-only', permissions);
 
     return LoadResult<String>(meta: roleName, data: permissions);
   }

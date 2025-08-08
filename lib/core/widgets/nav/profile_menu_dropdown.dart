@@ -120,10 +120,10 @@ class ProfileMenuDropdown extends StatelessWidget {
         child: ListTile(
           dense: true,
           mouseCursor: SystemMouseCursors.click,
-          leading: const Icon(Icons.logout),
+          leading: Icon(Icons.logout, color: context.colorScheme.error),
           title: Text(
             'Sign out',
-            style: TextStyle(color: Theme.of(context).colorScheme.error),
+            style: TextStyle(color: context.colorScheme.error),
           ),
         ),
       ),
@@ -179,7 +179,7 @@ class ProfileMenuDropdown extends StatelessWidget {
           const Divider(thickness: 4),
           _buildListTile(
             context,
-            title: 'SUBSCRIPTION: ${context.getSubscriptionName}',
+            title: 'SUBSCRIPTION: ${context.readSubscriptionName}',
             subtitle: 'Valid Until: ${workspace.expiresOn.toStandardDT}',
           ),
           const Divider(thickness: 0.4),

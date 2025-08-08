@@ -26,6 +26,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 // User? authUser = FirebaseAuth.instance.currentUser;
+final _today = DateTime.now();
 
 /// Using dynamicLinkDomain in Desktop Applications
 /// Custom URL Schemes
@@ -541,7 +542,7 @@ class AuthRepository extends FirestoreRepository {
       ).doc(agentId).collection('clients').doc(clientWorkspaceId).set({
         'clientWorkspaceId': clientWorkspaceId,
         'commission': [],
-        'assignedAt': (DateTime.now()).toISOString,
+        'assignedAt': _today.toISOString,
       });
 
       return true;

@@ -68,7 +68,7 @@ final _tabContent = [
 ];
 
 class PermissionCard extends StatelessWidget {
-  final void Function(Set<Permission> permissions) onSelectedFunc;
+  final void Function(Set<Permission>, String) onSelectedFunc;
   final Set<Permission>? initialPermissions;
 
   const PermissionCard({
@@ -117,7 +117,8 @@ class PermissionCard extends StatelessWidget {
         entitlements: tab.permissions,
         initialEntitlements: initialPermissions,
         toValue: (access) => _toValue(access),
-        onSelected: (permissions) => onSelectedFunc(permissions),
+        onSelected: (permissions, module) =>
+            onSelectedFunc(permissions, module),
         sectionColor: kPrimaryAccentColor,
       );
     }).toList();

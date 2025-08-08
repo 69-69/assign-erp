@@ -105,15 +105,19 @@ class _CreateNewRoleFormState extends State<_CreateNewRoleForm> {
     );
   }
 
-  void _onSelectedFunc(Set<Permission> permissions) {
-    // Find all modules involved in this permission set
+  void _onSelectedFunc(Set<Permission> permissions, String module) {
+    /*// Find all modules involved in this permission set
     final touchedModules = permissions.map((p) => p.module).toSet();
+    // Remove all permissions that belong to any of these modules
+    _assignedPermissions.removeWhere((p) => touchedModules.contains(p.module));*/
 
     // Remove all permissions that belong to any of these modules
-    _assignedPermissions.removeWhere((p) => touchedModules.contains(p.module));
+    _assignedPermissions.removeWhere((p) => p.module == module);
 
-    // Add newly selected permissions (can be empty if all toggled off)
-    _assignedPermissions.addAll(permissions);
+    // Only add new permissions if there are any selected (if `permissions` is empty, don't add anything)
+    if (permissions.isNotEmpty) {
+      _assignedPermissions.addAll(permissions);
+    }
   }
 
   @override

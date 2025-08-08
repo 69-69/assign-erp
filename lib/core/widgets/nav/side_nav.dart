@@ -333,7 +333,11 @@ class _SideNavState extends State<SideNav> with SingleTickerProviderStateMixin {
   // Build the logout button
   Widget _buildLogout(BuildContext context) {
     return TextButton.icon(
-      style: _btnStyle(context),
+      style: _btnStyle(context).copyWith(
+        backgroundColor: _shouldExpand
+            ? WidgetStatePropertyAll(context.colorScheme.error)
+            : null,
+      ),
       onPressed: () async {
         final isConfirmed = await context.confirmUserActionDialog(
           onAccept: 'Sign Out',

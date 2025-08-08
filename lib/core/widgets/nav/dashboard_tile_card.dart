@@ -84,7 +84,7 @@ class _DashboardTileCardState extends State<DashboardTileCard> {
         isUnknownPermission(perm) ||
         cxt.isLicensed(perm) ||
         cxt.hasPermission(perm);
-    return true;
+    return can;
     /*final canAccess = context.select((AccessControlCubit c) => c.has(perm));*/
   }
 

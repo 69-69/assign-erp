@@ -1,4 +1,5 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
+import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/dialog/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/dynamic_table.dart';
@@ -49,15 +50,15 @@ class AttendanceScreen extends StatelessWidget {
   _buildCard(BuildContext cxt, List<Attendance> attendances) {
     return DynamicDataTable(
       skip: true,
-      // skipPos: 1,
+      skipPos: 2,
       showIDToggle: true,
       headers: Attendance.dataTableHeader,
       anyWidgetAlignment: WrapAlignment.end,
       rows: attendances.map((d) => d.itemAsList()).toList(),
       editLabel: 'View Areas',
       editIcon: Icons.explore_outlined,
-      onEditTap: (row) async => _onViewedTap(cxt, attendances, row.first),
-      onDeleteTap: (row) async => _onDeleteTap(cxt, attendances, row.first),
+      onEditTap: (row) async => _onViewedTap(cxt, attendances, row[1]),
+      onDeleteTap: (row) async => _onDeleteTap(cxt, attendances, row[1]),
     );
   }
 
@@ -90,14 +91,17 @@ class AttendanceScreen extends StatelessWidget {
         dataRowMinHeight: 28,
         dataRowMaxHeight: 32,
         headingRowHeight: 30,
-        columns: [_dataColumn('Areas'), _dataColumn('Viewed At')],
+        columns: [_dataColumn('Area'), _dataColumn('Time')],
         rows: attendance.areasViewed.map((entry) {
           final parts = entry.split('@');
           final area = parts.first.trim();
           final time = parts.length > 1 ? parts.last : 'N/A';
 
           return DataRow(
-            cells: [DataCell(Text(area.toTitleCase)), DataCell(Text(time))],
+            cells: [
+              DataCell(Text(area.toTitleCase)),
+              DataCell(Text(time.timeOnly)),
+            ],
           );
         }).toList(),
       ),

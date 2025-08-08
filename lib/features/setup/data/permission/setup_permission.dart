@@ -112,7 +112,7 @@ final List<AccessControl> _companyInfoPermissions = [
 
 final List<AccessControl> _storeLocationPermissions = [
   AccessControl(
-    module: "store location",
+    module: "store locations",
     title: "Manage store locations",
     description: "Allow users to create, edit, and delete store locations.",
     access: SetupPermission.manageStoreLocation,

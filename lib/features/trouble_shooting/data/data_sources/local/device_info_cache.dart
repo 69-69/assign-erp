@@ -1,11 +1,12 @@
 import 'package:assign_erp/core/constants/app_db_collect.dart';
 import 'package:assign_erp/core/network/data_sources/local/cache_data_model.dart';
+import 'package:assign_erp/core/util/debug_printify.dart';
 import 'package:assign_erp/features/trouble_shooting/data/models/device_info_model.dart';
 import 'package:hive/hive.dart';
 
 /// A service for caching the device Info using Hive local storage.
 class DeviceInfoCache {
-  final Box<CacheData> _dataBox;
+  Box<CacheData> _dataBox;
   static const _cacheKey = DeviceInfo.cacheKey;
   static const String _onboardingCacheKey = 'hide_onboarding';
 
@@ -52,7 +53,26 @@ class DeviceInfoCache {
   bool get hideOnboarding =>
       _getCacheByKey(_onboardingCacheKey)?.data['hide'] ?? false;
 
+  /// Clear & delete Cache/localStorage [_clearCache]
+  Future<void> _clearCache(String key) async {
+    try {
+      // Ensure the box isn't closed before performing any actions
+      if (!_dataBox.isOpen) {
+        // Open the box if it's not already open
+        _dataBox = await Hive.openBox<CacheData>(userAuthCache);
+      }
+
+      await Future.wait([
+        _dataBox.clear(),
+        _dataBox.delete(key),
+        _dataBox.flush(),
+      ]);
+      prettyPrint('Cache cleared', 'successfully');
+    } catch (e) {
+      prettyPrint('Error clearing cache', '$e');
+    }
+  }
+
   /// Clears the stored device Info from local storage.
-  Future<void> clearDeviceInfo() async =>
-      await Future.wait([_dataBox.delete(_cacheKey), _dataBox.clear()]);
+  Future<void> clearDeviceInfo() async => await _clearCache(_cacheKey);
 }

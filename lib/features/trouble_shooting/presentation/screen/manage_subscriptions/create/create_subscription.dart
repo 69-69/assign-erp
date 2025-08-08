@@ -131,15 +131,18 @@ class _CreateNewSubscriptionFormState
     );
   }
 
-  void _onSelectedFunc(Set<License> licenses) {
-    // Find all modules involved in this License set
-    final touchedModules = licenses.map((p) => p.module).toSet();
+  void _onSelectedFunc(Set<License> licenses, String module) {
+    /*// Find all modules involved in this license set
+    final touchedModules = licenses.map((l) => l.module).toSet();
+    // Remove all licenses that belong to any of these modules
+    _assignedLicenses.removeWhere((l) => touchedModules.contains(l.module));*/
 
-    // Remove all Licenses that belong to any of these modules
-    _assignedLicenses.removeWhere((p) => touchedModules.contains(p.module));
+    _assignedLicenses.removeWhere((f) => f.module == module);
 
-    // Add newly selected Licenses (can be empty if all toggled off)
-    _assignedLicenses.addAll(licenses);
+    // Add newly selected licenses (can be empty if all toggled off)
+    if (licenses.isNotEmpty) {
+      _assignedLicenses.addAll(licenses);
+    }
   }
 
   @override
