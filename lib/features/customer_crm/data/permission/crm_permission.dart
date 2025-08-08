@@ -1,7 +1,8 @@
-import 'package:assign_erp/core/network/data_sources/models/permission_item_model.dart';
+import 'package:assign_erp/features/access_control/data/model/access_control_model.dart';
 
 /// PERMISSION BASED ACCESS-CONTROL
 enum CrmPermission {
+  manageCRM,
   viewLeads,
   createLead,
   editLead,
@@ -19,152 +20,183 @@ enum CrmPermission {
   updateOpportunityStage,
   viewCustomerProfile,
   editCustomerProfile,
+  createCustomer,
   addCustomerNote,
   viewCRMReports,
   exportCRMData,
+  viewCrmSecrets,
 }
 
-final List<PermissionItem> _leadsPermissions = [
-  PermissionItem(
+final List<AccessControl> _crmPermissionDetails = [
+  AccessControl(
+    module: "crm",
+    title: "Manage CRM",
+    description:
+        "Allows users to manage CRM records, including creation, modification, and removal.",
+    access: CrmPermission.manageCRM,
+  ),
+];
+
+final List<AccessControl> _leadsPermissions = [
+  AccessControl(
+    module: "crm create",
+    title: "Create Customer",
+    description: "Allow users to create a new customer account.",
+    access: CrmPermission.createCustomer,
+  ),
+  AccessControl(
     module: "crm lead",
     title: "View Leads",
-    subtitle: "Allow users to view all sales leads.",
-    permission: CrmPermission.viewLeads,
+    description: "Allow users to view all sales leads.",
+    access: CrmPermission.viewLeads,
   ),
-  PermissionItem(
+  AccessControl(
     module: "crm lead",
     title: "Create Lead",
-    subtitle: "Allow users to create new leads.",
-    permission: CrmPermission.createLead,
+    description: "Allow users to create new leads.",
+    access: CrmPermission.createLead,
   ),
-  PermissionItem(
+  AccessControl(
     module: "crm lead",
     title: "Edit Lead",
-    subtitle: "Allow users to update lead information.",
-    permission: CrmPermission.editLead,
+    description: "Allow users to update lead information.",
+    access: CrmPermission.editLead,
   ),
-  PermissionItem(
+  AccessControl(
     module: "crm lead",
     title: "Delete Lead",
-    subtitle: "Allow users to remove leads from the system.",
-    permission: CrmPermission.deleteLead,
+    description: "Allow users to remove leads from the system.",
+    access: CrmPermission.deleteLead,
   ),
-  PermissionItem(
+  AccessControl(
     module: "crm lead",
     title: "Assign Lead",
-    subtitle: "Allow users to assign leads to team members.",
-    permission: CrmPermission.assignLead,
+    description: "Allow users to assign leads to team members.",
+    access: CrmPermission.assignLead,
   ),
-  PermissionItem(
+  AccessControl(
     module: "crm lead",
     title: "Convert Lead",
-    subtitle: "Allow users to convert leads into opportunities or customers.",
-    permission: CrmPermission.convertLead,
+    description:
+        "Allow users to convert leads into opportunities or customers.",
+    access: CrmPermission.convertLead,
   ),
 ];
 
-final List<PermissionItem> _contactsPermissions = [
-  PermissionItem(
+final List<AccessControl> _contactsPermissions = [
+  AccessControl(
     module: "crm contacts",
     title: "View Contacts",
-    subtitle: "Allow users to view contact profiles.",
-    permission: CrmPermission.viewContacts,
+    description: "Allow users to view contact profiles.",
+    access: CrmPermission.viewContacts,
   ),
-  PermissionItem(
+  AccessControl(
     module: "crm contacts",
     title: "Create Contact",
-    subtitle: "Allow users to add new contacts.",
-    permission: CrmPermission.createContact,
+    description: "Allow users to add new contacts.",
+    access: CrmPermission.createContact,
   ),
-  PermissionItem(
+  AccessControl(
     module: "crm contacts",
     title: "Edit Contact",
-    subtitle: "Allow users to edit existing contact information.",
-    permission: CrmPermission.editContact,
+    description: "Allow users to edit existing contact information.",
+    access: CrmPermission.editContact,
   ),
-  PermissionItem(
+  AccessControl(
     module: "crm contacts",
     title: "Delete Contact",
-    subtitle: "Allow users to delete contacts from the system.",
-    permission: CrmPermission.deleteContact,
+    description: "Allow users to delete contacts from the system.",
+    access: CrmPermission.deleteContact,
   ),
 ];
 
-final List<PermissionItem> _opportunitiesPermissions = [
-  PermissionItem(
+final List<AccessControl> _opportunitiesPermissions = [
+  AccessControl(
     module: "crm opportunity",
     title: "View Opportunities",
-    subtitle: "Allow users to view opportunity pipelines.",
-    permission: CrmPermission.viewOpportunities,
+    description: "Allow users to view opportunity pipelines.",
+    access: CrmPermission.viewOpportunities,
   ),
-  PermissionItem(
+  AccessControl(
     module: "crm opportunity",
     title: "Create Opportunity",
-    subtitle: "Allow users to create new opportunities.",
-    permission: CrmPermission.createOpportunity,
+    description: "Allow users to create new opportunities.",
+    access: CrmPermission.createOpportunity,
   ),
-  PermissionItem(
+  AccessControl(
     module: "crm opportunity",
     title: "Edit Opportunity",
-    subtitle: "Allow users to modify opportunity details.",
-    permission: CrmPermission.editOpportunity,
+    description: "Allow users to modify opportunity details.",
+    access: CrmPermission.editOpportunity,
   ),
-  PermissionItem(
+  AccessControl(
     module: "crm opportunity",
     title: "Delete Opportunity",
-    subtitle: "Allow users to delete opportunities.",
-    permission: CrmPermission.deleteOpportunity,
+    description: "Allow users to delete opportunities.",
+    access: CrmPermission.deleteOpportunity,
   ),
-  PermissionItem(
+  AccessControl(
     module: "crm opportunity",
     title: "Update Opportunity Stage",
-    subtitle: "Allow users to move opportunities through stages.",
-    permission: CrmPermission.updateOpportunityStage,
+    description: "Allow users to move opportunities through stages.",
+    access: CrmPermission.updateOpportunityStage,
   ),
 ];
 
-final List<PermissionItem> _customersPermissions = [
-  PermissionItem(
+final List<AccessControl> _customersPermissions = [
+  AccessControl(
     module: "crm customer",
     title: "View Customer Profiles",
-    subtitle: "Allow users to view customer records and history.",
-    permission: CrmPermission.viewCustomerProfile,
+    description: "Allow users to view customer records and history.",
+    access: CrmPermission.viewCustomerProfile,
   ),
-  PermissionItem(
+  AccessControl(
     module: "crm customer",
     title: "Edit Customer Profile",
-    subtitle: "Allow users to update customer information.",
-    permission: CrmPermission.editCustomerProfile,
+    description: "Allow users to update customer information.",
+    access: CrmPermission.editCustomerProfile,
   ),
-  PermissionItem(
+  AccessControl(
     module: "crm customer",
     title: "Add Customer Note",
-    subtitle: "Allow users to log notes and updates for customers.",
-    permission: CrmPermission.addCustomerNote,
+    description: "Allow users to log notes and updates for customers.",
+    access: CrmPermission.addCustomerNote,
   ),
 ];
 
-final List<PermissionItem> _crmMetricsPermissions = [
-  PermissionItem(
+final List<AccessControl> _crmMetricsPermissions = [
+  AccessControl(
     module: "crm metrics",
     title: "View CRM Reports",
-    subtitle: "Allow users to view analytics and performance reports.",
-    permission: CrmPermission.viewCRMReports,
+    description: "Allow users to view analytics and performance reports.",
+    access: CrmPermission.viewCRMReports,
   ),
-  PermissionItem(
+  AccessControl(
     module: "crm metrics",
     title: "Export CRM Data",
-    subtitle: "Allow users to export CRM-related data.",
-    permission: CrmPermission.exportCRMData,
+    description: "Allow users to export CRM-related data.",
+    access: CrmPermission.exportCRMData,
   ),
 ];
 
-final List<PermissionItem> crmPermissions = [
+final List<AccessControl> _secretPermissionDetails = [
+  AccessControl(
+    module: "CRM Secrets",
+    title: "View Customer IDs",
+    description:
+        "Allow users to view the reference numbers or IDs of customers.",
+    access: CrmPermission.viewCrmSecrets,
+  ),
+];
+
+final List<AccessControl> crmPermissions = [
+  ..._crmPermissionDetails,
   ..._leadsPermissions,
   ..._contactsPermissions,
   ..._opportunitiesPermissions,
   ..._customersPermissions,
   ..._crmMetricsPermissions,
+  ..._secretPermissionDetails,
 ];
 
-final crmDisplayName = 'customer relation';
+final crmDisplayName = 'customer management';

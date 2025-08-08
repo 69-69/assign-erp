@@ -1,9 +1,9 @@
+export 'screen/all_employees/all_employees_screen.dart';
 export 'screen/back_up/back_up.dart';
 export 'screen/company/company_screen.dart';
 export 'screen/license_renewal/license_renewal.dart';
 export 'screen/manage_roles/manage_roles_screen.dart';
 export 'screen/product_config/product_config_screen.dart';
 export 'screen/setup_screen.dart';
-export 'screen/staff_account/staff_account_screen.dart';
 export 'screen/switch_shop_locations/switch_shop_locations_screen.dart';
 export 'setup_app.dart';

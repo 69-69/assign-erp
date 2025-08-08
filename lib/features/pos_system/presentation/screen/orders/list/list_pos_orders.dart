@@ -1,10 +1,10 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/widgets/adaptive_layout.dart';
-import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
+import 'package:assign_erp/core/widgets/dialog/async_progress_dialog.dart';
+import 'package:assign_erp/core/widgets/dialog/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/dynamic_table.dart';
-import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/pos_system/data/models/pos_order_model.dart';
@@ -61,7 +61,7 @@ class _ListPOSOrdersState extends State<ListPOSOrders> {
 
     return DynamicDataTable(
       skip: true,
-      toggleHideID: true,
+      showIDToggle: true,
       anyWidget: _buildAnyWidget(orders),
       headers: POSOrder.dataTableHeader,
       rows: todayOrders.map((o) => o.itemAsList()).toList(),
@@ -270,7 +270,7 @@ class _IssueMultiReceipts extends StatelessWidget {
   }
 
   Future<bool> _confirmDeleteDialog(BuildContext context) async {
-    return context.confirmAction(
+    return context.confirmAction<bool>(
       const Text('Are you sure you want to delete the selected orders?'),
       title: "Confirm Delete",
       onAccept: "Delete",

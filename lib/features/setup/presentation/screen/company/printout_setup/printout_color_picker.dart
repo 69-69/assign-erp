@@ -130,7 +130,7 @@ class _PrintoutColorPickerScreenState extends State<PrintoutColorPickerScreen> {
           Text(
             'Print Colors',
             textAlign: TextAlign.center,
-            style: context.ofTheme.textTheme.titleLarge?.copyWith(
+            style: context.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -140,7 +140,7 @@ class _PrintoutColorPickerScreenState extends State<PrintoutColorPickerScreen> {
       subtitle: Text(
         "This color will be used for the header and footer of invoices, receipts, reports, etc...\nClick on any Palette to see various previews.",
         textAlign: TextAlign.center,
-        style: context.ofTheme.textTheme.titleSmall,
+        style: context.textTheme.titleSmall,
       ),
     );
   }

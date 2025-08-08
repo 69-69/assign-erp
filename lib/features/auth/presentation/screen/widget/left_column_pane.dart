@@ -48,7 +48,7 @@ class LeftColumnPane extends StatelessWidget {
           title: Text(
             title,
             textAlign: TextAlign.center,
-            style: context.ofTheme.textTheme.titleLarge?.copyWith(
+            style: context.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w500,
               color: kPrimaryColor,
             ),
@@ -56,9 +56,7 @@ class LeftColumnPane extends StatelessWidget {
           subtitle: Text(
             subtitle,
             textAlign: TextAlign.center,
-            style: context.ofTheme.textTheme.titleSmall?.copyWith(
-              color: kBgLightColor,
-            ),
+            style: context.textTheme.titleSmall?.copyWith(color: kBgLightColor),
           ),
         ),
         const SizedBox(height: 20),

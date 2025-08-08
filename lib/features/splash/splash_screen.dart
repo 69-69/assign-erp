@@ -68,9 +68,12 @@ class _SplashScreenState extends State<SplashScreen> {
         // Ratio between the width and height of grid items
         childAspectRatio: 1,
       ),
-      itemBuilder: (context, index) => index.isOdd
-          ? _buildStack(context)
-          : _buildCard(context, index: index),
+      itemBuilder: (context, index) {
+        final randomBgColor = randomBgColors[index % randomBgColors.length];
+        return index.isOdd
+            ? _buildStack(context, randomBgColor)
+            : _buildCard(context, randomBgColor);
+      },
     );
     /*itemBuilder: (context, index) {
       if (index < 3) {
@@ -86,12 +89,13 @@ class _SplashScreenState extends State<SplashScreen> {
     }*/
   }
 
-  _buildCard(BuildContext context, {int index = 0}) {
-    var randomBgColor = randomBgColors[index % randomBgColors.length];
-    final borderSide = BorderSide(width: 4, color: randomBgColor);
+  _buildCard(BuildContext context, Color randomBgColor) {
+    // final borderSide = BorderSide(width: 4, color: randomBgColor);
+
     return AnimatedContainer(
-      // width: context.mediaShortSize / 1.3,
-      decoration: BoxDecoration(
+      color: randomBgColor,
+
+      /*decoration: BoxDecoration(
         border: Border(
           top: borderSide,
           left: borderSide,
@@ -99,8 +103,7 @@ class _SplashScreenState extends State<SplashScreen> {
           bottom: borderSide,
         ),
         color: randomBgColor, //Color(0xD7BFBFBF),
-      ),
-
+      ),*/
       padding: const EdgeInsets.all(20.0),
       duration: kAnimateDuration,
       child: GridTile(
@@ -112,7 +115,7 @@ class _SplashScreenState extends State<SplashScreen> {
             title: Text(
               appName.split('.').first.toUpperCaseAll,
               textAlign: TextAlign.center,
-              style: context.ofTheme.textTheme.titleLarge?.copyWith(
+              style: context.textTheme.titleLarge?.copyWith(
                 color: kPrimaryColor,
                 overflow: TextOverflow.ellipsis,
                 fontWeight: FontWeight.bold,
@@ -122,7 +125,7 @@ class _SplashScreenState extends State<SplashScreen> {
             subtitle: Text(
               subTitle,
               textAlign: TextAlign.center,
-              style: context.ofTheme.textTheme.labelSmall?.copyWith(
+              style: context.textTheme.labelSmall?.copyWith(
                 color: kLightBlueColor,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -134,7 +137,7 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  Stack _buildStack(BuildContext context) {
+  Stack _buildStack(BuildContext context, Color randomBgColor) {
     return Stack(
       alignment: Alignment.center,
       clipBehavior: Clip.none,
@@ -158,7 +161,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(color: kPrimaryColor),
               ),
-              _buildDefaultProgressIndicator(),
+              _buildDefaultProgressIndicator(randomBgColor),
             ],
           ),
         ),
@@ -166,12 +169,12 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  Widget _buildDefaultProgressIndicator() {
-    return const LinearProgressIndicator(
+  Widget _buildDefaultProgressIndicator(Color randomBgColor) {
+    return LinearProgressIndicator(
       semanticsLabel: 'loading',
       minHeight: 8,
       backgroundColor: kLightBlueColor,
-      valueColor: AlwaysStoppedAnimation<Color>(Colors.deepPurple),
+      valueColor: AlwaysStoppedAnimation<Color>(randomBgColor),
     );
   }
 }

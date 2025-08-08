@@ -4,6 +4,7 @@ import 'package:assign_erp/core/constants/collection_type_enum.dart';
 import 'package:assign_erp/core/network/data_sources/local/cache_data_model.dart';
 import 'package:assign_erp/core/network/data_sources/remote/repository/firestore_repository.dart';
 import 'package:assign_erp/core/util/debug_printify.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/features/auth/data/data_sources/local/auth_cache_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
@@ -101,6 +102,11 @@ class DataRepository extends FirestoreRepository {
     await updateById(item.id, data: item.data);
   }
 
+  /// Override remote data
+  Future<void> _overrideRemoteData(CacheData item) async {
+    await overrideById(item.id, data: item.data);
+  }
+
   /// Helper function to search in local HiveBox
   List<CacheData> _searchLocalCache(Object field, String query) {
     List<CacheData> dataList = [];
@@ -109,7 +115,9 @@ class DataRepository extends FirestoreRepository {
       final cachedData = _getCacheByIndex(i);
       if (cachedData != null && cachedData.data.containsKey(field)) {
         dynamic fieldValue = cachedData.data[field];
-        if (fieldValue.toString().toLowerCase().contains(query.toLowerCase())) {
+        if (fieldValue.toString().toLowercaseAll.contains(
+          query.toLowerCase(),
+        )) {
           dataList.add(cachedData);
         }
       }
@@ -157,21 +165,21 @@ class DataRepository extends FirestoreRepository {
 
   /// Convert QuerySnapshot to `List<CacheData>` [_toList]
   List<CacheData> _toList(QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-    return querySnapshot.size > 0
+    if (querySnapshot.docs.isEmpty) return [];
+
+    return querySnapshot.docs.map((doc) {
+      final data = _fromMap(doc.data(), doc.id);
+      _addToCache(doc.id, data);
+      return data;
+    }).toList();
+
+    /*querySnapshot.size > 0
         ? querySnapshot.docs.map((doc) => _fromMap(doc.data(), doc.id)).toList()
-        : [];
+        : [];*/
   }
 
   CacheData _fromMap(Map<String, dynamic> data, String id) =>
       CacheData.fromMap(data, id: id, scopeId: _scopeId);
-
-  /// Update/Push to Cache / LocalStorage [_updateCacheWithData]
-  void _updateCacheWithData(List<CacheData> data) {
-    for (var model in data) {
-      _addToCache(model.id, model); // Add or update each item in the cache
-    }
-    _emitDataToStream(); // Update the stream with the latest data
-  }
 
   /** PUBLIC METHODS */
 
@@ -211,6 +219,21 @@ class DataRepository extends FirestoreRepository {
     _emitDataToStream(); // Update the stream with the latest data
   }
 
+  /// Override Data Function [overrideData]
+  Future<void> overrideData(
+    String id, {
+    required Map<String, dynamic> data,
+  }) async {
+    if (id.isEmpty) return;
+
+    final cacheData = CacheData.fromCache(data, id: id, scopeId: _scopeId);
+
+    await _addToCache(cacheData.id, cacheData);
+    await _overrideRemoteData(cacheData);
+
+    _emitDataToStream(); // Update the stream with the latest data
+  }
+
   /// Delete/Remove Data Function [deleteData]
   Future<void> deleteData(String id) async {
     await _cacheBox.delete(id); // Delete from cache
@@ -222,16 +245,17 @@ class DataRepository extends FirestoreRepository {
     _emitDataToStream(); // Update the stream with the latest data
   }
 
-  /// Get All Data [getAllData]
-  Stream<List<CacheData>> getAllData() {
+  /// Get All Data from Cache [getAllCacheData]
+  Stream<List<CacheData>> getAllCacheData() {
     _emitDataToStream();
     return dataStream;
   }
 
-  /// Get All Data By ParentId [getAllByParentId]
-  Future<List<CacheData>> getAllByParentId() async {
+  /// Get All Data from Firestore [getAllRemoteData]
+  Future<List<CacheData>> getAllRemoteData() async {
     List<CacheData> dataList = [];
-    final querySnapshot = await findAllByParentId();
+    final querySnapshot = await findAll();
+
     if (querySnapshot.size > 0) {
       dataList = _toList(querySnapshot);
     }
@@ -321,11 +345,8 @@ class DataRepository extends FirestoreRepository {
       final futures = chunks.map((chunk) async {
         final snapshot = await findManyByIds(ids: chunk);
         return snapshot.docs.map((doc) {
-          final data = CacheData.fromMap(
-            doc.data(),
-            id: doc.id,
-            scopeId: _scopeId,
-          );
+          final data = _fromMap(doc.data(), doc.id);
+
           _addToCache(doc.id, data); // Add to cache
           return data;
         }).toList();
@@ -350,13 +371,10 @@ class DataRepository extends FirestoreRepository {
       return data;
     } else {
       if (field != null && field.toString().isNotEmpty) {
-        final query = await findOneByAny(field, term: id);
+        final querySnapshot = await findOneByAny(field, term: id);
+        final data = _toList(querySnapshot).firstOrNull;
 
-        final data = _toList(query).firstOrNull;
-        if (data != null) {
-          await _addToCache(data.id, data);
-          return data;
-        }
+        if (data != null) return data;
       } else {
         final docSnapshot = await findById(id);
         if (docSnapshot.exists && docSnapshot.data() != null) {
@@ -417,12 +435,9 @@ class DataRepository extends FirestoreRepository {
     await _dataSubscription?.cancel();
 
     _dataSubscription = getDataStream().listen((snapshot) {
-      final List<CacheData> data = _toList(snapshot);
-      // Add Data to Cache/LocalStorage
-      _updateCacheWithData(data);
-
+      _toList(snapshot);
       // Emit updated data to stream
-      // _emitDataToStream();
+      _emitDataToStream();
     }, onError: (e) => debugPrint('Data-Repository Error: $e'));
   }
 

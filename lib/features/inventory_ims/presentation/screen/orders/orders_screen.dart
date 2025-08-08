@@ -1,6 +1,7 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
-import 'package:assign_erp/core/widgets/tile_card.dart';
+import 'package:assign_erp/core/widgets/nav/dashboard_tile_card.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/inventory_tiles.dart';
 import 'package:flutter/material.dart';
 
@@ -12,8 +13,8 @@ class OrdersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomScaffold(
       isGradientBg: true,
-      title: allOrderScreenTitle.toUpperCase(),
-      body: TileCard(tiles: ordersTiles),
+      title: allOrderScreenTitle.toUpperCaseAll,
+      body: DashboardTileCard(tiles: ordersTiles),
       actions: const [],
     );
   }

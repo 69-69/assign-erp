@@ -5,7 +5,15 @@ import 'package:flutter/services.dart';
 
 enum UIDType { numeric, alphanumeric }
 
-/// Check if value is empty or null [isNullOrEmpty]
+/// Utility function to get the name from an Enum [getEnumName]
+String getEnumName<T extends Enum>(T e) => e.name;
+
+/// Check if a MAP is empty or null [isNullEmpty]
+extension SanitizeMap on Map? {
+  bool get isNullEmpty => this == null || this!.isEmpty;
+}
+
+/// Check if s STRING is empty or null [isNullOrEmpty]
 extension SanitizeExtensions on String? {
   bool get isNullOrEmpty =>
       this == null ||
@@ -132,6 +140,8 @@ extension CaseSenitive on String {
   /// Convert lowerCamelCase to two separate words
   /// Ex: 'dataType' to 'Data Type' [separateWord]
   String get separateWord {
+    if (isNullOrEmpty) return this;
+
     var regex = RegExp(r'([a-z])([A-Z])');
     if (!regex.hasMatch(this)) return this;
 
@@ -146,16 +156,16 @@ extension CaseSenitive on String {
   /// This will put the first letter in UpperCase, will print 'What Is Your Name'
   /// print(TextTools.toUppercaseFirstLetter(text: 'what is your name'));
   String get toUpperCaseFirst =>
-      !isNullOrEmpty ? replaceFirst(this[0], this[0].toUpperCase()) : this;
+      !isNullOrEmpty ? replaceFirst(this[0], this[0].toUpperCaseAll) : this;
 
-  /// This will put the first letter in UpperCase, will print 'What Is Your Name'
+  /// [toTitleCase] This will put the first letter in UpperCase, will print 'What Is Your Name'
   /// print(TextTools.toUppercaseFirstLetterEach('what is your name'));
   String get toTitleCase => !isNullOrEmpty
       ? split(' ')
             .map(
               (word) => word.isNullOrEmpty
                   ? word
-                  : word[0].toUpperCase() + word.substring(1),
+                  : word[0].toUpperCaseAll + word.substring(1),
             ) // Handles empty words
             .join(' ')
       : this;
@@ -163,7 +173,7 @@ extension CaseSenitive on String {
   /// This will put the letter in position 1 in UpperCase, will print 'nAme'
   /// print(TextTools.toUppercaseAnyLetter(text: 'name', position: 1));
   String toUppercaseAnyLetter({required int position}) =>
-      replaceFirst(this[position], this[position].toUpperCase());
+      replaceFirst(this[position], this[position].toUpperCaseAll);
 
   /// This will put the all letters in LowerCase, will print 'name'
   /// print(TextTools.toLowercaseFirstLetter(text: 'NAME'));
@@ -174,12 +184,12 @@ extension CaseSenitive on String {
 
   /// This will put the first letter in LowerCase, will print 'nAME'
   /// print(TextTools.toLowercaseFirstLetter(text: 'NAME'));
-  String get toLowerCaseFirst => replaceFirst(this[0], this[0].toLowerCase());
+  String get toLowerCaseFirst => replaceFirst(this[0], this[0].toLowercaseAll);
 
   /// This will put the letter in position 1 in LowerCase, will print 'NaME'
   /// print(TextTools.toLowercaseAnyLetter(text: 'NAME'));
   String toLowercaseAnyLetter({required int position}) =>
-      replaceFirst(this[position], this[position].toLowerCase());
+      replaceFirst(this[position], this[position].toLowercaseAll);
 }
 
 /// Copy/Paste text or string to/from Clipboard

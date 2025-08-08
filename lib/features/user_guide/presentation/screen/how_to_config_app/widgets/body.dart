@@ -1,4 +1,5 @@
 import 'package:assign_erp/core/util/size_config.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/user_guide/data/models/user_guide_model.dart';
 import 'package:assign_erp/features/user_guide/presentation/bloc/how_to/how_to_bloc.dart';
@@ -61,7 +62,7 @@ class Body extends StatelessWidget {
   Center _buildEmptyMessage(BuildContext context) {
     return Center(
       child: Text(
-        '${guideCategory.toUpperCase()}: No guides found.',
+        '${guideCategory.toUpperCaseAll}: No guides found.',
         textScaler: TextScaler.linear(context.textScaleFactor),
       ),
     );

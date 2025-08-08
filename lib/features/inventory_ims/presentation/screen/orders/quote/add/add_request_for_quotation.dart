@@ -2,13 +2,13 @@ import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/generate_new_uid.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
-import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
-import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
+import 'package:assign_erp/core/widgets/dialog/async_progress_dialog.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/form_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/orders/request_price_quotation_model.dart';
@@ -157,7 +157,7 @@ class _AddRequestForQuoteFormState extends State<_AddRequestForQuoteForm> {
                     padding: EdgeInsets.zero,
                     label: Text(
                       '${o.productName} x ${o.quantity}'.toTitleCase,
-                      style: context.ofTheme.textTheme.bodySmall?.copyWith(
+                      style: context.textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -189,13 +189,13 @@ class _AddRequestForQuoteFormState extends State<_AddRequestForQuoteForm> {
               textAlign: TextAlign.center,
               text: TextSpan(
                 text: 'RFQ Number:\n',
-                style: context.ofTheme.textTheme.titleLarge?.copyWith(
+                style: context.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
                 children: [
                   TextSpan(
                     text: _newRFQNumber,
-                    style: context.ofTheme.textTheme.titleLarge?.copyWith(
+                    style: context.textTheme.titleLarge?.copyWith(
                       color: kDangerColor,
                     ),
                   ),
@@ -260,7 +260,7 @@ class _AddRequestForQuoteFormState extends State<_AddRequestForQuoteForm> {
   }
 
   Future<void> _confirmPrintoutDialog() async {
-    final isConfirmed = await context.confirmAction(
+    final isConfirmed = await context.confirmAction<bool>(
       const Text('Would you like to print the purchase order: PO?'),
       title: "Print Purchase Order",
       onAccept: "Print",

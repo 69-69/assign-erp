@@ -35,7 +35,7 @@ class RightColumnPane extends StatelessWidget {
                 child: Text(
                   'Need Help?',
                   softWrap: false,
-                  style: context.ofTheme.textTheme.titleLarge?.copyWith(
+                  style: context.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w500,
                     overflow: TextOverflow.ellipsis,
                     color: context.primaryColor,

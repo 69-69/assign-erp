@@ -57,7 +57,7 @@ class _InvoiceSummaryState extends State<InvoiceSummary> {
 
   @override
   Widget build(BuildContext context) {
-    var fTheme = context.ofTheme.textTheme;
+    var fTheme = context.textTheme;
     var curDate = (DateTime.now()).toStandardDT;
 
     debugPrint('InvoiceType: $_selectedInvoiceType');
@@ -110,7 +110,7 @@ class _InvoiceSummaryState extends State<InvoiceSummary> {
       title: Text(
         '${widget.data['orderType'] ?? '0000'}'.toTitleCase,
         textAlign: TextAlign.center,
-        style: context.ofTheme.textTheme.titleLarge,
+        style: context.textTheme.titleLarge,
       ),
       subtitle: Text(
         'Customer ID: ${widget.data['customerId'] ?? '0000'}',
@@ -146,7 +146,7 @@ class _InvoiceSummaryState extends State<InvoiceSummary> {
   DataColumn _buildDataColumn(String title) => DataColumn(
     tooltip: title,
     label: Text(
-      title.toUpperCase(),
+      title.toUpperCaseAll,
       style: const TextStyle(color: kLightColor),
     ),
   );

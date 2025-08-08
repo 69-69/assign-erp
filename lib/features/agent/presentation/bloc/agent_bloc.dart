@@ -48,11 +48,6 @@ class AgentBloc<T> extends Bloc<AgentEvent, AgentState<T>> {
   Future<void> _initialize() async {
     on<RefreshClients<T>>(_onRefreshClients);
     on<LoadClients<T>>(_onLoadClients);
-    on<LoadClientById<T>>(_onLoadClientById);
-    on<LoadAgentById<T>>(_onLoadAgentById);
-    on<UpdateClient>(_onUpdateClient);
-    on<RemoveAuthorizedDeviceIds>(_onResetAuthorizedDeviceIds);
-    on<DeleteClient>(_onDeleteClient);
     on<_ClientsLoaded<T>>(_onClientsLoaded);
     on<_ClientLoaded<T>>(_onClientLoaded);
     on<_AgentError>(_onAgentError);
@@ -89,9 +84,7 @@ class AgentBloc<T> extends Bloc<AgentEvent, AgentState<T>> {
     emit(LoadingClients<T>());
 
     try {
-      final workspaces = event.isSystemWide
-          ? await _agentRepository.getSystemWideWorkspaces()
-          : await _agentRepository.getClientWorkspacesByAgent();
+      final workspaces = await _agentRepository.getAgentClientWorkspaces();
 
       final data = _toList(workspaces);
 
@@ -111,127 +104,13 @@ class AgentBloc<T> extends Bloc<AgentEvent, AgentState<T>> {
     emit(LoadingClients<T>());
 
     try {
-      final workspaces = event.isSystemWide
-          ? await _agentRepository.getSystemWideWorkspaces()
-          : await _agentRepository.getClientWorkspacesByAgent();
+      final workspaces = await _agentRepository.getAgentClientWorkspaces();
 
       final data = _toList(workspaces);
 
       emit(ClientsLoaded<T>(data));
     } catch (e) {
       emit(AgentError<T>('Error loading data: $e'));
-    }
-  }
-
-  Future<void> _onLoadClientById(
-    LoadClientById<T> event,
-    Emitter<AgentState<T>> emit,
-  ) async {
-    emit(LoadingClients<T>());
-    try {
-      final localData = await _agentRepository.getDataById(event.documentId);
-
-      if (localData != null) {
-        final data = fromFirestore(localData.data, localData.id);
-        emit(ClientLoaded<T>(data));
-      } else {
-        emit(AgentError<T>('Document not found'));
-      }
-    } catch (e) {
-      emit(AgentError<T>(e.toString()));
-    }
-  }
-
-  Future<void> _onLoadAgentById(
-    LoadAgentById<T> event,
-    Emitter<AgentState<T>> emit,
-  ) async {
-    emit(LoadingClients<T>());
-    try {
-      final agentInfo = await _agentRepository.getAgentById(event.agentId);
-
-      if (agentInfo != null) {
-        final data = fromFirestore(agentInfo.data, agentInfo.id);
-
-        emit(AgentLoaded<T>(data));
-      } else {
-        emit(AgentError<T>('Document not found'));
-      }
-    } catch (e) {
-      emit(AgentError<T>(e.toString()));
-    }
-  }
-
-  /// Note:: use Generic or Map data update
-  Future<void> _onUpdateClient(
-    UpdateClient event,
-    Emitter<AgentState<T>> emit,
-  ) async {
-    try {
-      final isPartialUpdate = event.mapData?.isNotEmpty ?? false;
-      final data = isPartialUpdate
-          ? {'data': event.mapData}
-          : toCache(event.data as T);
-
-      await _agentRepository.updateData(
-        event.documentId,
-        data: data,
-        isPartial: isPartialUpdate, // true if not a full model update
-      );
-
-      // Trigger LoadDataEvent to reload the data
-      // add(LoadDataEvent<T>());
-
-      // Update State: Notify that data updated
-      emit(ClientUpdated<T>(message: 'data updated successfully'));
-    } catch (e) {
-      emit(AgentError<T>(e.toString()));
-    }
-  }
-
-  /// Dispatches an event to reset workspace authorized device IDs for the clients workspace.
-  ///
-  /// If a specific [did] (device ID) is provided, it will be removed from the
-  /// list of authorized devices. If [did] is null, the event will trigger
-  /// removal of all authorized device IDs.
-  Future<void> _onResetAuthorizedDeviceIds(
-    RemoveAuthorizedDeviceIds event,
-    Emitter<AgentState<T>> emit,
-  ) async {
-    try {
-      // Remove Workspace Authorized Device Ids data from Firestore and update local storage
-      await _agentRepository.removeAuthorizedDeviceIds(
-        event.documentId,
-        authorizedDeviceId: event.data,
-      );
-
-      // Trigger LoadDataEvent to reload the data
-      add(LoadClients<T>());
-
-      // Update State: Notify that ids Remove
-      emit(
-        ClientDeleted<T>(message: 'Authorized Device Id remove successfully'),
-      );
-    } catch (e) {
-      emit(AgentError<T>(e.toString()));
-    }
-  }
-
-  Future<void> _onDeleteClient(
-    DeleteClient event,
-    Emitter<AgentState<T>> emit,
-  ) async {
-    try {
-      // Delete data from Firestore and update local storage
-      await _agentRepository.deleteData(event.documentId);
-
-      // Trigger LoadDataEvent to reload the data
-      add(LoadClients<T>());
-
-      // Update State: Notify that data deleted
-      emit(ClientDeleted<T>(message: 'data deleted successfully'));
-    } catch (e) {
-      emit(AgentError<T>(e.toString()));
     }
   }
 

@@ -2,208 +2,37 @@ import 'package:assign_erp/core/constants/account_status.dart';
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/constants/app_enum.dart';
-import 'package:assign_erp/core/constants/hosting_type.dart';
-import 'package:assign_erp/core/network/data_sources/models/subscription_licenses_enum.dart';
-import 'package:assign_erp/core/util/date_time_picker.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/adaptive_layout.dart';
-import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_dropdown_field.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/custom_text_field.dart';
+import 'package:assign_erp/core/widgets/dialog/async_progress_dialog.dart';
 import 'package:assign_erp/features/auth/data/role/workspace_role.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/sign_in/workspace/workspace_sign_in_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 
-/// Expiry & Effective Date Picker [ExpiryAndEffectiveDateInput]
-class ExpiryAndEffectiveDateInput extends StatelessWidget {
-  const ExpiryAndEffectiveDateInput({
+/// Workspace Account Role Dropdown [WorkspaceRole]
+class WorkspaceRole extends StatelessWidget {
+  const WorkspaceRole({
     super.key,
-    this.labelExpiry,
-    this.labelManufacture,
-    this.onQuantityChanged,
-    required this.onExpiryChanged,
-    required this.onEffectiveChanged,
-    this.serverExpiryDate,
-    this.serverEffectiveDate,
-  });
-
-  final String? serverExpiryDate;
-  final String? serverEffectiveDate;
-  final String? labelExpiry;
-  final String? labelManufacture;
-  final ValueChanged? onQuantityChanged;
-  final Function(DateTime) onExpiryChanged;
-  final Function(DateTime) onEffectiveChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return AdaptiveLayout(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        DatePicker(
-          serverDate: serverEffectiveDate,
-          label: labelManufacture,
-          restorationId: 'Effective date',
-          selectedDate: onEffectiveChanged,
-        ),
-        DatePicker(
-          serverDate: serverExpiryDate,
-          label: labelExpiry,
-          restorationId: 'Expiry date',
-          selectedDate: onExpiryChanged,
-        ),
-      ],
-    );
-  }
-}
-
-/// Subscription License & Number-of-Device TextField/Dropdown [LicenseAndTotalDevices]
-class LicenseAndTotalDevices extends StatelessWidget {
-  const LicenseAndTotalDevices({
-    super.key,
-    required this.totalDevicesController,
-    this.onTotalDevicesChanged,
-    required this.onPackageChange,
-    this.serverPackage,
-  });
-
-  final Function(String?) onPackageChange;
-  final String? serverPackage;
-
-  final TextEditingController totalDevicesController;
-  final ValueChanged? onTotalDevicesChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return AdaptiveLayout(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        CustomTextField(
-          labelText: 'Total Devices',
-          onChanged: onTotalDevicesChanged,
-          controller: totalDevicesController,
-          keyboardType: TextInputType.number,
-        ),
-        CustomDropdown(
-          key: key,
-          items: subscriptionLicensesToList(),
-          labelText: 'license type',
-          serverValue: serverPackage,
-          onValueChange: (String? v) => onPackageChange(v),
-        ),
-      ],
-    );
-  }
-}
-
-/// Subscription Fee & Hosting Type Dropdown [SubscribeFeeAndHostingType]
-class SubscribeFeeAndHostingType extends StatelessWidget {
-  const SubscribeFeeAndHostingType({
-    super.key,
-    required this.subscribeFeeController,
-    this.onSubscribeFeeChanged,
-    required this.onHostingChanged,
-    this.serverHosting,
-  });
-
-  final Function(String?) onHostingChanged;
-  final String? serverHosting;
-
-  final TextEditingController subscribeFeeController;
-  final ValueChanged? onSubscribeFeeChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return AdaptiveLayout(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        SubscriptionFee(
-          onSubscribeFeeChanged: onSubscribeFeeChanged,
-          subscribeFeeController: subscribeFeeController,
-        ),
-        CustomDropdown(
-          key: key,
-          items: hostingTypeList,
-          labelText: 'hosting type',
-          serverValue: serverHosting,
-          onValueChange: (String? v) => onHostingChanged(v),
-        ),
-      ],
-    );
-  }
-}
-
-/// Subscription Fee TextField [SubscriptionFee]
-class SubscriptionFee extends StatelessWidget {
-  const SubscriptionFee({
-    super.key,
-    required this.onSubscribeFeeChanged,
-    required this.subscribeFeeController,
-  });
-
-  final TextEditingController subscribeFeeController;
-  final ValueChanged? onSubscribeFeeChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomTextField(
-      labelText: 'Subscription Fee',
-      onChanged: onSubscribeFeeChanged,
-      controller: subscribeFeeController,
-      keyboardType: TextInputType.number,
-      inputDecoration: InputDecoration(
-        hintText: 'Subscription Fee',
-        label: const Text(
-          'Subscription Fee',
-          semanticsLabel: 'Subscription Fee',
-        ),
-        alignLabelWithHint: true,
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        prefixIcon: const Icon(Icons.payments, size: 15),
-      ),
-    );
-  }
-}
-
-/// Workspace Account Role & Status Dropdown [WorkspaceRoleAndStatus]
-class WorkspaceRoleAndStatus extends StatelessWidget {
-  const WorkspaceRoleAndStatus({
-    super.key,
-    this.serverStatus,
-    required this.onStatusChanged,
     required this.onRoleChanged,
     this.serverRole,
   });
 
   final Function(String?) onRoleChanged;
   final String? serverRole;
-  final Function(String?) onStatusChanged;
-  final String? serverStatus;
 
   @override
   Widget build(BuildContext context) {
-    return AdaptiveLayout(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        CustomDropdown(
-          items: workspaceStatusList,
-          labelText: workspaceStatusList.first,
-          serverValue: serverStatus,
-          onValueChange: (String? v) => onStatusChanged(v),
-        ),
-        CustomDropdown(
-          key: key,
-          items: workspaceRoleList,
-          labelText: workspaceRoleList.first,
-          serverValue: serverRole,
-          onValueChange: (String? v) => onRoleChanged(v),
-        ),
-      ],
+    return CustomDropdown(
+      key: key,
+      items: workspaceRoleList,
+      labelText: workspaceRoleList.first,
+      serverValue: serverRole,
+      onValueChange: (String? v) => onRoleChanged(v),
     );
   }
 }
@@ -579,7 +408,7 @@ class _TemporaryPasscodeInputState extends State<TemporaryPasscodeInput> {
         padding: EdgeInsets.only(bottom: 14),
         child: Text(
           'Employee passcode required after organizational workspace sign-in',
-          style: context.ofTheme.textTheme.bodyMedium?.copyWith(
+          style: context.textTheme.bodyMedium?.copyWith(
             color: kBgLightColor, // Styling for the text
           ),
         ),
@@ -820,251 +649,159 @@ class ForgotWorkspacePasswordButton extends StatelessWidget {
   );
 }
 
-/*
-class TemporalPasscodeInput extends StatefulWidget {
-  final String label;
-
-  /// Check if previous FormTextField is valid before showing Passcode Input Field [autoGeneratePasscode]
-  final bool checkPrevious;
-  final bool autoGeneratePasscode;
-
-  const TemporalPasscodeInput({
+/*/// Expiry & Effective Date Picker [ExpiryAndEffectiveDateInput]
+class ExpiryAndEffectiveDateInput extends StatelessWidget {
+  const ExpiryAndEffectiveDateInput({
     super.key,
-    required this.label,
-    this.checkPrevious = false,
-    this.autoGeneratePasscode = false,
+    this.labelExpiry,
+    this.labelManufacture,
+    this.onQuantityChanged,
+    required this.onExpiryChanged,
+    required this.onEffectiveChanged,
+    this.serverExpiryDate,
+    this.serverEffectiveDate,
   });
 
-  @override
-  State<TemporalPasscodeInput> createState() => _TemporalPasscodeInputState();
-}
-
-class _TemporalPasscodeInputState extends State<TemporaryPasscodeInput> {
-  bool _secureText = true;
-  final TextEditingController _controller = TextEditingController();
-  final String helperText =
-      'Generate Temporary passcode for employee access to the organization\'s workspace.';
-
-  String get _label => widget.label;
-
-  // Whether previous validation (like email/password) should be checked before showing passcode field
-  bool get _checkPrevious => widget.checkPrevious;
-
-  // Whether the passcode should be auto-generated
-  bool get _autoGenerate => widget.autoGeneratePasscode;
-
-  void showHide() => setState(() => _secureText = !_secureText);
-
-  // Generates a Temporary passcode by appending a random UID to a predefined prefix
-  String _generateTemporaryPasscode() {
-    final tempCode = '$kTemporaryPasscodeLength'.generateUID(
-      type: UIDType.numeric,
-    );
-    return '$kTemporaryPasscodePrefix$tempCode';
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // If auto-generation is enabled, generate a passcode
-    if (_autoGenerate) {
-      _controller.text = _generateTemporaryPasscode();
-    }
-  }
+  final String? serverExpiryDate;
+  final String? serverEffectiveDate;
+  final String? labelExpiry;
+  final String? labelManufacture;
+  final ValueChanged? onQuantityChanged;
+  final Function(DateTime) onExpiryChanged;
+  final Function(DateTime) onEffectiveChanged;
 
   @override
   Widget build(BuildContext context) {
-    // Show passcode field or Temporary passcode tile based on autoGenerate flag
-    return _autoGenerate
-        ? _buildTemporaryPasscodeTile()
-        : _buildPasscodeBlocBuilder();
-  }
-
-  /// Builds Temporary passcode input section
-  _buildTemporaryPasscodeTile() {
-    return ListTile(
-      dense: true,
-      title: Padding(
-        padding: const EdgeInsets.only(bottom: 20),
-        child: Text(
-          'Employee passcode required after organizational workspace sign-in',
-          style: context.ofTheme.textTheme.bodyMedium?.copyWith(
-            color: kBgLightColor, // Styling for the text
-          ),
+    return AdaptiveLayout(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        DatePicker(
+          serverDate: serverEffectiveDate,
+          label: labelManufacture,
+          restorationId: 'Effective date',
+          selectedDate: onEffectiveChanged,
         ),
-      ),
-      // Shows the passcode field wrapped in a BlocBuilder
-      subtitle: _buildPasscodeBlocBuilder(),
+        DatePicker(
+          serverDate: serverExpiryDate,
+          label: labelExpiry,
+          restorationId: 'Expiry date',
+          selectedDate: onExpiryChanged,
+        ),
+      ],
     );
   }
+}
 
-  /// Builds the BlocBuilder for handling state changes of the SignInBloc
-  Widget _buildPasscodeBlocBuilder() {
-    return BlocBuilder<SignInBloc, SignInState>(
-      buildWhen: (prev, curr) {
-        // Checks whether passcode, password, or email state has changed
-        final passcodeChanged = prev.passcode != curr.passcode;
-        final passwordChanged = prev.password != curr.password;
-        final emailChanged = prev.email != curr.email;
+/// Subscription License & Number-of-Device TextField/Dropdown [LicenseAndTotalDevices]
+class LicenseAndTotalDevices extends StatelessWidget {
+  const LicenseAndTotalDevices({
+    super.key,
+    required this.totalDevicesController,
+    this.onTotalDevicesChanged,
+    required this.onSubscriptionChange,
+    this.serverSubscription,
+  });
 
-        // Only trigger a rebuild if relevant state changes occur
-        return passcodeChanged || passwordChanged || emailChanged;
-      },
-      builder: (context, state) {
-        // Determine if the passcode field should be displayed based on the autoGenerate flag or form validation
-        final shouldRender =
-            _checkPrevious && (state.email.isValid || state.password.isValid);
-        return shouldRender
-            ? _buildPasscodeField(
-                context,
-                state,
-              ) // Show passcode field if shouldRender is true
-            : const SizedBox.shrink();
-      },
+  final Function(String?, String?) onSubscriptionChange;
+  final String? serverSubscription;
+
+  final TextEditingController totalDevicesController;
+  final ValueChanged? onTotalDevicesChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return AdaptiveLayout(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        CustomTextField(
+          labelText: 'Total Devices',
+          onChanged: onTotalDevicesChanged,
+          controller: totalDevicesController,
+          keyboardType: TextInputType.number,
+        ),
+        CustomDropdownSearch<Subscription>(
+          labelText: serverSubscription ?? 'Search Subscription...',
+          asyncItems: (String filter, loadProps) async =>
+              await GetSubscriptions.load(),
+          filterFn: (sub, filter) {
+            var f = filter.isEmpty ? (serverSubscription ?? '') : filter;
+            return sub.filterByAny(f);
+          },
+          itemAsString: (sub) => sub.itemAsString,
+          onChanged: (sub) => onSubscriptionChange(sub?.id, sub?.name),
+          validator: (sub) => sub == null ? 'Subscription is required' : null,
+        ),
+      ],
     );
   }
+}
 
-  /// Builds the CustomTextField widget for the passcode input
-  Widget _buildPasscodeField(BuildContext context, SignInState state) {
+/// Subscription Fee & Hosting Type Dropdown [SubscribeFeeAndHostingType]
+class SubscribeFeeAndHostingType extends StatelessWidget {
+  const SubscribeFeeAndHostingType({
+    super.key,
+    required this.subscribeFeeController,
+    this.onSubscribeFeeChanged,
+    required this.onHostingChanged,
+    this.serverHosting,
+  });
+
+  final Function(String?) onHostingChanged;
+  final String? serverHosting;
+
+  final TextEditingController subscribeFeeController;
+  final ValueChanged? onSubscribeFeeChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return AdaptiveLayout(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        SubscriptionFee(
+          onSubscribeFeeChanged: onSubscribeFeeChanged,
+          subscribeFeeController: subscribeFeeController,
+        ),
+        CustomDropdown(
+          key: key,
+          items: hostingTypeList,
+          labelText: 'hosting type',
+          serverValue: serverHosting,
+          onValueChange: (String? v) => onHostingChanged(v),
+        ),
+      ],
+    );
+  }
+}
+
+/// Subscription Fee TextField [SubscriptionFee]
+class SubscriptionFee extends StatelessWidget {
+  const SubscriptionFee({
+    super.key,
+    required this.onSubscribeFeeChanged,
+    required this.subscribeFeeController,
+  });
+
+  final TextEditingController subscribeFeeController;
+  final ValueChanged? onSubscribeFeeChanged;
+
+  @override
+  Widget build(BuildContext context) {
     return CustomTextField(
-      key: const Key('auth_pass_code_textField'),
-      controller: _controller,
-      obscureText: _secureText,
-      maxLines: 1,
-      maxLength: 20,
-      autofillHints: const [AutofillHints.password],
-      keyboardType: TextInputType.visiblePassword,
-      textInputAction: TextInputAction.done,
-      onChanged: _dispatchPasscodeChangeEvent,
-      onFieldSubmitted: _dispatchPasscodeChangeEvent,
-      inputDecoration: _buildInputDecoration(context, state),
-    );
-  }
-
-  // Builds the input decoration for the passcode field (either Temporary or regular)
-  InputDecoration _buildInputDecoration(
-    BuildContext context,
-    SignInState state,
-  ) {
-    final isTemporary = _autoGenerate; // Check if it's a Temporary passcode
-    final label = isTemporary ? 'Temporary Passcode' : _label;
-
-    return InputDecoration(
-      isDense: true,
-      contentPadding: const EdgeInsets.all(1.0),
-      fillColor: kGrayColor.withAlpha((0.1 * 255).toInt()),
-      hintText: isTemporary ? null : label,
-      label: Text(label, semanticsLabel: label),
-      helperText: isTemporary ? helperText : null,
-      floatingLabelBehavior: FloatingLabelBehavior.always,
-      alignLabelWithHint: true,
-      prefixIcon: Icon(isTemporary ? Icons.pin : Icons.lock, size: 15),
-      errorText: state.password.displayError != null ? 'Invalid $label' : null,
-      suffixIcon: isTemporary
-          ? SizedBox(
-              width: 200,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  _toggleVisibility(),
-                  context.elevatedButton(
-                    'Generate',
-                    tooltip: helperText,
-                    color: kLightColor,
-                    bgColor: kDangerColor,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    onPressed: () => setState(
-                      () => _controller.text = _generateTemporaryPasscode(),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : _toggleVisibility(),
-    );
-  }
-
-  IconButton _toggleVisibility() {
-    return IconButton(
-      onPressed: showHide,
-      icon: Icon(
-        _secureText ? Icons.visibility_off : Icons.visibility,
-        color: _secureText ? kGrayColor : kTextColor,
-        semanticLabel: 'visibility icon',
+      labelText: 'Subscription Fee',
+      onChanged: onSubscribeFeeChanged,
+      controller: subscribeFeeController,
+      keyboardType: TextInputType.number,
+      inputDecoration: InputDecoration(
+        hintText: 'Subscription Fee',
+        label: const Text(
+          'Subscription Fee',
+          semanticsLabel: 'Subscription Fee',
+        ),
+        alignLabelWithHint: true,
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        prefixIcon: const Icon(Icons.payments, size: 15),
       ),
     );
   }
-
-  // Dispatches the PasscodeChanged event to the SignInBloc with the updated passcode
-  void _dispatchPasscodeChangeEvent(String passcode) {
-    context.read<SignInBloc>().add(
-      PasscodeChanged(passcode.trim()),
-    ); // Update the passcode in the state
-  }
-}
-*/
-
-/*
-// Employee Button
-class EmployeeSignInButton extends StatelessWidget {
-  const EmployeeSignInButton({super.key, this.onChanged});
-
-  final Function(String)? onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<SignInBloc, SignInState>(
-      builder: (context, state) {
-        return _buildButton(
-          context,
-          inProgress: state.status.isInProgress,
-          onPress: (state.email.isValid && state.password.isValid)
-              ? () => context.read<SignInBloc>().add(EmployeeSignInRequested())
-              : null,
-        );
-      },
-    );
-  }
-
-  _buildButton(
-    BuildContext context, {
-    bool inProgress = false,
-    required void Function()? onPress,
-  }) => context.confirmableActionButton(
-    label: inProgress ? "Please wait..." : "Sign In",
-    onPressed: onPress,
-  );
-}
-
-// Change Employee TemporaryPasscode Button
-class ChangeEmployeeTemporaryPasscodeButton extends StatelessWidget {
-  const ChangeEmployeeTemporaryPasscodeButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<SignInBloc, SignInState>(
-      builder: (context, state) {
-        return _buildButton(
-          context,
-          inProgress: state.status.isInProgress,
-          onPress: state.passcode.isValid
-              ? () {
-                  context.read<SignInBloc>().add(
-                    ChangeTemporaryPasscodeRequested(),
-                  );
-                }
-              : null,
-        );
-      },
-    );
-  }
-
-  _buildButton(
-    BuildContext context, {
-    bool inProgress = false,
-    required void Function()? onPress,
-  }) => context.confirmableActionButton(
-    label: inProgress ? "Please wait..." : "Create New Password",
-    onPressed: onPress,
-  );
 }*/

@@ -3,10 +3,10 @@ import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/adaptive_layout.dart';
-import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
+import 'package:assign_erp/core/widgets/dialog/async_progress_dialog.dart';
+import 'package:assign_erp/core/widgets/dialog/prompt_user_for_action.dart';
 import 'package:flutter/material.dart';
 
 const divLine = Divider(thickness: 10.0, height: 30.0);
@@ -112,7 +112,7 @@ extension ScreenHelper on BuildContext {
   Future<bool> confirmUserActionDialog({
     String onAccept = 'Delete',
     String? msg,
-  }) async => await confirmAction(
+  }) async => await confirmAction<bool>(
     Text(msg ?? 'Would you like to proceed?'),
     title: "Confirm $onAccept",
     onAccept: onAccept,
@@ -222,7 +222,7 @@ extension ScreenHelper on BuildContext {
           backgroundColor: colorScheme.error,
         ),
         label: Text(
-          'TOTAL: $count'.toUpperCase(),
+          'TOTAL: $count'.toUpperCaseAll,
           style: ofTheme.textTheme.titleMedium?.copyWith(color: kLightColor),
         ),
       ),
@@ -282,7 +282,7 @@ extension ScreenHelper on BuildContext {
               onPressed: onPressed,
               style: ElevatedButton.styleFrom(backgroundColor: borderColor),
               label: Text(
-                (buttonLabel ?? label).toUpperCase(),
+                (buttonLabel ?? label).toUpperCaseAll,
                 style: const TextStyle(color: kLightColor),
               ),
               icon: Icon(icon, color: kLightColor),
@@ -404,7 +404,7 @@ class GenericCard extends StatelessWidget {
   }
 
   _buildBody(BuildContext context) {
-    var textStyle = context.ofTheme.textTheme.titleLarge;
+    var textStyle = context.textTheme.titleLarge;
 
     return Column(
       children: [
@@ -428,7 +428,7 @@ class GenericCard extends StatelessWidget {
             subTitle,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
-            style: context.ofTheme.textTheme.titleSmall?.copyWith(
+            style: context.textTheme.titleSmall?.copyWith(
               color: kTextColor,
               fontSize: 12,
             ),
@@ -452,7 +452,7 @@ class GenericCard extends StatelessWidget {
     String label = '',
     String text = '',
   }) {
-    var textStyle = context.ofTheme.textTheme.titleMedium;
+    var textStyle = context.textTheme.titleMedium;
     return Padding(
       padding: EdgeInsets.zero,
       child: RichText(

@@ -48,6 +48,10 @@ class SetupUpdated<T> extends SetupState<T> {
   List<Object?> get props => [message];
 }
 
+class SetupOverridden<T> extends SetupUpdated<T> {
+  const SetupOverridden({required super.message});
+}
+
 class SetupDeleted<T> extends SetupState<T> {
   final String message;
 

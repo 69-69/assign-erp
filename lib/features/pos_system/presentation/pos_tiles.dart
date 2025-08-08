@@ -1,11 +1,84 @@
 import 'package:assign_erp/config/routes/route_names.dart';
 import 'package:assign_erp/core/network/data_sources/models/dashboard_model.dart';
-import 'package:assign_erp/features/setup/data/role/employee_role.dart';
+import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/features/pos_system/data/permission/pos_permission.dart';
 import 'package:flutter/material.dart';
+
+// Get name from enum
+String _getValue(e) => getEnumName<PosPermission>(e);
 
 /// POS Navigation Links [POSTiles]
 extension POSTiles on dynamic {
-  // rbc: Role Based Dashboard Tiles
+  List<DashboardTile> get posTiles {
+    final tilesData = [
+      // Orders tab
+      {
+        'label': 'orders',
+        'icon': Icons.shopping_cart,
+        'action': RouteNames.posOrders,
+        'param': {},
+        'access': _getValue(PosPermission.managePosOrders),
+        'description':
+            'place an order for a customer and then update its status.',
+      },
+      // POS tab
+      {
+        'label': 'sales',
+        'icon': Icons.shopping_basket,
+        'action': RouteNames.posSales,
+        'param': {},
+        'access': _getValue(PosPermission.managePosSales),
+        'description': 'keep track of, and oversee the progress of sales.',
+      },
+      {
+        'label': 'report - Analytics',
+        'icon': Icons.add_chart,
+        'action': RouteNames.posReports,
+        'param': {},
+        'access': _getValue(PosPermission.viewPosReport),
+        'description':
+            'generate sales report, turnover rates, forecasts and performance analytics',
+      },
+      // Payments tab
+      {
+        'label': 'payment',
+        'icon': Icons.payments_outlined,
+        'action': RouteNames.posPayments,
+        'param': {},
+        'access': _getValue(PosPermission.managePosPayments),
+        'description':
+            'records payment details for each transaction: payment method and any related information',
+      },
+      // Receipt tab
+      {
+        'label': 'receipt',
+        'icon': Icons.receipt,
+        'action': RouteNames.posReceipt,
+        'param': {},
+        'access': _getValue(PosPermission.reprintReceipt),
+        'description':
+            'keep history of the creation and processing of receipts',
+      },
+      // Finance tab
+      {
+        'label': 'finance',
+        'icon': Icons.money,
+        'action': RouteNames.posPayments,
+        'param': {},
+        'access': _getValue(PosPermission.managePosFinance),
+        'description':
+            'Manages & analyzes company\'s financial resources; budgeting, forecasting, investing',
+      },
+    ];
+
+    final defaultTiles = tilesData
+        .map((e) => DashboardTile.fromMap(e))
+        .toList();
+
+    return defaultTiles;
+  }
+
+  /* rbc: Role Based Dashboard Tiles
   Map<EmployeeRole, List<DashboardTile>> get _rbcPOSTiles {
     final tilesData = [
       // Orders tab
@@ -89,5 +162,5 @@ extension POSTiles on dynamic {
   }
 
   Map<EmployeeRole, RoleBasedDashboardTile<EmployeeRole>> get posTiles =>
-      DashboardTileManager<EmployeeRole>(tiles: _rbcPOSTiles).create();
+      DashboardTileManager<EmployeeRole>(tiles: _rbcPOSTiles).create();*/
 }

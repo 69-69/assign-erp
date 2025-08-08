@@ -332,7 +332,7 @@ class PrintRFQ2 {
           crossAxisAlignment: pw.CrossAxisAlignment.end,
           children: [
             pw.Text(
-              _rfqTitle.toUpperCase(),
+              _rfqTitle.toUpperCaseAll,
               style: pw.TextStyle(color: _pdfColors.headerColor, fontSize: 14),
             ),
             pw.SizedBox(height: 3.0),

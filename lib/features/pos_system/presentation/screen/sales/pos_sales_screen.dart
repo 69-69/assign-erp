@@ -1,4 +1,5 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/pos_system/data/models/pos_sale_model.dart';
@@ -19,7 +20,7 @@ class PosSalesScreen extends StatelessWidget {
           POSSaleBloc(firestore: FirebaseFirestore.instance)
             ..add(GetPOSs<POSSale>()),
       child: CustomScaffold(
-        title: posSalesScreenTitle.toUpperCase(),
+        title: posSalesScreenTitle.toUpperCaseAll,
         body: const ListPOSSales(),
         floatingActionButton: context.buildFloatingBtn(
           'Add Sales',

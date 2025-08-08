@@ -1,4 +1,4 @@
-import 'package:assign_erp/core/widgets/custom_tab.dart';
+import 'package:assign_erp/core/widgets/nav/custom_tab.dart';
 import 'package:assign_erp/features/setup/presentation/screen/product_config/index.dart';
 import 'package:flutter/material.dart';
 

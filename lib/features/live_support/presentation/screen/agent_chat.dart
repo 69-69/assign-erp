@@ -31,7 +31,7 @@ class _AgentChatDashboardState extends State<AgentChatDashboard> {
   String get _clientWorkspaceId =>
       widget.clientWorkspaceId ?? ''; // Same as Client's WorkspaceId
   String get _agentId =>
-      context.workspace?.agentID ?? ''; // Same as Agent's WorkspaceId
+      context.workspace?.agentId ?? ''; // Same as Agent's WorkspaceId
 
   void _selectChat(String chatId, String userName) {
     setState(() {
@@ -88,7 +88,7 @@ class _AgentChatDashboardState extends State<AgentChatDashboard> {
           ? Center(
               child: Text(
                 'Select a conversation',
-                style: context.ofTheme.textTheme.bodyLarge,
+                style: context.textTheme.bodyLarge,
                 textScaler: TextScaler.linear(context.textScaleFactor),
               ),
             )

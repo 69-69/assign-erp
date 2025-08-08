@@ -1,23 +1,27 @@
 import 'dart:async';
 
+import 'package:assign_erp/config/routes/route_logger.dart';
 import 'package:assign_erp/core/constants/account_status.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/constants/app_db_collect.dart';
 import 'package:assign_erp/core/constants/collection_type_enum.dart';
-import 'package:assign_erp/core/network/data_sources/models/subscription_licenses_enum.dart';
 import 'package:assign_erp/core/network/data_sources/remote/repository/firestore_helper.dart';
 import 'package:assign_erp/core/network/data_sources/remote/repository/firestore_repository.dart';
-import 'package:assign_erp/core/result/result.dart';
+import 'package:assign_erp/core/result/result_data.dart';
+import 'package:assign_erp/core/util/debug_printify.dart';
 import 'package:assign_erp/core/util/device_info_service.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/secret_hasher.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/features/auth/data/data_sources/local/auth_cache_service.dart';
+import 'package:assign_erp/features/auth/data/data_sources/remote/geo_location_service.dart';
 import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
 import 'package:assign_erp/features/auth/data/role/workspace_role.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_status_enum.dart';
-import 'package:assign_erp/features/index.dart';
+import 'package:assign_erp/features/setup/data/models/attendance_model.dart';
 import 'package:assign_erp/features/setup/data/models/employee_model.dart';
-import 'package:assign_erp/features/setup/data/role/employee_role.dart';
+import 'package:assign_erp/features/setup/data/permission/setup_permission.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
@@ -33,13 +37,17 @@ import 'package:flutter/foundation.dart';
 class AuthRepository extends FirestoreRepository {
   final FirebaseAuth _firebaseAuth;
   final FirebaseFirestore firestore;
+  final RouteLogger routeLogger;
 
-  AuthRepository({FirebaseAuth? firebaseAuth, required this.firestore})
-    : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-      super(
-        firestore: firestore,
-        collectionRef: firestore.collection(workspaceUserDBCollectionPath),
-      );
+  AuthRepository({
+    FirebaseAuth? firebaseAuth,
+    required this.firestore,
+    required this.routeLogger,
+  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+       super(
+         firestore: firestore,
+         collectionRef: firestore.collection(workspaceAccDBCollectionPath),
+       );
 
   final _controller = StreamController<AuthStatus>.broadcast();
 
@@ -74,7 +82,7 @@ class AuthRepository extends FirestoreRepository {
 
       // Try to get the workspace from the cache
       Workspace? cacheWorkspace = _getWorkspaceCache();
-      if (cacheWorkspace != null) {
+      if (cacheWorkspace != null || cacheWorkspace!.unExpired) {
         return cacheWorkspace;
       }
 
@@ -82,18 +90,14 @@ class AuthRepository extends FirestoreRepository {
       final docSnapshot = await findById(id);
 
       // Check if the document exists and is not empty
-      if (docSnapshot.exists && docSnapshot.data() != null) {
-        final data = docSnapshot.data()!;
-        if (data.isNotEmpty &&
-            data['status'] == AccountStatus.enabled.label &&
-            data['license'] != SubscriptionLicenses.unauthorized) {
-          var workspace = Workspace.fromMap(data);
+      if (docSnapshot.exists && !docSnapshot.data().isNullEmpty) {
+        final workspace = Workspace.fromMap(docSnapshot.data()!);
 
-          // Write to cache
-          await _cacheWorkspace(workspace);
+        if (workspace.isExpired) return null;
 
-          return workspace;
-        }
+        // Write to cache
+        await _cacheWorkspace(workspace);
+        return workspace;
       }
 
       // Return null if no valid data found
@@ -129,21 +133,21 @@ class AuthRepository extends FirestoreRepository {
   /// [assignWorkspaceRole] Determines the role for a "New Workspace Setup" based on the
   /// currently signed-in user's role (cached workspace role).
   ///
-  /// - NOTE: `WorkspaceRole.initialSetup` role is used as first-time login during initial APP or WorkSpace setup.
+  /// - NOTE: `WorkspaceRole.onboarding` role is used as first-time login during initial APP or WorkSpace setup.
   ///
   /// Role Assignment Logic:
-  /// - If the currently signed-in user's role is:
-  ///   - `initialSetup`, assigns `WorkspaceRole.agentFranchise`.
+  /// - If the currently signed-in workspace's role is:
+  ///   - `onboarding`, assigns `WorkspaceRole.agentFranchise`.
   ///   - `agentFranchise`, assigns `WorkspaceRole.subscriber`.
   ///   - `developer`, retains `WorkspaceRole.developer`.
   ///   - If the role is `null`, defaults to `WorkspaceRole.subscriber`.
   ///
-  /// Used during the "Setup New Workspace" flow. [assignWorkspaceRole]
+  /// Used during the "Setup/Create New Workspace" flow. [assignWorkspaceRole]
   WorkspaceRole get assignWorkspaceRole {
     Workspace? cacheWorkspace = _getWorkspaceCache();
 
     return switch (cacheWorkspace?.role) {
-      WorkspaceRole.initialSetup => WorkspaceRole.agentFranchise,
+      WorkspaceRole.onboarding => WorkspaceRole.agentFranchise,
       WorkspaceRole.agentFranchise => WorkspaceRole.subscriber,
       WorkspaceRole.developer => WorkspaceRole.developer,
       _ => WorkspaceRole.subscriber,
@@ -160,7 +164,7 @@ class AuthRepository extends FirestoreRepository {
   _validateWorkspaceAccess(String email) async {
     try {
       // Fetch the workspace document by email
-      final doc = await _fetchWorkspaceUserByEmail(email);
+      final doc = await _fetchWorkspaceByEmail(email);
 
       // workspace not created
       if (doc == null) {
@@ -171,10 +175,10 @@ class AuthRepository extends FirestoreRepository {
       }
 
       // Convert doc data to Workspace
-      final work = Workspace.fromMap(doc.data());
+      final workspace = Workspace.fromMap(doc.data());
 
       // Validate workspace and license status
-      if (work.isExpired) {
+      if (workspace.isExpired || workspace.subscriptionId.isEmpty) {
         return Failure(
           message: '$errorPrefix:Software is unlicensed / expired',
         );
@@ -183,8 +187,8 @@ class AuthRepository extends FirestoreRepository {
       final userDeviceId = await DeviceInfoService.getDeviceId();
 
       // Device-Id not previously authorized, else skip
-      if (!work.isDeviceAuthorized(userDeviceId)) {
-        if (work.isDeviceLimitReached) {
+      if (!workspace.isDeviceAuthorized(userDeviceId)) {
+        if (workspace.isDeviceLimitReached) {
           return Failure(
             message: '$errorPrefix:Upgrade your Plan: Too many devices in use',
           );
@@ -263,6 +267,13 @@ class AuthRepository extends FirestoreRepository {
       // Cache the workspace data for future use
       await _cacheWorkspace(workspace);
 
+      await _logAuthSession(
+        workspace.id,
+        'sign-in',
+        name: workspace.name,
+        colPath: workspaceSessionLogsCollectionPath,
+      );
+
       _controller.add(AuthStatus.workspaceAuthenticated);
 
       // Return the Workspace object
@@ -284,7 +295,7 @@ class AuthRepository extends FirestoreRepository {
     }
   }
 
-  /// Remove device ID from a user's authorized device list.
+  /*/// Remove device ID from a user's authorized device list.
   Future<void> revokeDeviceFromAuthorizedList({
     required String deviceId,
     required String email,
@@ -299,7 +310,7 @@ class AuthRepository extends FirestoreRepository {
         'authorizedDeviceIds': FieldValue.arrayRemove([deviceId]),
       },
     );
-  }
+  }*/
 
   /// Signs in an employee using their email and passcode.
   /// Returns a tuple with the `employee` and `workspace` if successful, otherwise `null` for both.
@@ -314,7 +325,7 @@ class AuthRepository extends FirestoreRepository {
 
     try {
       // Fetch Employee document using email and passcode
-      final result = await _fetchEmployeeByEmailPassCode(email, passCode);
+      final result = await _fetchEmployeeByEmailPasscode(email, passCode);
 
       if (result is Failure) {
         return (
@@ -335,15 +346,17 @@ class AuthRepository extends FirestoreRepository {
       final doc = (result as Success).data;
       final data = doc.data();
 
-      if (data['status'] != AccountStatus.enabled.label && data['role'] != '') {
+      // Convert the data to an Employee object
+      final employee = Employee.fromMap(data, id: doc.id);
+
+      if (employee.status != AccountStatus.enabled.label ||
+          employee.workspaceId != workspace.uid ||
+          employee.roleId.isEmpty) {
         return invalid;
       }
 
-      // Convert the data to an Employee object
-      final employeeUser = Employee.fromMap(data, id: doc.id);
-
       // Cache the employee data
-      await _cacheEmployee(employeeUser);
+      await _cacheEmployee(employee);
 
       /// Determines whether the provided passcode is a Temporary passcode.
       ///
@@ -361,7 +374,7 @@ class AuthRepository extends FirestoreRepository {
       _controller.add(status);
 
       // Return the employee and workspace objects
-      return (employee: employeeUser, workspace: workspaceUser, message: '');
+      return (employee: employee, workspace: workspaceUser, message: '');
     } on FirebaseAuthException catch (e) {
       // Handle Firebase authentication exceptions
       _handleAuthException(
@@ -378,11 +391,11 @@ class AuthRepository extends FirestoreRepository {
 
   /// Changes the temporary PassCode for employee.
   ///
-  /// [employeeId] - The unique identifier of the employee whose passcode needs to be updated.
+  /// [workspaceId] - The unique identifier of the employee whose passcode needs to be updated.
   /// [newPasscode] - The new passcode to be set for the employee.
   ///
   /// This method performs the following steps:
-  /// 1. Fetch the employee info using the provided [employeeId] and a workspace ID.
+  /// 1. Fetch the employee info using the provided [workspaceId] and a workspace ID.
   /// 2. Hashes the provided [newPasscode] using the `PasswordHash.hashPassword` method to ensure security.
   /// 3. Updates the employee with the hashed passcode.
   Future<({Employee? employee, Workspace? workspace})>
@@ -399,7 +412,7 @@ class AuthRepository extends FirestoreRepository {
       }
 
       final docRef = _genericCollection(
-        workspaceRole: cacheWorkspace.role.name,
+        workspaceRole: getEnumName<WorkspaceRole>(cacheWorkspace.role),
         workspaceId: cacheWorkspace.id,
       ).doc(cacheEmployee.id);
 
@@ -472,7 +485,7 @@ class AuthRepository extends FirestoreRepository {
           mobileNumber: mobileNumber,
           workspaceName: workspaceName,
           workspaceCategory: workspaceCategory,
-          agentID: _registrarAgentId,
+          agentId: _registrarAgentId,
         );
 
         /* FOR COMPANY EMPLOYEE SIGN-IN:
@@ -571,7 +584,7 @@ class AuthRepository extends FirestoreRepository {
   /// - [fullName]: The full name of the client or customer.
   /// - [mobileNumber]: The client's mobile phone number.
   /// - [workspaceCategory]: The type of business type (e.g., real estate, retail, logistics).
-  /// - [agentID]: The ID of the agent who is creating or updating the workspace.
+  /// - [agentId]: The ID of the agent who is creating or updating the workspace.
   ///
   /// Returns a [Future<void>]. [_createWorkspace]
   Future<void> _createWorkspace({
@@ -580,24 +593,23 @@ class AuthRepository extends FirestoreRepository {
     required String mobileNumber,
     required String workspaceName,
     required String workspaceCategory,
-    required String agentID,
+    required String agentId,
   }) async {
-    final agentId = agentID.isNullOrEmpty ? _registrarAgentId : agentID;
+    final aId = agentId.isNullOrEmpty ? _registrarAgentId : agentId;
 
     final workspace = Workspace(
       id: _newWorkspaceId,
       role: assignWorkspaceRole,
-      status: '',
       email: email,
-      agentID: agentId,
+      agentId: aId,
+      subscriptionId: '',
+      name: workspaceName,
       clientName: fullName,
       mobileNumber: mobileNumber,
-      workspaceName: workspaceName,
-      workspaceCategory: workspaceCategory,
-      license: SubscriptionLicenses.unauthorized,
+      category: workspaceCategory,
     );
 
-    await overrideDataById(_newWorkspaceId, data: workspace.toMap());
+    await overrideById(_newWorkspaceId, data: workspace.toMap());
   }
 
   /// Creates and saves employee data in Firestore.
@@ -615,21 +627,27 @@ class AuthRepository extends FirestoreRepository {
     required String createdBy,
     required String employeePasscode,
   }) async {
+    final workspaceId = _newWorkspaceId;
+    final empRole = getEnumName<WorkspaceRole>(assignWorkspaceRole);
+
+    final role = await _defaultStoreOwnerPermissions(empRole, workspaceId);
+
     // Add a new document to the collection and get its reference
-    final DocumentReference newEmpDocRef = _genericCollection(
-      workspaceRole: assignWorkspaceRole.name,
-      workspaceId: _newWorkspaceId,
+    final DocumentReference docRef = _genericCollection(
+      workspaceRole: empRole,
+      workspaceId: workspaceId,
     ).doc(); // Generates a new document reference with an auto-generated ID
 
     // Extract the document ID
-    final String documentId = newEmpDocRef.id;
+    final String documentId = docRef.id;
     final byWho = await getEmployee();
 
     // Create an Employee instance with the document ID
     final Employee employee = Employee(
       id: documentId,
-      workspaceId: _newWorkspaceId,
-      role: EmployeeRole.storeOwner,
+      workspaceId: workspaceId,
+      roleId: role.id,
+      role: role.name,
       email: email,
       fullName: fullName,
       mobileNumber: mobileNumber,
@@ -640,7 +658,25 @@ class AuthRepository extends FirestoreRepository {
     );
 
     // Add the employee data to the Firestore collection
-    await newEmpDocRef.set(employee.toMap());
+    await docRef.set(employee.toMap());
+  }
+
+  /// [_defaultStoreOwnerPermissions] This is the default permissions for the store owner
+  /// during first-time workspace setup(Workspace Creation)
+  Future<({String id, String name})> _defaultStoreOwnerPermissions(
+    String workspaceRole,
+    String workspaceId,
+  ) async {
+    final defaultPerm = defaultStoreOwnerPermissions;
+
+    final docRef = await _genericCollection(
+      workspaceId: workspaceId,
+      workspaceRole: workspaceRole,
+      collectionType: CollectionType.global,
+      collectionPath: rolesDBCollectionPath,
+    ).add(defaultPerm);
+
+    return (id: docRef.id, name: defaultPerm['name'] as String);
   }
 
   /// Provides a [CollectionReference] for specified collection path.
@@ -653,8 +689,8 @@ class AuthRepository extends FirestoreRepository {
     // Create a FirestoreHelper instance with current workspace role and ID
     final fireHelper = FirestoreHelper(
       firestore: firestore,
-      workspaceRole: workspaceRole,
       workspaceId: workspaceId,
+      workspaceRole: workspaceRole,
     );
     final cPath = collectionPath ?? employeesDBCollectionPath;
 
@@ -680,16 +716,19 @@ class AuthRepository extends FirestoreRepository {
   Future<bool> forgotWorkspacePassword({required String email}) async {
     try {
       // Fetch the workspace document based on the email
-      final doc = await _fetchWorkspaceUserByEmail(email);
+      final queryDocSnap = await _fetchWorkspaceByEmail(email);
 
-      // Check if the document is available and has an active status
-      if (doc == null ||
-          doc.data()['license'] == SubscriptionLicenses.unauthorized ||
-          (doc.data()['status'] != AccountStatus.enabled.label)) {
-        return false;
+      // Check if account is available and not expired
+      if (queryDocSnap!.exists && !queryDocSnap.data().isNullEmpty) {
+        final workspace = Workspace.fromMap(queryDocSnap.data());
+
+        if (workspace.isExpired) return false;
+
+        await _forgotPassword(email);
+        return true;
       }
-      await _forgotPassword(email);
-      return true;
+
+      return false;
     } catch (e) {
       // Handle any other types of exceptions
       _handleAuthException("An unexpected error occurred: $e");
@@ -745,8 +784,9 @@ class AuthRepository extends FirestoreRepository {
     }
   }
 
-  Future<QueryDocumentSnapshot<Map<String, dynamic>>?>
-  _fetchWorkspaceUserByEmail(String email) async {
+  Future<QueryDocumentSnapshot<Map<String, dynamic>>?> _fetchWorkspaceByEmail(
+    String email,
+  ) async {
     final querySnapshot = await findOneByAny('email', term: email);
     if (querySnapshot.docs.isNotEmpty) {
       final snap = querySnapshot.docs.first;
@@ -757,7 +797,7 @@ class AuthRepository extends FirestoreRepository {
 
   // Future<QueryDocumentSnapshot<Map<String, dynamic>>>
   Future<Result<QueryDocumentSnapshot<Map<String, dynamic>>>>
-  _fetchEmployeeByEmailPassCode(String email, String passCode) async {
+  _fetchEmployeeByEmailPasscode(String email, String passCode) async {
     // Try to get the workspace from the cache
     Workspace? cacheWorkspace = _getWorkspaceCache();
 
@@ -767,9 +807,12 @@ class AuthRepository extends FirestoreRepository {
       );
     }
 
+    final workId = cacheWorkspace.id;
+    final workRole = getEnumName<WorkspaceRole>(cacheWorkspace.role);
+
     final querySnap = await _genericCollection(
-      workspaceRole: cacheWorkspace.role.name,
-      workspaceId: cacheWorkspace.id,
+      workspaceId: workId,
+      workspaceRole: workRole,
     ).where('email', isEqualTo: email).get();
     // .where('passCode', isEqualTo: PasswordHash.hashPassword(passCode))
 
@@ -787,6 +830,15 @@ class AuthRepository extends FirestoreRepository {
     if (!isSame) {
       return Failure(message: '$errorPrefix:Invalid Passcode.');
     }
+
+    await _logAuthSession(
+      doc.id,
+      'sign-in',
+      name: data['fullName'],
+      workspaceId: workId,
+      workspaceRole: workRole,
+      colPath: employeeSessionLogsCollectionPath,
+    );
 
     return Success(data: doc);
   }
@@ -834,6 +886,55 @@ class AuthRepository extends FirestoreRepository {
     await user.sendEmailVerification(/*actionCodeSettings*/);
   }
 
+  /// Log Workspace & Employee Auth Activity; Sign-In or Sign-Out. [_logAuthSession]
+  Future<void> _logAuthSession(
+    String id,
+    String type, {
+    String? name,
+    String? colPath,
+    String? workspaceId,
+    String? workspaceRole,
+  }) async {
+    try {
+      final geo = await GeoLocationService().getGeoLocation();
+
+      final colType = workspaceRole == null
+          ? CollectionType.global
+          : CollectionType.workspace;
+
+      final colRef = _genericCollection(
+        collectionPath: colPath,
+        collectionType: colType,
+        workspaceId: workspaceId,
+        workspaceRole: workspaceRole,
+      ).doc();
+
+      final areasViewed = routeLogger.visitedRoutes
+          .map((e) => '${e.name} @ ${e.visitedAt.toStandardDT}')
+          .toList();
+
+      // Prepare log data
+      final log = Attendance(
+        id: colRef.id,
+        type: type,
+        userId: id,
+        name: name ?? 'employee',
+        ip: geo?.ip,
+        city: geo?.city,
+        region: geo?.region,
+        areasViewed: areasViewed,
+        location: geo != null ? GeoPoint(geo.latitude, geo.longitude) : null,
+      );
+
+      // Write to Firestore
+      await colRef.set(log.toMap());
+
+      prettyPrint('Attendance $type', 'logged successfully.');
+    } catch (e) {
+      prettyPrint('Failed to log attendance', '$e');
+    }
+  }
+
   void _handleAuthException(e, {String? message}) {
     throw Exception(message ?? e);
     // debugPrint('FirebaseAuthException: ${e.code} - ${e.message}\n');
@@ -869,10 +970,32 @@ class AuthRepository extends FirestoreRepository {
   // SignOut current Workspace & Employee
   Future<void> signOut() async {
     Future.wait([
+      _logSignOut(),
       _authCacheService.deleteEmployee(),
       _authCacheService.deleteWorkspace(),
       _firebaseAuth.signOut(),
+      // _controller.close(),
     ]);
+  }
+
+  // Log signOut sessions for tracking and analytics
+  Future<void> _logSignOut() async {
+    Workspace? cacheWorkspace = _getWorkspaceCache();
+    Employee? cacheEmp = _getEmployeeCache();
+
+    if (cacheWorkspace == null) return;
+
+    final workId = cacheWorkspace.id;
+    final workRole = getEnumName<WorkspaceRole>(cacheWorkspace.role);
+
+    await _logAuthSession(
+      firebaseUser?.uid ?? cacheWorkspace.id,
+      'sign-out',
+      name: cacheEmp?.fullName,
+      workspaceId: workId,
+      workspaceRole: workRole,
+      colPath: employeeSessionLogsCollectionPath,
+    );
   }
 
   void _closeController() {

@@ -1,4 +1,7 @@
+import 'package:assign_erp/config/routes/route_logger.dart';
 import 'package:assign_erp/config/routes/route_names.dart';
+import 'package:assign_erp/core/util/debug_printify.dart';
+import 'package:assign_erp/features/access_control/domain/repository/access_control_repository.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_status_enum.dart';
 import 'package:assign_erp/features/index.dart';
 import 'package:assign_erp/features/setup/data/models/company_info_model.dart';
@@ -10,11 +13,14 @@ class App extends StatelessWidget {
     super.key,
     required FirebaseFirestore fireStore,
     required AuthRepository authRepo,
+    required RouteLogger routeLogger,
   }) : _fireStore = fireStore,
-       _authRepo = authRepo;
+       _authRepo = authRepo,
+       _routeLogger = routeLogger;
 
   final FirebaseFirestore _fireStore;
   final AuthRepository _authRepo;
+  final RouteLogger _routeLogger;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +32,9 @@ class App extends StatelessWidget {
 
     final blocProviders = [
       // _bloc<AuthBloc>(() => AuthBloc(authRepository: _authRepo)),
+      _bloc<AccessControlCubit>(
+        () => AccessControlCubit(AccessControlRepository(_fireStore)),
+      ),
       _bloc<WorkspaceSignInBloc>(
         () => WorkspaceSignInBloc(authRepository: _authRepo),
       ),
@@ -57,11 +66,12 @@ class App extends StatelessWidget {
       _bloc<POSSaleBloc>(() => POSSaleBloc(firestore: _fireStore)),
       _bloc<POSOrderBloc>(() => POSOrderBloc(firestore: _fireStore)),
       _bloc<AgentClientBloc>(() => AgentClientBloc(firestore: _fireStore)),
-      _bloc<SystemWideBloc>(() => SystemWideBloc(firestore: _fireStore)),
-      // Software User Guide BlocProvider
-      _bloc<HowToBloc>(() => HowToBloc(firestore: _fireStore)),
       // Live Support/Chat BlocProvider
       _bloc<ChatBloc>(() => ChatBloc(firestore: _fireStore)),
+      _bloc<AllTenantsBloc>(() => AllTenantsBloc(firestore: _fireStore)),
+      _bloc<SubscriptionBloc>(() => SubscriptionBloc(firestore: _fireStore)),
+      // Software User Guide BlocProvider
+      _bloc<HowToBloc>(() => HowToBloc(firestore: _fireStore)),
       // _bloc<ChatOverviewBloc>(() => ChatOverviewBloc(firestore: _fireStore)),
     ];
 
@@ -90,6 +100,7 @@ class App extends StatelessWidget {
             theme: brightness == Brightness.light
                 ? theme.light()
                 : theme.dark(),
+            routeLogger: _routeLogger,
           ),
         ),
       ),
@@ -105,20 +116,34 @@ class App extends StatelessWidget {
   ) => BlocProvider<T>(create: (BuildContext context) => create());
 }
 
-class _AppView extends StatelessWidget {
+class _AppView extends StatefulWidget {
   final ThemeData theme;
+  final RouteLogger routeLogger;
 
-  const _AppView({required this.theme});
+  const _AppView({required this.theme, required this.routeLogger});
+
+  @override
+  State<_AppView> createState() => _AppViewState();
+}
+
+class _AppViewState extends State<_AppView> {
+  late final GoRouter _appRouter;
+
+  @override
+  void initState() {
+    super.initState();
+    _appRouter = appRouter(widget.routeLogger); // Only created once
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      routerConfig: appRouter,
+      routerConfig: _appRouter,
       title: appName.replaceAll('.', ' '),
       debugShowCheckedModeBanner: false,
       debugShowMaterialGrid: false,
-      theme: theme,
-      builder: (_, child) => _authStateListener(child, appRouter),
+      theme: widget.theme,
+      builder: (_, child) => _authStateListener(child, _appRouter),
     );
   }
 
@@ -127,11 +152,21 @@ class _AppView extends StatelessWidget {
     GoRouter appRoute,
   ) {
     return BlocListener<AuthBloc, AuthState>(
-      listener: (_, state) {
+      listener: (cxt, state) async {
         final loc = appRoute.state.matchedLocation;
+        // final loc = GoRouter.of(cxt).state.matchedLocation;
         final route = _authRedirect(state, loc);
 
+        // Clear permissions if logging out
+        if (state.authStatus == AuthStatus.unauthenticated) {
+          if (cxt.mounted) {
+            cxt.read<AccessControlCubit>().clear();
+          }
+        }
+
         if (route != null && route != loc) {
+          // ✅ Load permissions if authenticated
+          await _loadPermissions(cxt, state);
           /*if (loc == RouteNames.mainDashboard) {
             appRoute.refresh();
           }*/
@@ -142,6 +177,34 @@ class _AppView extends StatelessWidget {
     );
   }
 
+  // ✅ Load permissions if authenticated
+  Future<void> _loadPermissions(BuildContext context, AuthState state) async {
+    if (state.authStatus == AuthStatus.authenticated &&
+        state.employee != null) {
+      final wId = state.workspace?.id;
+      final wSubscriptionId = state.workspace?.subscriptionId;
+      final wRole = state.workspace?.role;
+      final roleId = state.employee?.roleId ?? '';
+
+      Future.microtask(() async {
+        prettyPrint('Subscribed-id', '$wSubscriptionId');
+        try {
+          if (context.mounted) {
+            await context.read<AccessControlCubit>().loadAll(
+              roleId,
+              workspaceId: wId,
+              subscriptionId: wSubscriptionId,
+              workspaceRole: wRole?.name,
+            );
+          }
+        } catch (e) {
+          prettyPrint('Failed to load licenses & permissions', '$e');
+        }
+      });
+    }
+  }
+
+  // Redirect based on auth status
   String? _authRedirect(AuthState state, String curLocation) {
     switch (state.authStatus) {
       case AuthStatus.unauthenticated:
@@ -153,7 +216,7 @@ class _AppView extends StatelessWidget {
       case AuthStatus.authenticated:
         if (state.workspace != null) {
           return state.employee != null
-              ? '/${RouteNames.mainDashboard}'
+              ? '/${RouteNames.homeDashboard}'
               : '/${RouteNames.employeeSignIn}';
         }
         return null;

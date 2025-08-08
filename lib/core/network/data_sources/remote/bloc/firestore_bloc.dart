@@ -80,7 +80,7 @@ class FirestoreBloc<T> extends Bloc<FirestoreEvent, FirestoreState<T>> {
       await _dataRepository.refreshCacheData();
 
       // Fetch the updated data from the repository
-      final snapshot = await _dataRepository.getAllData().first;
+      final snapshot = await _dataRepository.getAllCacheData().first;
       final data = _toList(snapshot);
 
       // Emit the loaded state with the refreshed data
@@ -122,7 +122,7 @@ class FirestoreBloc<T> extends Bloc<FirestoreEvent, FirestoreState<T>> {
     emit(LoadingData<T>());
 
     try {
-      _subscription = _dataRepository.getAllData().listen(
+      _subscription = _dataRepository.getAllCacheData().listen(
         (snapshot) async {
           final data = _toList(snapshot);
 

@@ -1,7 +1,8 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/constants/app_enum.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
-import 'package:assign_erp/core/widgets/custom_tab.dart';
+import 'package:assign_erp/core/widgets/nav/custom_tab.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/user_guide/data/models/user_guide_model.dart';
@@ -56,7 +57,7 @@ class HowToConfigAppScreen extends StatelessWidget {
     final guideCategories = _getFilterGuideCategories(canAccessAgent);
 
     final tabs = guideCategories.map((type) {
-      final label = type[0].toUpperCase() + type.substring(1);
+      final label = type[0].toUpperCaseAll + type.substring(1);
       final icon = _iconForType(type);
       return {'label': label, 'icon': icon};
     }).toList();

@@ -2,11 +2,11 @@ import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/barcode_scanner.dart';
-import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/form_bottom_sheet.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/product_model.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/bloc/inventory_bloc.dart';
@@ -169,7 +169,7 @@ class _AddProductFormState extends State<_AddProductForm> {
                     padding: EdgeInsets.zero,
                     label: Text(
                       '${o.name} - $ghanaCedis${o.sellingPrice}'.toTitleCase,
-                      style: context.ofTheme.textTheme.bodySmall?.copyWith(
+                      style: context.textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -192,7 +192,7 @@ class _AddProductFormState extends State<_AddProductForm> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Text('Product Info', style: context.ofTheme.textTheme.titleLarge),
+        Text('Product Info', style: context.textTheme.titleLarge),
         const SizedBox(height: 20.0),
         BatchIdAndSKUInput(
           batchController: _batchIdController,

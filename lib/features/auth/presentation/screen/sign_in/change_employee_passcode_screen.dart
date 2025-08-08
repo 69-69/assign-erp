@@ -35,7 +35,7 @@ class _ChangeEmployeePasscodeScreenState
   final PrintoutSetupCacheService _printoutService =
       PrintoutSetupCacheService();
   final ScrollController _scrollController = ScrollController();
-  bool isInitialSetupAllowed = false;
+  bool isOnboardingAllowed = false;
   bool isTemporaryPasscode = false;
   String? companyLogo;
 
@@ -52,9 +52,9 @@ class _ChangeEmployeePasscodeScreenState
     }
   }
 
-  void _canAccessInitialSetup() {
-    // If current workspace role can access Setup the system for client workspace
-    isInitialSetupAllowed = WorkspaceRoleGuard.canAccessInitialSetup(context);
+  void _canAccessOnboarding() {
+    // If current workspace-role can create first-time Agent Workspace
+    isOnboardingAllowed = WorkspaceRoleGuard.canAccessOnboarding(context);
   }
 
   /// Shows the alert overlay if there is a failure state.
@@ -73,7 +73,7 @@ class _ChangeEmployeePasscodeScreenState
 
   @override
   Widget build(BuildContext context) {
-    _canAccessInitialSetup();
+    _canAccessOnboarding();
 
     return BlocProvider(
       create: (context) {
@@ -134,13 +134,13 @@ class _ChangeEmployeePasscodeScreenState
                       'Create Passcode',
                   subtitle: 'Create a new employee passcode',
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 6),
                 _leftColumnPane(),
               ],
             ),
           ),
         ),
-        _RightColumnPane(isInitialSetupAllowed: isInitialSetupAllowed),
+        _RightColumnPane(isOnboardingAllowed: isOnboardingAllowed),
       ],
     );
   }
@@ -166,9 +166,9 @@ class _ChangeEmployeePasscodeScreenState
 }
 
 class _RightColumnPane extends StatelessWidget {
-  final bool isInitialSetupAllowed;
+  final bool isOnboardingAllowed;
 
-  const _RightColumnPane({required this.isInitialSetupAllowed});
+  const _RightColumnPane({required this.isOnboardingAllowed});
 
   @override
   Widget build(BuildContext context) {
@@ -184,11 +184,11 @@ class _RightColumnPane extends StatelessWidget {
         },
       ),
       children: [
-        if (isInitialSetupAllowed) ...{
+        if (isOnboardingAllowed) ...{
           _buildOpenCreateWorkspaceButton(context),
           const Divider(),
         },
-        Flexible(child: WorkspaceGuide(isWorkspace: isInitialSetupAllowed)),
+        Flexible(child: WorkspaceGuide(isWorkspace: isOnboardingAllowed)),
       ],
     );
   }
@@ -201,9 +201,7 @@ class _RightColumnPane extends StatelessWidget {
       label: Text(
         'Setup New Workspace',
         overflow: TextOverflow.ellipsis,
-        style: context.ofTheme.textTheme.titleLarge?.copyWith(
-          color: kLightColor,
-        ),
+        style: context.textTheme.titleLarge?.copyWith(color: kLightColor),
       ),
     );
   }

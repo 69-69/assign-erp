@@ -49,16 +49,13 @@ class _ListRolesState extends State<ListRoles> {
     return DynamicDataTable(
       skip: true,
       skipPos: 1,
-      toggleHideID: true,
+      showIDToggle: true,
       headers: Role.dataTableHeader,
-      anyWidget: Padding(
-        padding: EdgeInsets.fromLTRB(5, 20, 20, 0),
-        child: _buildAnyWidget(),
-      ),
+      anyWidget: _buildAnyWidget(),
       anyWidgetAlignment: WrapAlignment.end,
       rows: roles.map((d) => d.itemAsList()).toList(),
-      onEditTap: (List<String> row) async => _onEditTap(roles, row),
-      onDeleteTap: (List<String> row) async => _onDeleteTap(roles, row),
+      onEditTap: (List<String> row) async => _onEditTap(roles, row.first),
+      onDeleteTap: (List<String> row) async => _onDeleteTap(roles, row.first),
       onChecked: (bool? isChecked, List<String> row) =>
           _onChecked(roles, row.first, isChecked),
     );
@@ -70,22 +67,6 @@ class _ListRolesState extends State<ListRoles> {
       runSpacing: 10.0,
       runAlignment: WrapAlignment.end,
       children: [
-        if (_isChecked == true) ...[
-          context.elevatedButton(
-            'Assign Permission',
-            onPressed: () async {
-              if (_selectedRole == null) return;
-
-              /// Assign permission to role
-              await context.openUpdateNewRole(
-                isAssign: true,
-                role: _selectedRole!,
-              );
-            },
-            bgColor: kGrayBlueColor,
-            color: kLightColor,
-          ),
-        ],
         context.elevatedIconBtn(
           Icon(Icons.admin_panel_settings, color: kLightColor),
           label: 'Create Role',
@@ -93,13 +74,30 @@ class _ListRolesState extends State<ListRoles> {
           bgColor: kDangerColor,
           color: kLightColor,
         ),
+        if (_isChecked == true) ...{
+          context.elevatedButton(
+            'Assign Permission',
+            onPressed: () async {
+              if (_selectedRole == null) return;
+
+              /// Assign permission to role
+              await context.openUpdateRole(
+                isAssign: true,
+                role: _selectedRole!,
+              );
+            },
+            bgColor: kGrayBlueColor,
+            color: kLightColor,
+          ),
+        },
       ],
     );
   }
 
   // Handle onChecked orders
   void _onChecked(List<Role> roles, String id, bool? isChecked) async {
-    final role = _findRole(id: id, roles: roles);
+    final role = _findRole(id: id, roles);
+
     setState(() {
       _isChecked = isChecked;
 
@@ -109,19 +107,22 @@ class _ListRolesState extends State<ListRoles> {
     });
   }
 
-  Role _findRole({required String id, required List<Role> roles}) =>
+  Role? _findRole(List<Role> roles, {required String id}) =>
       Role.findById(roles, id);
 
-  Future<void> _onEditTap(List<Role> roles, List<String> row) async {
-    Role role = _findRole(id: row.first, roles: roles);
+  Future<void> _onEditTap(List<Role> roles, String id) async {
+    Role? role = _findRole(id: id, roles);
 
-    /// Update specific role
-    await context.openUpdateNewRole(role: role);
+    if (role != null) {
+      /// Update specific role
+      await context.openUpdateRole(role: role);
+    }
   }
 
-  Future<void> _onDeleteTap(List<Role> roles, List<String> row) async {
+  Future<void> _onDeleteTap(List<Role> roles, String id) async {
     {
-      Role role = _findRole(id: row.first, roles: roles);
+      Role? role = _findRole(id: id, roles);
+      if (role == null) return;
 
       final isConfirmed = await context.confirmUserActionDialog();
       if (mounted && isConfirmed) {

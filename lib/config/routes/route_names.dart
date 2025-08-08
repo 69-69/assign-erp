@@ -10,7 +10,7 @@ abstract class RouteNames {
   /// Entry/Startup Point for Home / Landing-Page [initialScreen]
   static const initialScreen = '/';
   static const initialScreenName = 'initial_screen';
-  static const mainDashboard = 'main_dashboard';
+  static const homeDashboard = 'home';
 
   /// ─────────────────────────── 🔐 Workspace Authentication ───────────────────────────
   static const workspaceSignIn = 'workspace_sign_in';
@@ -31,12 +31,15 @@ abstract class RouteNames {
 
   /// ───────────────────────── 🔧 Trouble Shooting ─────────────────────────
   static const troubleShootingApp = 'trouble_shooting_app';
-  static const listAppIssues = 'list_app_issues';
-  static const userDeviceSpecs = 'user_device_specs';
+  static const diagnoseIssues = 'diagnose_issues';
+  static const allTenantWorkspaces = 'all_tenants_workspaces';
+  static const manageSubscriptions = 'manage_subscriptions';
+  // static const listAppIssues = 'list_app_issues';
+  // static const userDeviceSpecs = 'user_device_specs';
 
   /// ───────────────────────── 💬 Live Chat/Support between Agents with Clients/Subscribers/Tenants ─────────────────────────
   static const liveChatSupport = 'live_chat_support_app';
-  static const agentChat = 'agent_chat_screen';
+  static const tenantChat = 'tenant_chat_screen';
 
   /// ───────────────────────── 📄 User Guide/Manual ─────────────────────────
   static const userGuideApp = 'user_guide_app';
@@ -75,7 +78,7 @@ abstract class RouteNames {
   /// ─────────────────────── ⚙️ Setup / Settings Module ───────────────────────
   // static const switchStoresAccount = 'switch_stores_account_screen';
   static const companyInfo = 'company_info_screen';
-  static const staffAccount = 'staff_account_screen';
+  static const allEmployees = 'all_employees_screen';
   static const manageRoles = 'manage_roles_screen';
   static const productConfig = 'product_config_screen';
   static const backup = 'backup_screen';

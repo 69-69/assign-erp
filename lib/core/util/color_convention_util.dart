@@ -1,14 +1,11 @@
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 
 // Convert Flutter Colors to PdfColors
 List<PdfColor> convertToPdfColors(List<Color> colors) {
   return colors
-      .map((color) => PdfColor(
-            color.r / 255,
-            color.g / 255,
-            color.b / 255,
-          ))
+      .map((color) => PdfColor(color.r / 255, color.g / 255, color.b / 255))
       .toList();
 }
 
@@ -66,7 +63,7 @@ extension ColorHexConversion on Color {
 
 extension PadColor on String {
   // Return the color in the format "#RRGGBB" as 6 counts
-  String padHex() => substring(2).toUpperCase();
+  String padHex() => substring(2).toUpperCaseAll;
 }
 
 // convert a hexadecimal string to a Color Object

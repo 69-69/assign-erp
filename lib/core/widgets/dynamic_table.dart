@@ -1,10 +1,14 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/date_time_picker.dart';
+import 'package:assign_erp/core/util/debug_printify.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/custom_text_field.dart';
+import 'package:assign_erp/core/widgets/dialog/prompt_user_for_action.dart';
+import 'package:assign_erp/core/widgets/file_doc_manager.dart';
 import 'package:flutter/material.dart';
 
 class DynamicDataTable extends StatefulWidget {
@@ -15,9 +19,9 @@ class DynamicDataTable extends StatefulWidget {
   /// Especially, if you don't need to show ID field
   final int skipPos;
 
-  /// Show or Hide Sensitive ID [toggleHideID]
-  /// Use [toggleHideID], [skip] must be set to TURE
-  final bool toggleHideID;
+  /// Show or Hide Sensitive ID [showIDToggle]
+  /// Use [showIDToggle], [skip] must be set to TURE
+  final bool showIDToggle;
 
   /// Add Widget to DataTable Top [anyWidget]
   final Widget? anyWidget;
@@ -71,7 +75,7 @@ class DynamicDataTable extends StatefulWidget {
     this.childrenRow,
     this.skip = false,
     this.skipPos = 1,
-    this.toggleHideID = false,
+    this.showIDToggle = false,
     this.anyWidget,
     this.editIcon,
     this.deleteIcon,
@@ -161,7 +165,7 @@ class _DynamicDataTableState extends State<DynamicDataTable> {
     return widget.rows
         .where(
           (row) => row.any(
-            (cell) => cell.toLowerCase().contains(_searchQuery.toLowerCase()),
+            (cell) => cell.toLowercaseAll.contains(_searchQuery.toLowercaseAll),
           ),
         )
         .toList();
@@ -173,7 +177,7 @@ class _DynamicDataTableState extends State<DynamicDataTable> {
             ?.where(
               (row) => row.any(
                 (cell) =>
-                    cell.toLowerCase().contains(_searchQuery.toLowerCase()),
+                    cell.toLowercaseAll.contains(_searchQuery.toLowercaseAll),
               ),
             )
             .toList() ??
@@ -254,7 +258,11 @@ class _DynamicDataTableState extends State<DynamicDataTable> {
       child: Wrap(
         alignment: widget.anyWidgetAlignment,
         children: [
-          widget.anyWidget ?? const SizedBox.shrink(),
+          _AnyWidget(
+            headers: widget.headers,
+            anyWidget: widget.anyWidget,
+            selectedRows: _getSelectedRows,
+          ),
           _SearchTextField(
             controller: _searchController,
             onPressed: () {
@@ -312,7 +320,7 @@ class _DynamicDataTableState extends State<DynamicDataTable> {
       ),
 
       // Toggle All Hide Row-IDs Icon
-      if (widget.toggleHideID) ...{
+      if (widget.showIDToggle) ...{
         DataColumn(
           tooltip: 'Show ${widget.headers.first}',
           label: _makeVisibleAllRowIDs(context),
@@ -360,10 +368,8 @@ class _DynamicDataTableState extends State<DynamicDataTable> {
       ),
       onPressed: () => _allToggleHideID(),
       label: Text(
-        widget.headers.first.toUpperCase(),
-        style: context.ofTheme.textTheme.titleMedium?.copyWith(
-          color: kLightColor,
-        ),
+        widget.headers.first.toUpperCaseAll,
+        style: context.textTheme.titleMedium?.copyWith(color: kLightColor),
         // textScaler: TextScaler.linear(context.textScaleFactor),
       ),
     );
@@ -373,10 +379,8 @@ class _DynamicDataTableState extends State<DynamicDataTable> {
   DataColumn _buildDataColumn(String title) => DataColumn(
     tooltip: title,
     label: Text(
-      title.toUpperCase(),
-      style: context.ofTheme.textTheme.titleMedium?.copyWith(
-        color: kLightColor,
-      ),
+      title.toUpperCaseAll,
+      style: context.textTheme.titleMedium?.copyWith(color: kLightColor),
     ),
   );
 
@@ -411,8 +415,15 @@ class _DynamicDataTableState extends State<DynamicDataTable> {
           _buildEachCheckBox(index, row),
 
           // toggleHideID
-          if (widget.toggleHideID) ...{
-            _buildToggleHideID(context, row.first, index),
+          if (widget.showIDToggle) ...{
+            DataCell(
+              _ToggleSecretButton(
+                id: row.first,
+                index: index,
+                isToggle: (_visibleRowIdIndex == index || _allVisibleRowIds),
+                onPressed: () => _toggleHideID(index),
+              ),
+            ),
           },
 
           // Data to display: Skip the first value in each row: ...row.skip(1)
@@ -493,37 +504,23 @@ class _DynamicDataTableState extends State<DynamicDataTable> {
         value: _selectedRowsStatus[index],
         side: const BorderSide(width: 1.0),
         onChanged: (bool? selected) {
+          setState(() {
+            if (selected == true) {
+              // Uncheck all except the currently selected
+              for (int i = 0; i < _selectedRowsStatus.length; i++) {
+                _selectedRowsStatus[i] = (i == index);
+              }
+            } else {
+              // Allow unchecking the currently selected box
+              _selectedRowsStatus[index] = false;
+            }
+          });
           // Notify if a callback is provided
           if (widget.onChecked != null) {
             widget.onChecked!(selected, row);
           }
-          setState(() => _selectedRowsStatus[index] = selected ?? false);
+          // setState(() => _selectedRowsStatus[index] = selected ?? false);
         },
-      ),
-    );
-  }
-
-  /// For security, ID's are hidden, unless toggle to view is tapped [_buildToggleHideID]
-  _buildToggleHideID(BuildContext context, String id, int index) {
-    bool isToggle = (_visibleRowIdIndex == index || _allVisibleRowIds);
-
-    return DataCell(
-      TextButton.icon(
-        iconAlignment: IconAlignment.end,
-        style: const ButtonStyle(
-          padding: WidgetStatePropertyAll(EdgeInsets.zero),
-        ),
-        icon: Icon(
-          isToggle ? Icons.visibility : Icons.visibility_off,
-          color: isToggle ? kGrayBlueColor : kGrayColor,
-        ),
-        onPressed: () => _toggleHideID(index),
-        label: isToggle
-            ? context.copyPasteText(str: id)
-            : const Text(
-                '***',
-                // textScaler: TextScaler.linear(context.textScaleFactor),
-              ),
       ),
     );
   }
@@ -569,6 +566,133 @@ class _SearchTextField extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _AnyWidget extends StatelessWidget {
+  final Widget? anyWidget;
+  final List<String> headers;
+  final List<List<String>> Function() selectedRows;
+
+  const _AnyWidget({
+    required this.anyWidget,
+    required this.headers,
+    required this.selectedRows,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _body();
+  }
+
+  Widget _body() {
+    final exportBtn = _ExportButton(
+      headers: headers,
+      selectedRowsFunc: selectedRows,
+    );
+
+    return anyWidget == null
+        ? Padding(padding: EdgeInsets.only(right: 20), child: exportBtn)
+        : SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [?anyWidget, const SizedBox(width: 10.0), exportBtn],
+            ),
+          );
+  }
+}
+
+/// [_ToggleSecretButton] For security, secrets (e.g.: ID, ref) are hidden, unless toggled
+class _ToggleSecretButton extends StatelessWidget {
+  final bool isToggle;
+  final int index;
+  final String id;
+  final void Function()? onPressed;
+
+  const _ToggleSecretButton({
+    required this.onPressed,
+    required this.isToggle,
+    required this.id,
+    required this.index,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton.icon(
+      iconAlignment: IconAlignment.end,
+      style: const ButtonStyle(
+        padding: WidgetStatePropertyAll(EdgeInsets.zero),
+      ),
+      icon: Icon(
+        isToggle ? Icons.visibility : Icons.visibility_off,
+        color: isToggle ? kGrayBlueColor : kGrayColor,
+      ),
+      onPressed: onPressed,
+      label: isToggle ? context.copyPasteText(str: id) : const Text('***'),
+    );
+  }
+}
+
+/// Export data into Excel-sheet
+class _ExportButton extends StatelessWidget {
+  final List<String> headers;
+  final List<List<String>> Function() selectedRowsFunc;
+
+  const _ExportButton({required this.headers, required this.selectedRowsFunc});
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildEditBtn(context);
+  }
+
+  Widget _buildEditBtn(BuildContext context) {
+    final List<List<String>> selectedRows = selectedRowsFunc();
+
+    return selectedRows.isEmpty
+        ? const SizedBox.shrink()
+        : context.elevatedIconBtn(
+            Icon(Icons.file_download, color: kPrimaryAccentColor),
+            style: ElevatedButton.styleFrom(
+              shape: const RoundedRectangleBorder(
+                side: BorderSide(color: kPrimaryAccentColor),
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+            ),
+            tooltip: 'Export Data to Excel or PDF',
+            onPressed: () async {
+              final isExcel = await _buildPreference(context);
+              prettyPrint('isExcel', isExcel);
+              if (isExcel == null) return;
+
+              if (isExcel == true) {
+                await FileDocManager.exportDataToExcel(
+                  headers: headers,
+                  data: selectedRows,
+                );
+              } else {
+                await FileDocManager.exportDataToPdf(
+                  headers: headers,
+                  data: selectedRows,
+                );
+              }
+            },
+            label: 'Export',
+            color: kPrimaryAccentColor,
+          );
+  }
+
+  // choice
+  Future<dynamic> _buildPreference(BuildContext context) async {
+    return await context.confirmAction<dynamic>(
+      Text('Export data to Excel or PDF?'),
+      title: 'Confirm Export',
+      onAccept: 'Excel',
+      onReject: 'PDF',
+      anyAction: 'Cancel',
     );
   }
 }
@@ -1099,7 +1223,7 @@ class DynamicDataTable2 extends StatelessWidget {
           tooltip: title,
           label: Text(
             title,
-            style: context.ofTheme.textTheme.bodyLarge?.copyWith(
+            style: context.textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.bold,
               color: kLightColor,
             ),

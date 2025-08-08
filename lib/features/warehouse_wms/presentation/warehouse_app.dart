@@ -1,6 +1,6 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
-import 'package:assign_erp/core/widgets/tile_card.dart';
+import 'package:assign_erp/core/widgets/nav/dashboard_tile_card.dart';
 import 'package:assign_erp/features/warehouse_wms/presentation/warehouse_tiles.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +17,7 @@ class WarehouseApp extends StatelessWidget {
     );
   }
 
-  TileCard _buildTiles() => TileCard(
+  DashboardTileCard _buildTiles() => DashboardTileCard(
     tiles: warehouseTiles,
     metricsTitle: "POS Metrics",
     metricsSubtitle:

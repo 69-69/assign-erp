@@ -1,7 +1,6 @@
 import 'package:assign_erp/core/constants/account_status.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/features/setup/data/role/employee_role.dart';
 import 'package:equatable/equatable.dart';
 
 var _today = DateTime.now();
@@ -14,9 +13,8 @@ class Employee extends Equatable {
   final String fullName;
   final String mobileNumber;
   final String username;
-
-  /// Assign Roles to Users [role]
-  final EmployeeRole role;
+  final String role; // role name
+  final String roleId;
   final String email;
   final String status;
 
@@ -29,11 +27,12 @@ class Employee extends Equatable {
   Employee({
     this.id = '',
     required this.workspaceId,
-    this.storeNumber = '', // fallback mainStore,
+    this.storeNumber = '', // fallback main-Store,
     this.username = '',
     required this.fullName,
     required this.mobileNumber,
     required this.role,
+    required this.roleId,
     required this.email,
     required this.status,
     this.passCode = '',
@@ -52,11 +51,12 @@ class Employee extends Equatable {
       id: (id ?? map['id']) ?? '',
       workspaceId: map['workspaceId'] ?? '',
       storeNumber: map['storeNumber'] ?? '',
+      role: map['role'] ?? '',
+      roleId: map['roleId'] ?? '',
       email: map['email'] ?? '',
       fullName: map['fullName'] ?? '',
       mobileNumber: map['mobileNumber'] ?? '',
       username: map['username'].toString().emailToUsername,
-      role: getRoleByString(map['role']),
       status: map['status'] ?? AccountStatus.disabled.label,
       passCode: map['passCode'] ?? '',
       createdBy: map['createdBy'] ?? '',
@@ -66,22 +66,22 @@ class Employee extends Equatable {
     );
   }
 
-  static EmployeeRole getRoleByString(String role) =>
+  /*static EmployeeRole getRoleByString(String role) =>
       EmployeeRole.values.firstWhere(
         (e) => roleAsString(e) == role,
         orElse: () => EmployeeRole.unknown,
       );
 
   static String roleAsString(EmployeeRole e) => e.toString().split('.').last;
-
+*/
   // map template
   Map<String, dynamic> _mapTemp() => {
     'id': id,
     'workspaceId': workspaceId,
     'storeNumber': storeNumber,
     'username': email.emailToUsername,
-    // Convert enum to string
-    'role': roleAsString(role),
+    'role': role,
+    'roleId': roleId,
     'email': email,
     'fullName': fullName,
     'mobileNumber': mobileNumber,
@@ -117,7 +117,8 @@ class Employee extends Equatable {
     String? username,
     String? fullName,
     String? mobileNumber,
-    EmployeeRole? role,
+    String? role,
+    String? roleId,
     String? email,
     String? passCode,
     String? status,
@@ -134,6 +135,7 @@ class Employee extends Equatable {
       fullName: fullName ?? this.fullName,
       mobileNumber: mobileNumber ?? this.mobileNumber,
       role: role ?? this.role,
+      roleId: roleId ?? this.roleId,
       email: email ?? this.email,
       status: status ?? this.status,
       passCode: passCode ?? this.passCode,
@@ -163,12 +165,6 @@ class Employee extends Equatable {
   /// Formatted to Standard-DateTime in String [getUpdatedAt]
   String get getUpdatedAt => updatedAt.toStandardDT;
 
-  /// Formatted to Standard-DateTime in String [getUpdatedAt]
-  bool get isEmployee =>
-      role != EmployeeRole.storeOwner ||
-      role != EmployeeRole.developer ||
-      role != EmployeeRole.tester;
-
   /// [findById]
   static Iterable<Employee> findById(List<Employee> employees, String id) =>
       employees.where((employee) => employee.id == id);
@@ -180,19 +176,12 @@ class Employee extends Equatable {
       .where((employee) => isActive ? employee.isActive : !employee.isActive)
       .toList();
 
-  /// Check Permissions Based on Role
-  bool canAccessAdminDashboard(Employee user) =>
-      user.role == EmployeeRole.storeOwner;
-
-  bool canEditContent(Employee user) =>
-      user.role == EmployeeRole.storeOwner ||
-      user.role == EmployeeRole.contentEditor;
-
   @override
   List<Object?> get props => [
     id,
     workspaceId,
     role,
+    roleId,
     email,
     username,
     fullName,
@@ -206,15 +195,15 @@ class Employee extends Equatable {
     updatedAt,
   ];
 
-  /// ToList for PRODUCTS [itemAsList]
+  /// ToList for Employee [itemAsList]
   List<String> itemAsList() => [
     email,
     id,
-    fullName.toTitleCase,
-    role.name.separateWord.toTitleCase,
-    mobileNumber,
-    storeNumber.toTitleCase,
     status.toTitleCase,
+    role.toTitleCase,
+    storeNumber.toTitleCase,
+    fullName.toTitleCase,
+    mobileNumber,
     getCreatedAt,
     createdBy.toTitleCase,
     updatedBy.toTitleCase,
@@ -224,11 +213,11 @@ class Employee extends Equatable {
   static List<String> get dataTableHeader => const [
     'Email',
     'ID',
-    'Name',
-    'Role',
-    'Mobile',
-    'Store number',
     'Status',
+    'Role',
+    'Store number',
+    'Name',
+    'Mobile',
     'Create At',
     'Created By',
     'Updated By',

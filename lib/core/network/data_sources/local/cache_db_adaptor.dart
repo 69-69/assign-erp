@@ -6,6 +6,7 @@ import 'package:hive_flutter/adapters.dart';
 const cacheDataBoxes = [
   employeesDBCollectionPath,
   rolesDBCollectionPath,
+  employeeSessionLogsCollectionPath,
   companyStoreDBCollectionPath,
   companyInfoDBCollectionPath,
   supplierDBCollectionPath,
@@ -17,7 +18,8 @@ const cacheDataBoxes = [
   deliveryDBCollectionPath,
   ordersDBCollectionPath,
   miscOrdersDBCollectionPath,
-  workspaceUserDBCollectionPath, // Only for system-wide-bloc (to cache all workspaces)
+  workspaceAccDBCollectionPath, // Only for system-wide-bloc (to cache all workspaces)
+  subscriptionDBCollectionPath,
   purchaseOrdersDBCollectionPath,
   requestPriceQuoteDBCollectionPath,
   posSalesDBCollectionPath,

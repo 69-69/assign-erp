@@ -81,7 +81,7 @@ class _InfoCard extends StatelessWidget {
                 info.name.toTitleCase,
                 textAlign: TextAlign.start,
                 overflow: TextOverflow.ellipsis,
-                style: context.ofTheme.textTheme.displaySmall?.copyWith(
+                style: context.textTheme.displaySmall?.copyWith(
                   color: kTextColor,
                 ),
               ),
@@ -159,13 +159,11 @@ class _InfoCard extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
         text: TextSpan(
           text: '$label: ',
-          style: context.ofTheme.textTheme.titleLarge?.copyWith(
-            color: kTextColor,
-          ),
+          style: context.textTheme.titleLarge?.copyWith(color: kTextColor),
           children: [
             TextSpan(
               text: text.toTitleCase,
-              style: context.ofTheme.textTheme.titleLarge?.copyWith(
+              style: context.textTheme.titleLarge?.copyWith(
                 color: kDarkTextColor,
               ),
             ),

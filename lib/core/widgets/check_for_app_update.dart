@@ -1,8 +1,8 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/size_config.dart';
-import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
+import 'package:assign_erp/core/widgets/dialog/async_progress_dialog.dart';
 import 'package:flutter/material.dart';
 
 class CheckForAppUpdate extends StatelessWidget {
@@ -25,7 +25,7 @@ class CheckForAppUpdate extends StatelessWidget {
           children: [
             Text(
               'Update installed',
-              style: context.ofTheme.textTheme.bodyMedium?.copyWith(
+              style: context.textTheme.bodyMedium?.copyWith(
                 color: kDangerColor,
                 fontWeight: FontWeight.w500,
               ),
@@ -52,7 +52,7 @@ class CheckForAppUpdate extends StatelessWidget {
           children: [
             Text(
               'Checking for updates and installing...',
-              style: context.ofTheme.textTheme.bodyLarge,
+              style: context.textTheme.bodyLarge,
             ),
           ],
         ),

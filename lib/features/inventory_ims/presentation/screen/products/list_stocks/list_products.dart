@@ -1,7 +1,7 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/widgets/adaptive_layout.dart';
+import 'package:assign_erp/core/widgets/dialog/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/dynamic_table.dart';
-import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/product_model.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/bloc/inventory_bloc.dart';
@@ -66,7 +66,7 @@ class _ListProductsState extends State<ListProducts> {
 
     return DynamicDataTable(
       skip: true,
-      toggleHideID: true,
+      showIDToggle: true,
       headers: Product.dataTableHeader,
       anyWidget: _buildAnyWidget(products),
       rows: inStockProducts.map((p) => p.itemAsList()).toList(),
@@ -184,7 +184,7 @@ class _IssueMultiDelete extends StatelessWidget {
   }
 
   Future<bool> _confirmDeleteDialog(BuildContext context) async {
-    return context.confirmAction(
+    return context.confirmAction<bool>(
       const Text('Are you sure you want to delete the selected products?'),
       title: "Confirm Delete",
       onAccept: "Delete",

@@ -76,7 +76,7 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
       await _inventoryRepository.refreshCacheData();
 
       // Fetch the updated data from the repository
-      final snapshot = await _inventoryRepository.getAllData().first;
+      final snapshot = await _inventoryRepository.getAllCacheData().first;
       final data = _toList(snapshot);
 
       // Emit the loaded state with the refreshed data
@@ -95,7 +95,7 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
     emit(LoadingInventories<T>());
 
     try {
-      _getDataStreamObserver = _inventoryRepository.getAllData().listen(
+      _getDataStreamObserver = _inventoryRepository.getAllCacheData().listen(
         (snapshot) async {
           final data = _toList(snapshot);
 

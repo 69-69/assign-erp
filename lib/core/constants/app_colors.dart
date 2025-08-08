@@ -32,6 +32,7 @@ extension ColorToInt on Color {
 
 extension DefaultColors on BuildContext {
   ThemeData get ofTheme => Theme.of(this);
+  TextTheme get textTheme => ofTheme.textTheme;
   ColorScheme get colorScheme => ofTheme.colorScheme;
   Color get primaryColor => ofTheme.primaryColor;
   Color get primaryColorLight => ofTheme.primaryColorLight;

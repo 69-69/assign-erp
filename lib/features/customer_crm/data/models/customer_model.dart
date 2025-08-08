@@ -129,7 +129,7 @@ class Customer extends Equatable {
   );
 
   String get itemAsString => name.contains(autoID)
-      ? name.toUpperCase()
+      ? name.toUpperCaseAll
       : isEmpty
       ? 'No Data'
       : '$name - $customerId'.toTitleCase;

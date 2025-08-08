@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:assign_erp/core/constants/account_status.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/debug_printify.dart';
 import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
@@ -96,7 +95,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final workspace = await _authRepository.getWorkspace(uid: user.uid);
       final employee = await _authRepository.getEmployee();
 
-      if (workspace?.status == AccountStatus.enabled.label) {
+      if (workspace!.unExpired) {
         if (!user.emailVerified) {
           emit(const AuthState.emailNotVerified());
         } else {

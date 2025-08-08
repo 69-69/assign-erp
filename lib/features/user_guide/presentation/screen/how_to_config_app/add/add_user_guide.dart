@@ -1,10 +1,10 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/form_bottom_sheet.dart';
 import 'package:assign_erp/features/user_guide/data/models/user_guide_model.dart';
 import 'package:assign_erp/features/user_guide/presentation/bloc/index.dart';
 import 'package:assign_erp/features/user_guide/presentation/bloc/user_guide_bloc.dart';
@@ -133,7 +133,7 @@ class _AddGuideFormState extends State<_AddGuideForm> {
                     padding: EdgeInsets.zero,
                     label: Text(
                       o.title.toTitleCase,
-                      style: context.ofTheme.textTheme.bodySmall?.copyWith(
+                      style: context.textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -156,7 +156,7 @@ class _AddGuideFormState extends State<_AddGuideForm> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Text('Create Guide', style: context.ofTheme.textTheme.titleLarge),
+        Text('Create Guide', style: context.textTheme.titleLarge),
         TitleCategoryInput(
           titleController: _titleController,
           onCategoryChange: (t) => setState(() => _selectedCategory = t),

@@ -62,7 +62,7 @@ class PrintInvoice {
 
   String get _title => title.toTitleCase;
 
-  bool _isTrue(String s) => _title.toLowerCase().contains(s.toLowerCase());
+  bool _isTrue(String s) => _title.toLowercaseAll.contains(s.toLowerCase());
 
   late final PrintPDFColors _pdfColors;
   late final IssuerCompany _company;
@@ -287,7 +287,7 @@ class PrintInvoice {
           crossAxisAlignment: pw.CrossAxisAlignment.end,
           children: [
             pw.Text(
-              title.toUpperCase(),
+              title.toUpperCaseAll,
               style: pw.TextStyle(color: hColor, fontSize: 14),
             ),
             pw.SizedBox(height: 3.0),
@@ -352,7 +352,7 @@ class PrintInvoice {
           crossAxisAlignment: pw.CrossAxisAlignment.end,
           children: [
             pw.Text(
-              title.toUpperCase(),
+              title.toUpperCaseAll,
               style: pw.TextStyle(color: _pdfColors.headerColor, fontSize: 14),
             ),
             pw.SizedBox(height: 3.0),

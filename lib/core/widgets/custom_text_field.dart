@@ -1,3 +1,4 @@
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:flutter/material.dart';
 
 /// Form text field [CustomTextField]
@@ -222,9 +223,9 @@ class _LowercaseTextFieldState extends State<LowercaseTextField> {
     setState(() => capsLockOn = _isCapsLockOn(value));
 
     // Only update the controller's text if it's different
-    if (_controller?.text != value.toLowerCase()) {
+    if (_controller?.text != value.toLowercaseAll) {
       _controller?.value = _controller!.value.copyWith(
-        text: value.toLowerCase(),
+        text: value.toLowercaseAll,
         selection: TextSelection.collapsed(offset: value.length),
       );
     }

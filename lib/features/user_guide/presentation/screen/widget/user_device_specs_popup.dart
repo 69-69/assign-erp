@@ -1,6 +1,6 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
-import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/form_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
 extension LiveSupportBottomSheet<T> on BuildContext {

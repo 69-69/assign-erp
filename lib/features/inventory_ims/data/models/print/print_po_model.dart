@@ -355,7 +355,7 @@ class PrintPO {
           crossAxisAlignment: pw.CrossAxisAlignment.end,
           children: [
             pw.Text(
-              _poTitle.toUpperCase(),
+              _poTitle.toUpperCaseAll,
               style: pw.TextStyle(color: hColor, fontSize: 14),
             ),
             pw.SizedBox(height: 3.0),

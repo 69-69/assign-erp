@@ -1,12 +1,13 @@
 import 'dart:async';
 
+import 'package:assign_erp/config/routes/route_logger.dart';
 import 'package:assign_erp/config/routes/route_names.dart';
 import 'package:assign_erp/features/404_fallback/not_found_screen.dart';
 import 'package:assign_erp/features/agent/presentation/agent_app.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/auth/presentation/screen/sign_in/index.dart';
 import 'package:assign_erp/features/customer_crm/presentation/index.dart';
-import 'package:assign_erp/features/dashboard/main_dashboard.dart';
+import 'package:assign_erp/features/home/home_app.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/index.dart';
 import 'package:assign_erp/features/live_support/presentation/index.dart';
 import 'package:assign_erp/features/pos_system/presentation/index.dart';
@@ -149,7 +150,7 @@ GoRoute _posRoute() {
 GoRoute _setupRoute() {
   final List<String> setupRoutes = [
     RouteNames.companyInfo,
-    RouteNames.staffAccount,
+    RouteNames.allEmployees,
     RouteNames.manageRoles,
     RouteNames.productConfig,
     RouteNames.backup,
@@ -257,8 +258,8 @@ GoRoute _agentRoute() {
         _animateTransition(state, const AgentApp()),
     routes: [
       GoRoute(
-        name: RouteNames.agentChat,
-        path: '${RouteNames.agentChat}/:clientWorkspaceId',
+        name: RouteNames.tenantChat,
+        path: '${RouteNames.tenantChat}/:clientWorkspaceId',
         builder: (context, state) => AgentChatDashboard(
           clientWorkspaceId: state.pathParameters['clientWorkspaceId'] ?? '',
         ),
@@ -308,8 +309,15 @@ GoRoute _liveSupportRoute() {
 /// Developer: Trouble Shooting App
 GoRoute _troubleShootRoute() {
   final List<({String name, Widget screen})> troubleShootRoutes = [
-    (name: RouteNames.listAppIssues, screen: const ErrorLogScreen()),
-    (name: RouteNames.userDeviceSpecs, screen: const UserDeviceSpecScreen()),
+    (name: RouteNames.diagnoseIssues, screen: const DiagnosticScreen()),
+    (
+      name: RouteNames.allTenantWorkspaces,
+      screen: const TenantWorkspacesScreen(),
+    ),
+    (
+      name: RouteNames.manageSubscriptions,
+      screen: const ManageSubscriptionScreen(),
+    ),
   ];
 
   return GoRoute(
@@ -322,7 +330,7 @@ GoRoute _troubleShootRoute() {
 }
 
 // Define your routes
-List<RouteBase> _routerConfig = <RouteBase>[
+List<RouteBase> appRouterConfig = <RouteBase>[
   _configBaseRoute(
     name: RouteNames.initialScreenName,
     path: RouteNames.initialScreen,
@@ -330,9 +338,9 @@ List<RouteBase> _routerConfig = <RouteBase>[
     routes: [
       /// Protected Workspace Route
       _configBaseRoute(
-        name: RouteNames.mainDashboard,
-        path: RouteNames.mainDashboard,
-        child: const MainDashboard(),
+        name: RouteNames.homeDashboard,
+        path: RouteNames.homeDashboard,
+        child: const HomeApp(),
         routes: [
           _setupRoute(),
           _storesSwitcherRoute(),
@@ -360,7 +368,7 @@ List<RouteBase> _routerConfig = <RouteBase>[
         redirect: (context, state) async {
           if (state.name == RouteNames.employeeSignIn) {
             final shouldRedirect = await dashboardGuard.redirect(context);
-            return shouldRedirect ? '/${RouteNames.mainDashboard}' : null;
+            return shouldRedirect ? '/${RouteNames.homeDashboard}' : null;
           }
           return null;
         },
@@ -379,9 +387,13 @@ List<RouteBase> _routerConfig = <RouteBase>[
   ),
 ];
 
-final appRouter = GoRouter(
-  initialLocation: RouteNames.initialScreen,
-  routes: _routerConfig,
-  errorBuilder: (context, state) => const NotFoundPage(),
-  // refreshListenable: GoRouterRefreshStream(authBloc.stream),
-);
+GoRouter appRouter(RouteLogger routeLogger) {
+  return GoRouter(
+    initialLocation: RouteNames.initialScreen,
+    routes: appRouterConfig,
+    errorBuilder: (context, state) => const NotFoundPage(),
+    // [observers] To track & monitor routes visited
+    observers: [routeLogger],
+    // refreshListenable: GoRouterRefreshStream(authBloc.stream),
+  );
+}

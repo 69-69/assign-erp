@@ -1,6 +1,7 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/debug_printify.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/sign_in/employee/employee_sign_in_bloc.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/sign_in/workspace/workspace_sign_in_bloc.dart';
@@ -49,7 +50,7 @@ extension ShowSignInAlert on BuildContext {
           'Something went wrong. Please tap the red refresh icon above.';
 
       final msg =
-          simplifiedError.toLowerCase().contains(
+          simplifiedError.toLowercaseAll.contains(
             'cannot add new events after calling close',
           )
           ? fallbackMsg
@@ -59,7 +60,7 @@ extension ShowSignInAlert on BuildContext {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         showAlertOverlay(msg, bgColor: kDangerColor);
 
-        if (isWorkspace && msg.toLowerCase().contains('license')) {
+        if (isWorkspace && msg.toLowercaseAll.contains('license')) {
           await Future.delayed(kRProgressDelay);
           showUpgradeWarningDialog();
         }

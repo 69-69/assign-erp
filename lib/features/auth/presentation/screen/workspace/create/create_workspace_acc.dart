@@ -1,8 +1,9 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/size_config.dart';
-import 'package:assign_erp/core/widgets/bottom_sheet_header.dart';
-import 'package:assign_erp/core/widgets/custom_dialog.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
+import 'package:assign_erp/core/widgets/dialog/bottom_sheet_header.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_dialog.dart';
 import 'package:assign_erp/features/auth/domain/repository/auth_repository.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/sign_in/workspace/workspace_sign_in_bloc.dart';
 import 'package:assign_erp/features/auth/presentation/screen/widget/workspace_form_inputs.dart';
@@ -39,7 +40,7 @@ class WorkspaceScreen extends StatelessWidget {
   _buildAlertDialog(BuildContext context) {
     return CustomDialog(
       title: DialogTitle(
-        title: 'Setup New Workspace'.toUpperCase(),
+        title: 'Setup New Workspace'.toUpperCaseAll,
         subtitle: "Create a new Workspace for your new Client.",
       ),
       body: _buildFormBody(context),
@@ -74,7 +75,7 @@ class WorkspaceScreen extends StatelessWidget {
     } else if (state.status.isSuccess) {
       context.showAlertOverlay(
         duration: 10,
-        'Workspace has been successfully created!\n\n'
+        'Workspace has been created!\n\n'
         'Please check your email (${state.email}) and click the verification link to complete the process.',
       );
     }

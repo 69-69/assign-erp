@@ -1,6 +1,7 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
-import 'package:assign_erp/core/widgets/custom_tab.dart';
+import 'package:assign_erp/core/widgets/nav/custom_tab.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/orders/request_price_quotation_model.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/bloc/inventory_bloc.dart';
@@ -21,7 +22,7 @@ class RequestForQuotationScreen extends StatelessWidget {
           RequestForQuotationBloc(firestore: FirebaseFirestore.instance)
             ..add(GetInventories<RequestForQuotation>()),
       child: CustomScaffold(
-        title: requestPriceQuoteScreenTitle.toUpperCase(),
+        title: requestPriceQuoteScreenTitle.toUpperCaseAll,
         body: _buildBody(),
         floatingActionButton: context.buildFloatingBtn(
           'Request For Quotation',

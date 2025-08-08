@@ -63,7 +63,7 @@ class _ListCompanyStoresState extends State<ListCompanyStores> {
   Widget _buildCard(List<CompanyStores> stores) {
     return DynamicDataTable(
       skip: true,
-      toggleHideID: true,
+      showIDToggle: true,
       headers: CompanyStores.dataTableHeader,
       anyWidget: _buildAnyWidget(stores),
       rows: stores.map((d) => d.itemAsList()).toList(),

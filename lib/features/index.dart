@@ -2,6 +2,7 @@ export 'package:assign_erp/config/routes/app_routes.dart';
 export 'package:assign_erp/config/theme/index.dart';
 export 'package:assign_erp/core/constants/app_constant.dart';
 export 'package:assign_erp/core/network/data_sources/remote/repository/data_repository.dart';
+export 'package:assign_erp/features/access_control/presentation/cubit/access_control_cubit.dart';
 export 'package:assign_erp/features/agent/presentation/bloc/index.dart';
 export 'package:assign_erp/features/auth/domain/repository/index.dart';
 export 'package:assign_erp/features/auth/presentation/bloc/index.dart';
@@ -11,6 +12,7 @@ export 'package:assign_erp/features/inventory_ims/presentation/bloc/index.dart';
 export 'package:assign_erp/features/live_support/presentation/bloc/index.dart';
 export 'package:assign_erp/features/setup/presentation/bloc/create_roles/role_bloc.dart';
 export 'package:assign_erp/features/setup/presentation/bloc/index.dart';
+export 'package:assign_erp/features/trouble_shooting/presentation/bloc/index.dart';
 export 'package:cloud_firestore/cloud_firestore.dart';
 export 'package:flutter_bloc/flutter_bloc.dart';
 

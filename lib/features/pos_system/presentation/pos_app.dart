@@ -1,8 +1,7 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
-import 'package:assign_erp/core/widgets/tile_card.dart';
+import 'package:assign_erp/core/widgets/nav/dashboard_tile_card.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/pos_system/presentation/pos_tiles.dart';
 import 'package:assign_erp/features/pos_system/presentation/screen/orders/widget/group_btn_card.dart';
 import 'package:flutter/material.dart';
@@ -39,12 +38,12 @@ class POSApp extends StatelessWidget {
   }
 
   Widget _buildTiles(BuildContext context) {
+    /* Role Based Access Control
     final employee = context.employee;
+    final tiles = [...?posTiles[employee?.role]?.tiles]; */
 
-    /* Role Based Access Control */
-    final tiles = [...?posTiles[employee?.role]?.tiles];
-    return TileCard(
-      tiles: tiles,
+    return DashboardTileCard(
+      tiles: posTiles,
       metricsTitle: "POS Metrics",
       metricsSubtitle: "Track sales, revenue, refunds, and daily transactions.",
       metrics: {

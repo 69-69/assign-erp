@@ -4,10 +4,10 @@ import 'package:assign_erp/features/user_guide/data/models/subscription_model.da
 final List<Map<String, String>> subs = [
   {'title': 'POS', 'description': 'Orders, Sales, Payment, Finance'},
   {'title': 'Warehouse', 'description': 'Stocks, Supplies, Deliveries'},
-  {'title': 'Full', 'description': 'Complete ERP access'},
+  // {'title': 'Full', 'description': 'Complete ERP access'},
   {'title': 'Agent', 'description': 'Account creation and management'},
   {'title': 'Inventory', 'description': 'Order, Stock, Purchases, Sales'},
-  {'title': 'Setup', 'description': 'Workspace account setup'},
+  {'title': 'Onboarding', 'description': 'Workspace account creation'},
   {'title': 'CRM', 'description': 'Customer Relationship Management'},
   {'title': 'Dev', 'description': 'System maintenance and development'},
 ];
@@ -17,8 +17,8 @@ final String overview =
     'Each subscription tier is designed to cater to specific business needs, ensuring that your enterprise is equipped with the appropriate tools for efficient operations. '
     'The user guide also outlines onboarding processes and additional features included in all licenses.';
 
-final Map<SubscriptionLicenses, SubscriptionDetail> subscriptionDetails = {
-  SubscriptionLicenses.pos: SubscriptionDetail.fromMap('pos', {
+final Map<String, SubscriptionDetail> subscriptionDetails = {
+  SubscriptionLicenses.pos.name: SubscriptionDetail.fromMap('pos', {
     'description': [
       'POS Subscription: Ideal for businesses needing full point-of-sale functionality.',
     ],
@@ -30,7 +30,7 @@ final Map<SubscriptionLicenses, SubscriptionDetail> subscriptionDetails = {
       '• Finance': 'Manage and track financial data related to POS.',
     },
   }),
-  SubscriptionLicenses.warehouse: SubscriptionDetail.fromMap('warehouse', {
+  SubscriptionLicenses.warehouse.name: SubscriptionDetail.fromMap('warehouse', {
     'description': [
       'Warehouse Subscription: Designed for managing warehouse operations and logistics.',
     ],
@@ -40,7 +40,7 @@ final Map<SubscriptionLicenses, SubscriptionDetail> subscriptionDetails = {
       'Deliveries': '• Manage and track deliveries and logistics.',
     },
   }),
-  SubscriptionLicenses.full: SubscriptionDetail.fromMap('full', {
+  /*SubscriptionLicenses.full.name: SubscriptionDetail.fromMap('full', {
     'description': [
       'Full Subscription: Provides complete access to all ERP system features.',
     ],
@@ -49,8 +49,8 @@ final Map<SubscriptionLicenses, SubscriptionDetail> subscriptionDetails = {
       'Manage': '• Comprehensive control over orders, stocks, and deliveries.',
       'Advance': '• Advanced reporting and performance tracking tools.',
     },
-  }),
-  SubscriptionLicenses.agent: SubscriptionDetail.fromMap('agent', {
+  }),*/
+  SubscriptionLicenses.agent.name: SubscriptionDetail.fromMap('agent', {
     'description': [
       'Agent Subscription: Meant for agents or franchises managing subscriber accounts.',
     ],
@@ -63,7 +63,7 @@ final Map<SubscriptionLicenses, SubscriptionDetail> subscriptionDetails = {
           '• Allows agents to create subscriber accounts and manage permissions.',
     },
   }),
-  SubscriptionLicenses.inventory: SubscriptionDetail.fromMap('inventory', {
+  SubscriptionLicenses.inventory.name: SubscriptionDetail.fromMap('inventory', {
     'description': [
       'Inventory Subscription: For businesses managing stock, orders, and inventory levels.',
     ],
@@ -78,9 +78,11 @@ final Map<SubscriptionLicenses, SubscriptionDetail> subscriptionDetails = {
       '• Reports': 'Detailed reports for inventory, purchases, sales, etc.',
     },
   }),
-  SubscriptionLicenses.setup: SubscriptionDetail.fromMap('setup', {
+  SubscriptionLicenses
+      .onboarding
+      .name: SubscriptionDetail.fromMap('onboarding', {
     'description': [
-      'Setup Subscription: Primarily for developers and system administrators to set up workspace accounts.',
+      'Onboarding Subscription: Primarily for developers and agents to create first-time workspace accounts.',
     ],
     'features': {
       'Account': '• Setup workspace accounts for agents and franchises.',
@@ -89,7 +91,7 @@ final Map<SubscriptionLicenses, SubscriptionDetail> subscriptionDetails = {
           '• Limited access for setup and onboarding purposes only.',
     },
   }),
-  SubscriptionLicenses.crm: SubscriptionDetail.fromMap('crm', {
+  SubscriptionLicenses.crm.name: SubscriptionDetail.fromMap('crm', {
     'description': [
       'CRM Subscription: For managing customer relationships and account information.',
     ],
@@ -100,7 +102,7 @@ final Map<SubscriptionLicenses, SubscriptionDetail> subscriptionDetails = {
           'Generate and view customer account statements.',
     },
   }),
-  SubscriptionLicenses.dev: SubscriptionDetail.fromMap('dev', {
+  SubscriptionLicenses.dev.name: SubscriptionDetail.fromMap('dev', {
     'description': [
       'Developer Subscription: Designed for system maintenance and software development.',
     ],
@@ -130,7 +132,7 @@ final Map<SubscriptionLicenses, SubscriptionDetail> subscriptionDetails = {
             children: [
               Text(
                 'Features of $subscriptionName Subscription',
-                style: context.ofTheme.textTheme.titleLarge?.copyWith(
+                style: context.textTheme.titleLarge?.copyWith(
                   color: kDarkTextColor,
                   fontWeight: FontWeight.w500,
                 ),

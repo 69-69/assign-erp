@@ -1,12 +1,12 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
-import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
 import 'package:assign_erp/core/widgets/barcode_scanner.dart';
-import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
-import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
+import 'package:assign_erp/core/widgets/dialog/async_progress_dialog.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/form_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/prompt_user_for_action.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/customer_crm/data/data_sources/remote/get_customers.dart';
 import 'package:assign_erp/features/inventory_ims/data/data_sources/remote/get_orders.dart';
@@ -120,7 +120,7 @@ class _AddDeliveryBodyState extends State<_AddDeliveryBody> {
   }
 
   Future<void> _confirmPrintoutDialog() async {
-    final isConfirmed = await context.confirmAction(
+    final isConfirmed = await context.confirmAction<bool>(
       const Text('Would you like to print the Invoice & Way-bill?'),
       title: "Invoice & Way-Bill",
       onAccept: "Print",

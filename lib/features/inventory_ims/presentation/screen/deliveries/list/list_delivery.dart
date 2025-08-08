@@ -1,10 +1,10 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/widgets/adaptive_layout.dart';
-import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
+import 'package:assign_erp/core/widgets/dialog/async_progress_dialog.dart';
+import 'package:assign_erp/core/widgets/dialog/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/dynamic_table.dart';
-import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/customer_crm/data/data_sources/remote/get_customers.dart';
 import 'package:assign_erp/features/inventory_ims/data/data_sources/remote/get_orders.dart';
@@ -66,7 +66,7 @@ class _ListDeliveriesState extends State<ListDeliveries> {
 
     return DynamicDataTable(
       skip: true,
-      toggleHideID: true,
+      showIDToggle: true,
       headers: Delivery.dataHeader,
       anyWidget: _buildAnyWidget(deliveries),
       rows: pendingDeliveries.map((d) => d.itemAsList()).toList(),
@@ -211,7 +211,7 @@ class _IssueMultiDelete extends StatelessWidget {
   }
 
   Future<bool> _confirmDeleteDialog(BuildContext context) async {
-    return context.confirmAction(
+    return context.confirmAction<bool>(
       const Text('Are you sure you want to delete the selected deliveries?'),
       title: "Confirm Delete",
       onAccept: "Delete",

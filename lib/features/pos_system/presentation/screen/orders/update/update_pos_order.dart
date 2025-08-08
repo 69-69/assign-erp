@@ -4,10 +4,10 @@ import 'package:assign_erp/core/util/calculate_extras.dart';
 import 'package:assign_erp/core/util/generate_new_uid.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/barcode_scanner.dart';
-import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/form_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/product_model.dart';
@@ -23,7 +23,7 @@ extension UpdateOrderForm on BuildContext {
     isExpand: false,
     child: FormBottomSheet(
       title: 'Edit Order',
-      subtitle: order.orderNumber.toUpperCase(),
+      subtitle: order.orderNumber.toUpperCaseAll,
       body: _UpdateOrderForm(order: order),
     ),
   );
@@ -178,10 +178,7 @@ class _UpdateOrderFormState extends State<_UpdateOrderForm> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Text(
-          'Update Order Status',
-          style: context.ofTheme.textTheme.titleLarge,
-        ),
+        Text('Update Order Status', style: context.textTheme.titleLarge),
         const SizedBox(height: 10.0),
         OrdersStatusDropdown(
           serverValue: _order.status,
@@ -199,7 +196,7 @@ class _UpdateOrderFormState extends State<_UpdateOrderForm> {
       title: Text(
         'Modify this Order',
         textAlign: TextAlign.center,
-        style: context.ofTheme.textTheme.titleLarge,
+        style: context.textTheme.titleLarge,
       ),
       subtitle: Text(
         'ID ${_order.id}'.toUpperCaseAll,
@@ -255,7 +252,7 @@ class _UpdateOrderFormState extends State<_UpdateOrderForm> {
           title: Text(
             'Additional Charges:',
             textAlign: TextAlign.center,
-            style: context.ofTheme.textTheme.titleMedium,
+            style: context.textTheme.titleMedium,
           ),
           subtitle: const Text('Optional', textAlign: TextAlign.center),
         ),

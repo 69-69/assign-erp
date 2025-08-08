@@ -14,16 +14,16 @@ class SearchStores extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomDropdownSearch<CompanyStores>(
-      labelText: (serverValue ?? 'Search Stores...').toTitleCase,
+      labelText: (serverValue ?? 'Assign Store locations...').toTitleCase,
       asyncItems: (String filter, loadProps) async =>
           await GetStores.byAnyTerm(filter),
       filterFn: (store, filter) {
-        var f = filter.isEmpty ? (serverValue ?? '') : filter;
-        return store.filterByAny(f);
+        // var f = filter.isEmpty ? (serverValue ?? '') : filter;
+        return store.filterByAny(filter);
       },
       itemAsString: (store) => store.itemAsString,
       onChanged: (store) => onChanged(store!.storeNumber, store.name),
-      validator: (store) => store == null ? 'Please add Store' : null,
+      validator: (store) => store == null ? 'Assign Store location' : null,
     );
   }
 }

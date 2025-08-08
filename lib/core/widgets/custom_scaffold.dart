@@ -2,9 +2,9 @@ import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/bread_crumbs.dart';
 import 'package:assign_erp/core/widgets/check_for_app_update.dart';
-import 'package:assign_erp/core/widgets/profile_menu_dropdown.dart';
+import 'package:assign_erp/core/widgets/nav/bread_crumbs.dart';
+import 'package:assign_erp/core/widgets/nav/profile_menu_dropdown.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -74,6 +74,11 @@ class _CustomScaffoldState extends State<CustomScaffold> {
       floatingActionButtonLocation: widget.floatingActionBtnLocation,
       floatingActionButton: widget.floatingActionButton,
       drawer: widget.drawer,
+      /*Drawer(
+        child: SafeArea(
+          child: SideNav(tiles: widget.tiles),
+        ),
+      ),*/
     );
   }
 
@@ -155,7 +160,7 @@ class _CustomScaffoldState extends State<CustomScaffold> {
         (widget.subTitle ?? appSubName).toUpperCaseAll,
         textAlign: TextAlign.center,
         maxLines: 1,
-        style: context.ofTheme.textTheme.titleSmall?.copyWith(
+        style: context.textTheme.titleSmall?.copyWith(
           fontSize: 10,
           color: kLightBlueColor,
           overflow: TextOverflow.fade,

@@ -1,15 +1,11 @@
 import 'package:assign_erp/config/routes/route_names.dart';
-import 'package:assign_erp/core/constants/app_constant.dart';
-import 'package:assign_erp/core/widgets/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/dynamic_table.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/agent/data/models/agent_client_model.dart';
 import 'package:assign_erp/features/agent/presentation/bloc/agent_bloc.dart';
 import 'package:assign_erp/features/agent/presentation/bloc/client/agent_clients_bloc.dart';
-import 'package:assign_erp/features/agent/presentation/screen/list/header_wrap.dart';
 import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
 import 'package:assign_erp/features/auth/presentation/screen/workspace/create/create_workspace_acc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -24,23 +20,7 @@ class AgentClientsWorkspaces extends StatefulWidget {
 class _AgentClientsWorkspacesState extends State<AgentClientsWorkspaces> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AgentClientBloc>(
-      create: (context) =>
-          AgentClientBloc(firestore: FirebaseFirestore.instance)
-            ..add(LoadClients<AgentClient>()),
-      child: CustomScaffold(
-        title: clienteleScreenTitle.toUpperCase(),
-        body: HeaderWrap(
-          title: 'Client Workspaces'.toUpperCase(),
-          body: _buildBody(),
-        ),
-        floatingActionButton: context.buildFloatingBtn(
-          'setup new workspace',
-          icon: Icons.workspaces_outline,
-          onPressed: () => context.openCreateWorkspacePopUp(),
-        ),
-      ),
-    );
+    return _buildBody();
   }
 
   BlocBuilder<AgentClientBloc, AgentState<AgentClient>> _buildBody() {
@@ -59,7 +39,7 @@ class _AgentClientsWorkspacesState extends State<AgentClientsWorkspaces> {
           AgentError<AgentClient>(error: var error) => context.buildError(
             error,
           ),
-          _ => const SizedBox.shrink(),
+          ClientLoaded<AgentClient>() => context.loader,
         };
       },
     );
@@ -85,7 +65,7 @@ class _AgentClientsWorkspacesState extends State<AgentClientsWorkspaces> {
     return DynamicDataTable(
       skip: true,
       skipPos: 2,
-      toggleHideID: true,
+      showIDToggle: true,
       headers: Workspace.dataTableHeader,
       anyWidget: _buildAnyWidget(filters.unExpired),
       rows: filters.unExpired.map((w) => w.itemAsList()).toList(),
@@ -93,7 +73,7 @@ class _AgentClientsWorkspacesState extends State<AgentClientsWorkspaces> {
       optButtonIcon: Icons.support_agent,
       optButtonLabel: 'Client Chat',
       onOptButtonTap: (row) => context.goNamed(
-        RouteNames.agentChat,
+        RouteNames.tenantChat,
         pathParameters: {'clientWorkspaceId': row[1]},
       ),
     );

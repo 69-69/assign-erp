@@ -29,6 +29,7 @@ class FirestoreRepository extends FirestoreHelper {
        super(firestore: firestore ?? FirebaseFirestore.instance);
 
   /// Optional Named Constructor [withCollectionName]
+  /// Creates an instance of [FirestoreRepository] with a specific collection name.
   FirestoreRepository.withCollectionName({String? collectionPath})
     : this(collectionPath: collectionPath);
 
@@ -94,6 +95,7 @@ class FirestoreRepository extends FirestoreHelper {
   /// ```dart
   /// QuerySnapshot snapshot = await firestoreRepo.findAll();
   /// for (var doc in snapshot.docs) {
+  ///   print(doc.id);
   ///   print(doc.data());
   /// }
   /// ```
@@ -224,27 +226,6 @@ class FirestoreRepository extends FirestoreHelper {
     return await _resolvedCollectionRef.doc(docId).get();
   }
 
-  /// Retrieves all documents from a subcollection under a specific parent document.
-  ///
-  /// This method assumes that `_resolvedCollectionRef` is already resolved
-  /// to point to the correct subcollection path, typically:
-  /// `collection(parentCollection).doc(parentId).collection(subcollection)`.
-  ///
-  /// Returns:
-  /// - A [QuerySnapshot] containing all documents in the subcollection.
-  ///
-  /// Example usage:
-  /// ```dart
-  /// final snapshot = await repo.findAllByParentId();
-  /// for (var doc in snapshot.docs) {
-  ///   print(doc.id);
-  ///   print(doc.data());
-  /// }
-  /// ```
-  Future<QuerySnapshot<Map<String, dynamic>>> findAllByParentId() async {
-    return await _resolvedCollectionRef.get();
-  }
-
   /// Adds a new document with the given [data] to the Firestore collection.
   ///
   /// This method creates a new document in the collection with the specified [data]. It
@@ -259,7 +240,19 @@ class FirestoreRepository extends FirestoreHelper {
   Future<DocumentReference<Map<String, dynamic>>> addData(
     Map<String, dynamic> data,
   ) async {
-    return await _resolvedCollectionRef.add(data);
+    DocumentReference<Map<String, dynamic>> docRef;
+
+    // If 'id' field exists and it's invalid (null or empty), manually generate an ID.
+    if (data.containsKey('id') && (data['id'] == null || data['id'].isEmpty)) {
+      // Create a reference with Firestore auto-generated ID
+      docRef = _resolvedCollectionRef.doc();
+      data['id'] = docRef.id; // Assign the generated ID to the data map
+      await docRef.set(data);
+    } else {
+      docRef = await _resolvedCollectionRef.add(data);
+    }
+
+    return docRef; // Return the reference (whether it was auto-generated or specified)
   }
 
   /// Updates an existing document or creates a new one if it does not exist.
@@ -279,9 +272,7 @@ class FirestoreRepository extends FirestoreHelper {
     String docId, {
     required Map<String, dynamic> data,
   }) async {
-    DocumentReference<Map<String, dynamic>> docRef = _resolvedCollectionRef.doc(
-      docId,
-    );
+    final docRef = _resolvedCollectionRef.doc(docId);
 
     // If doc exist, update it, else create new doc with data
     return docRef.id.isNotEmpty
@@ -291,13 +282,15 @@ class FirestoreRepository extends FirestoreHelper {
 
   /// NOTE: Overrides an existing document or creates a new one if it does not exist.
   ///
-  /// This method overrides an existing document identified by [docId] with the provided [data] - [overrideDataById]
-  Future<void> overrideDataById(
+  /// This method overrides an existing document identified by [docId] with the provided [data] - [overrideById]
+  Future<void> overrideById(
     String docId, {
     required Map<String, dynamic> data,
   }) async {
     // If doc exist, override it, else create new doc data with this docId
-    return await _resolvedCollectionRef.doc(docId).set(data);
+    return await _resolvedCollectionRef
+        .doc(docId)
+        .set(data, SetOptions(merge: false));
   }
 
   /// Deletes a document from the collection by its ID.

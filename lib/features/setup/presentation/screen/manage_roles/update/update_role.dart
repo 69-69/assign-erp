@@ -1,68 +1,59 @@
 import 'package:assign_erp/core/util/debug_printify.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
-import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/form_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/prompt_user_for_action.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
-import 'package:assign_erp/features/index.dart';
+import 'package:assign_erp/features/setup/data/models/permission_model.dart';
 import 'package:assign_erp/features/setup/data/models/role_model.dart';
-import 'package:assign_erp/features/setup/data/models/role_permission_model.dart';
+import 'package:assign_erp/features/setup/presentation/bloc/create_roles/role_bloc.dart';
+import 'package:assign_erp/features/setup/presentation/bloc/setup_bloc.dart';
 import 'package:assign_erp/features/setup/presentation/screen/manage_roles/widget/form_inputs.dart';
 import 'package:assign_erp/features/setup/presentation/screen/manage_roles/widget/permission_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-extension UpdateNewRole<T> on BuildContext {
-  Future<void> openUpdateNewRole({required Role role, bool? isAssign}) =>
+extension UpdateRole<T> on BuildContext {
+  Future<void> openUpdateRole({required Role role, bool? isAssign}) =>
       openBottomSheet(
         isExpand: false,
         child: FormBottomSheet(
-          title: isAssign == true ? 'Assign Permissions' : 'Update Role',
+          title: isAssign == true ? 'Assign Permissions' : 'Edit Role',
           subtitle: role.name,
-          body: _UpdateNewRoleForm(role: role, isAssign: isAssign),
+          body: _UpdateRoleForm(role: role, isAssign: isAssign),
         ),
       );
 }
 
-class _UpdateNewRoleForm extends StatefulWidget {
+class _UpdateRoleForm extends StatefulWidget {
   final Role role;
   final bool? isAssign;
 
-  const _UpdateNewRoleForm({required this.role, this.isAssign});
+  const _UpdateRoleForm({required this.role, this.isAssign});
 
   @override
-  State<_UpdateNewRoleForm> createState() => _UpdateNewRoleFormState();
+  State<_UpdateRoleForm> createState() => _UpdateRoleFormState();
 }
 
-class _UpdateNewRoleFormState extends State<_UpdateNewRoleForm> {
+class _UpdateRoleFormState extends State<_UpdateRoleForm> {
   Role get _role => widget.role;
-  final Set<String> _touchedModules = {};
   final _formKey = GlobalKey<FormState>();
-  final Set<RolePermission> _assignedPermissions = {};
+  late Set<Permission> _assignedPermissions = {};
   late final _nameController = TextEditingController(text: _role.name);
 
-  Role get _updatedRole {
-    // Keep original permissions for untouched modules
-    // final untouchedPermissions = _role.permissions
-    //     .where((p) => !_touchedModules.contains(p.module))
-    //     .toSet();
-    //
-    // // Combine with newly selected ones
-    // final finalPermissions = untouchedPermissions.union(_assignedPermissions);
-
-    return _role.copyWith(
-      name: _nameController.text,
-      permissions: _assignedPermissions,
-      updatedBy: context.employee?.fullName ?? 'unknown',
-    );
+  @override
+  void initState() {
+    _assignedPermissions = Set.from(_role.permissions);
+    super.initState();
   }
 
   Future<void> _onSubmit() async {
     final isRemovingAllPermissions = _assignedPermissions.isEmpty;
 
     if (isRemovingAllPermissions) {
-      final result = await context.confirmAction(
+      final result = await context.confirmAction<bool>(
         const Text('Are you sure you want to remove all permissions?'),
         title: 'Remove All Permissions',
       );
@@ -70,9 +61,16 @@ class _UpdateNewRoleFormState extends State<_UpdateNewRoleForm> {
     }
 
     if (mounted && _formKey.currentState!.validate()) {
+      final updatedRole = _role.copyWith(
+        name: _nameController.text,
+        permissions: _assignedPermissions,
+        updatedBy: context.employee?.fullName ?? 'unknown',
+      );
+
+      prettyPrint('CURRENT-PERMISSIONS', '$_assignedPermissions');
       // prettyPrint('Updating role', updatedRole.toMap());
       context.read<RoleBloc>().add(
-        UpdateSetup<Role>(documentId: _role.id, data: _updatedRole),
+        OverrideSetup<Role>(documentId: _role.id, data: updatedRole),
       );
 
       _formKey.currentState!.reset();
@@ -111,7 +109,7 @@ class _UpdateNewRoleFormState extends State<_UpdateNewRoleForm> {
 
         PermissionCard(
           onSelectedFunc: _onSelectedFunc,
-          initialPermissions: _role.permissions,
+          initialPermissions: _assignedPermissions,
         ),
         const SizedBox(height: 10.0),
 
@@ -121,22 +119,15 @@ class _UpdateNewRoleFormState extends State<_UpdateNewRoleForm> {
     );
   }
 
-  void _onSelectedFunc(
-    String displayName, {
-    required Set<RolePermission> permissions,
-  }) {
-    _touchedModules.add(displayName);
-
+  void _onSelectedFunc(Set<Permission> permissions) {
     // Find all modules involved in this permission set
     final touchedModules = permissions.map((p) => p.module).toSet();
-    prettyPrint('OLD-PERMISSIONS', '$permissions');
 
     // Remove all permissions that belong to any of these modules
     _assignedPermissions.removeWhere((p) => touchedModules.contains(p.module));
 
     // Add newly selected permissions (can be empty if all toggled off)
     _assignedPermissions.addAll(permissions);
-    prettyPrint('NEW-PERMISSIONS', '$_assignedPermissions');
   }
 
   @override

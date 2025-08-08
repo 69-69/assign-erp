@@ -1,6 +1,7 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
-import 'package:assign_erp/core/widgets/custom_tab.dart';
+import 'package:assign_erp/core/widgets/nav/custom_tab.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/customer_crm/data/models/customer_model.dart';
 import 'package:assign_erp/features/customer_crm/presentation/bloc/create_acc/customer_acc_bloc.dart';
@@ -23,7 +24,7 @@ class CustomerScreen extends StatelessWidget {
           CustomerAccountBloc(firestore: FirebaseFirestore.instance)
             ..add(GetCustomers<Customer>()),
       child: CustomScaffold(
-        title: customersScreenTitle.toUpperCase(),
+        title: customersScreenTitle.toUpperCaseAll,
         body: _buildBody(),
         actions: const [],
         floatingActionButton: context.buildFloatingBtn(

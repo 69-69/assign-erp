@@ -307,7 +307,9 @@ class _ChatOverviewPaneState extends State<ChatOverviewPane>
         CircleAvatar(
           backgroundColor: kGrayBlueColor,
           child: Text(
-            chat.userName.isNullOrEmpty ? '?' : chat.userName![0].toUpperCase(),
+            chat.userName.isNullOrEmpty
+                ? '?'
+                : chat.userName![0].toUpperCaseAll,
             style: TextStyle(color: kLightColor),
           ),
         ),

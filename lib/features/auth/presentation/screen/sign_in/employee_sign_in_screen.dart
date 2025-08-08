@@ -31,7 +31,7 @@ class _EmployeeSignInScreenState extends State<EmployeeSignInScreen> {
   final PrintoutSetupCacheService _printoutService =
       PrintoutSetupCacheService();
   final ScrollController _scrollController = ScrollController();
-  bool isInitialSetupAllowed = false;
+  bool isOnboardingAllowed = false;
   String? companyLogo;
 
   @override
@@ -47,18 +47,18 @@ class _EmployeeSignInScreenState extends State<EmployeeSignInScreen> {
     }
   }
 
-  void _canAccessInitialSetup() {
-    // If current workspace role can access Setup the system for client workspace
-    isInitialSetupAllowed = WorkspaceRoleGuard.canAccessInitialSetup(context);
-    if (isInitialSetupAllowed != isInitialSetupAllowed) {
-      setState(() => isInitialSetupAllowed = isInitialSetupAllowed);
+  void _canAccessOnboarding() {
+    // If current workspace-role can create first-time Agent Workspace
+    isOnboardingAllowed = WorkspaceRoleGuard.canAccessOnboarding(context);
+    if (isOnboardingAllowed != isOnboardingAllowed) {
+      setState(() => isOnboardingAllowed = isOnboardingAllowed);
     }
     // prettyPrint('steve', SecretHasher.hash('TEMP-451282'));
   }
 
   @override
   Widget build(BuildContext context) {
-    _canAccessInitialSetup();
+    _canAccessOnboarding();
 
     /*MINE-STEVE
     return BlocProvider(
@@ -112,16 +112,16 @@ class _EmployeeSignInScreenState extends State<EmployeeSignInScreen> {
             child: Column(
               children: [
                 FormTitle(
-                  title: context.workspace?.workspaceName ?? 'Employee Account',
+                  title: context.workspace?.name ?? 'Employee Account',
                   subtitle: 'Organization\'s Workspace',
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 6),
                 _leftColumnPane(),
               ],
             ),
           ),
         ),
-        _RightColumnPane(isInitialSetupAllowed: isInitialSetupAllowed),
+        _RightColumnPane(isOnboardingAllowed: isOnboardingAllowed),
       ],
     );
   }
@@ -148,9 +148,9 @@ class _EmployeeSignInScreenState extends State<EmployeeSignInScreen> {
 }
 
 class _RightColumnPane extends StatelessWidget {
-  final bool isInitialSetupAllowed;
+  final bool isOnboardingAllowed;
 
-  const _RightColumnPane({required this.isInitialSetupAllowed});
+  const _RightColumnPane({required this.isOnboardingAllowed});
 
   @override
   Widget build(BuildContext context) {
@@ -163,11 +163,11 @@ class _RightColumnPane extends StatelessWidget {
         onPressed: () => _handleSignOut(context),
       ),
       children: [
-        if (isInitialSetupAllowed) ...[
+        if (isOnboardingAllowed) ...[
           _buildOpenCreateWorkspaceButton(context),
           const Divider(),
         ],
-        Flexible(child: WorkspaceGuide(isWorkspace: isInitialSetupAllowed)),
+        Flexible(child: WorkspaceGuide(isWorkspace: isOnboardingAllowed)),
       ],
     );
   }
@@ -180,9 +180,7 @@ class _RightColumnPane extends StatelessWidget {
       label: Text(
         'Setup New Workspace',
         overflow: TextOverflow.ellipsis,
-        style: context.ofTheme.textTheme.titleLarge?.copyWith(
-          color: kLightColor,
-        ),
+        style: context.textTheme.titleLarge?.copyWith(color: kLightColor),
       ),
     );
   }

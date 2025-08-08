@@ -17,13 +17,6 @@ extension AccountStatusExtension on AccountStatus {
   }
 }
 
-final accountStatusList = AccountStatus.values.map((e) => e.label).toList();
-
-final workspaceStatusList = [
-  'workspace status',
-  ...AccountStatus.values.map((e) => e.label),
-];
-
 final employeeAccountStatusList = [
   'account status',
   ...AccountStatus.values.map((e) => e.label),

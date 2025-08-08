@@ -1,5 +1,6 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/setup/data/data_sources/local/printout_setup_cache_service.dart';
@@ -49,7 +50,7 @@ class _PrintoutLayoutsState extends State<PrintoutLayouts> {
 
   Future<void> _saveCardSelection(String label) async {
     final settings = (await _printoutService.getSettings())?.copyWith(
-      layout: label.toLowerCase(),
+      layout: label.toLowercaseAll,
     );
     if (settings != null) {
       await _printoutService.setSettings(settings);
@@ -101,7 +102,7 @@ class _PrintoutLayoutsState extends State<PrintoutLayouts> {
           Text(
             'Print Layout',
             textAlign: TextAlign.center,
-            style: context.ofTheme.textTheme.titleLarge?.copyWith(
+            style: context.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -111,7 +112,7 @@ class _PrintoutLayoutsState extends State<PrintoutLayouts> {
       subtitle: Text(
         "This layout will be used for printing invoices, receipts, reports, etc...",
         textAlign: TextAlign.center,
-        style: context.ofTheme.textTheme.titleSmall,
+        style: context.textTheme.titleSmall,
       ),
     );
   }
@@ -133,7 +134,7 @@ class _PrintoutLayoutsState extends State<PrintoutLayouts> {
 
   Widget _buildCard(int index, String label) {
     final assetName = index > 0 ? loosePrintLayout : densePrintLayout;
-    label = label.toLowerCase();
+    label = label.toLowercaseAll;
 
     return Card(
       margin: const EdgeInsets.all(10),
@@ -161,7 +162,7 @@ class _PrintoutLayoutsState extends State<PrintoutLayouts> {
           title: Text(
             label,
             overflow: TextOverflow.ellipsis,
-            style: context.ofTheme.textTheme.titleSmall?.copyWith(
+            style: context.textTheme.titleSmall?.copyWith(
               color: kDangerColor,
               fontWeight: FontWeight.bold,
             ),

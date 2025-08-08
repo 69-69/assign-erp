@@ -1,10 +1,10 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/calculate_extras.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/form_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/orders/purchase_order_model.dart';
@@ -20,7 +20,7 @@ extension UpdatePurchaseOrderForm on BuildContext {
         isExpand: false,
         child: FormBottomSheet(
           title: 'Edit Purchase Order',
-          subtitle: po.poNumber.toUpperCase(),
+          subtitle: po.poNumber.toUpperCaseAll,
           body: _UpdatePurchaseOrderForm(po: po),
         ),
       );
@@ -169,7 +169,7 @@ class _UpdatePurchaseOrderFormState extends State<_UpdatePurchaseOrderForm> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Text('Update PO Status', style: context.ofTheme.textTheme.titleLarge),
+        Text('Update PO Status', style: context.textTheme.titleLarge),
         const SizedBox(height: 10.0),
         POStatusDropdown(
           serverValue: _order.status,
@@ -187,7 +187,7 @@ class _UpdatePurchaseOrderFormState extends State<_UpdatePurchaseOrderForm> {
       title: Text(
         'Modify this PO',
         textAlign: TextAlign.center,
-        style: context.ofTheme.textTheme.titleLarge,
+        style: context.textTheme.titleLarge,
       ),
       subtitle: Text(
         'ID ${_order.id}'.toUpperCaseAll,
@@ -231,7 +231,7 @@ class _UpdatePurchaseOrderFormState extends State<_UpdatePurchaseOrderForm> {
           title: Text(
             'Additional Charges:',
             textAlign: TextAlign.center,
-            style: context.ofTheme.textTheme.titleMedium,
+            style: context.textTheme.titleMedium,
           ),
           subtitle: const Text('Optional', textAlign: TextAlign.center),
         ),

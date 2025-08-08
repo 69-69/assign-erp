@@ -1,5 +1,6 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/color_convention_util.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/features/setup/data/data_sources/local/printout_setup_cache_service.dart';
 import 'package:flutter/material.dart';
@@ -108,12 +109,12 @@ class _PreviewPrintoutColorsState extends State<PreviewPrintoutColors> {
         const SizedBox(height: 10),
         Padding(
           padding: const EdgeInsets.only(top: 8.0),
-          child: _buildText(context, 'Header Color:'.toUpperCase()),
+          child: _buildText(context, 'Header Color:'.toUpperCaseAll),
         ),
         _buildHeader(context),
         Padding(
           padding: const EdgeInsets.only(top: 8.0),
-          child: _buildText(context, 'Footer Color:'.toUpperCase()),
+          child: _buildText(context, 'Footer Color:'.toUpperCaseAll),
         ),
         _buildFooter(context),
       ],
@@ -128,7 +129,7 @@ class _PreviewPrintoutColorsState extends State<PreviewPrintoutColors> {
       subtitle: Text(
         'Choose one color for your print-out (PDFs)',
         textAlign: TextAlign.center,
-        style: context.ofTheme.textTheme.titleSmall,
+        style: context.textTheme.titleSmall,
       ),
     );
   }
@@ -141,7 +142,7 @@ class _PreviewPrintoutColorsState extends State<PreviewPrintoutColors> {
     return Text(
       label,
       textAlign: TextAlign.center,
-      style: context.ofTheme.textTheme.titleMedium?.copyWith(
+      style: context.textTheme.titleMedium?.copyWith(
         color: color,
         fontWeight: FontWeight.bold,
       ),

@@ -125,7 +125,7 @@ class _EmployeePasscodeInputState extends State<EmployeePasscodeInput> {
         padding: EdgeInsets.only(bottom: 14),
         child: Text(
           'Employee passcode required after organizational workspace sign-in',
-          style: context.ofTheme.textTheme.bodyMedium?.copyWith(
+          style: context.textTheme.bodyMedium?.copyWith(
             color: kBgLightColor, // Styling for the text
           ),
         ),

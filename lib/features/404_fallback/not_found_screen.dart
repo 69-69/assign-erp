@@ -23,7 +23,7 @@ class NotFoundPage extends StatelessWidget {
               'Request not found...we\'re working on new updates.\nOr You\'re not authorized!',
               textAlign: TextAlign.center,
               softWrap: true,
-              style: context.ofTheme.textTheme.bodyLarge?.copyWith(
+              style: context.textTheme.bodyLarge?.copyWith(
                 color: kDangerColor,
                 overflow: TextOverflow.visible,
               ),
@@ -34,7 +34,7 @@ class NotFoundPage extends StatelessWidget {
               onPressed: () {
                 final authBloc = context.read<AuthBloc>();
                 if (authBloc.state.authStatus == AuthStatus.authenticated) {
-                  context.goNamed(RouteNames.mainDashboard);
+                  context.goNamed(RouteNames.homeDashboard);
                 } else {
                   context.go(RouteNames.initialScreen);
                 }

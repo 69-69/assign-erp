@@ -28,7 +28,7 @@ class SubscriptionOverview extends StatelessWidget {
           SizedBox(height: 20),
           Text(
             'Subscription Licenses Overview',
-            style: context.ofTheme.textTheme.titleMedium?.copyWith(
+            style: context.textTheme.titleMedium?.copyWith(
               color: kDarkTextColor,
             ),
             textScaler: TextScaler.linear(context.textScaleFactor),
@@ -67,7 +67,7 @@ class OverviewCard extends StatelessWidget {
         dense: true,
         title: Text(
           '${sub.title} License',
-          style: context.ofTheme.textTheme.titleSmall?.copyWith(
+          style: context.textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.w500,
           ),
         ),

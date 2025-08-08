@@ -1,8 +1,7 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
-import 'package:assign_erp/core/widgets/tile_card.dart';
+import 'package:assign_erp/core/widgets/nav/dashboard_tile_card.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/inventory_tiles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,12 +35,11 @@ class InventoryApp extends StatelessWidget {
   }
 
   Widget _buildTiles(BuildContext context) {
+    /* Role Based Access Control
     final employee = context.employee;
-
-    /* Role Based Access Control */
-    final tiles = [...?inventoryTiles[employee?.role]?.tiles];
-    return TileCard(
-      tiles: tiles,
+    final tiles = [...?inventoryTiles[employee?.role]?.tiles]; */
+    return DashboardTileCard(
+      tiles: inventoryTiles,
       metricsTitle: "Inventory Metrics",
       metricsSubtitle:
           "Monitor stock levels, order statuses, and fulfillment progress.",

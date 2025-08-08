@@ -31,7 +31,7 @@ class FirestoreHelper {
   ///
   /// Returns:
   /// - A tuple of two strings:
-  ///   - workspace Role (e.g., subscriber, agentFranchise, developer, initialSetup)
+  ///   - workspace Role (e.g., subscriber, agentFranchise, developer, onboarding)
   ///   - and workspace ID (e.g., "9789fs23fg2123").
   (String role, String id) get _workspaceDetails {
     final workspace = _authCacheService.getWorkspace();

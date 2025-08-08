@@ -10,68 +10,11 @@ sealed class AgentEvent<T> extends Equatable {
 }
 
 class LoadClients<T> extends AgentEvent<T> {
-  final bool isSystemWide;
-
-  const LoadClients({this.isSystemWide = false});
+  const LoadClients();
 }
 
 class RefreshClients<T> extends AgentEvent<T> {
-  final bool isSystemWide;
-
-  const RefreshClients({this.isSystemWide = false});
-}
-
-class LoadClientById<T> extends AgentEvent<T> {
-  final Object? field;
-  final String documentId;
-
-  const LoadClientById({required this.documentId, this.field});
-
-  @override
-  List<Object?> get props => [documentId, field];
-}
-
-/// [LoadAgentById] For Getting Agent Data `agentId` is same as `Agent workspace Id`
-class LoadAgentById<T> extends AgentEvent<T> {
-  final String agentId;
-
-  const LoadAgentById({required this.agentId});
-
-  @override
-  List<Object?> get props => [agentId];
-}
-
-/// T data: Generic Data Update: using Model-Class
-///   --OR-- Note:: use Generic or Map data update
-/// Map? mapData: `Map<String, dynamic>` Data Update
-class UpdateClient<T> extends AgentEvent<T> {
-  final T? data;
-  final Map<String, dynamic>? mapData;
-  final String documentId;
-
-  const UpdateClient({required this.documentId, this.data, this.mapData});
-
-  @override
-  List<Object?> get props => [data, documentId];
-}
-
-class RemoveAuthorizedDeviceIds<T> extends AgentEvent<T> {
-  final T? data;
-  final String documentId;
-
-  const RemoveAuthorizedDeviceIds({required this.documentId, this.data});
-
-  @override
-  List<Object?> get props => [documentId, this.data];
-}
-
-class DeleteClient<T> extends AgentEvent<T> {
-  final String documentId;
-
-  const DeleteClient({required this.documentId});
-
-  @override
-  List<Object?> get props => [documentId];
+  const RefreshClients();
 }
 
 /// Internal events for state updates

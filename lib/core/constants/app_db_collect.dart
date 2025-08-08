@@ -25,7 +25,16 @@ const appErrorLogsCache = 'app_error_logs_cache_db';
 // ---------------------------
 
 /// Firebase collection for workspace user authentication records
-const workspaceUserDBCollectionPath = 'workspace_auth_db';
+const workspaceAccDBCollectionPath = 'workspace_auth_db';
+// Logs workspace signIn/signOut sessions for tracking and analytics
+const workspaceSessionLogsCollectionPath = 'workspace_session_logs';
+
+// ---------------------------
+// 💰 Subscription Licenses Collections
+// ---------------------------
+
+/// Firebase collection for Subscription Licenses
+const subscriptionDBCollectionPath = 'subscription_licenses_db';
 
 // ---------------------------
 // 🔐 Roles Collections
@@ -81,6 +90,8 @@ const userGuideDBCollectionPath = 'user_guide_db';
 
 /// Firebase collection for employee accounts
 const employeesDBCollectionPath = 'employee_account_db';
+// for tracking employees auth sessions
+const employeeSessionLogsCollectionPath = 'employee_session_logs';
 
 /// Firebase collection for company store locations
 const companyStoreDBCollectionPath = 'company_stores_db';

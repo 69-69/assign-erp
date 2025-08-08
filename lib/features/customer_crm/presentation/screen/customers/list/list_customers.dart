@@ -53,7 +53,7 @@ class _ListCustomersState extends State<ListCustomers> {
 
     return DynamicDataTable(
       skip: true,
-      toggleHideID: true,
+      showIDToggle: true,
       headers: Customer.dataTableHeader,
       anyWidget: _buildAnyWidget(customers),
       rows: todayCustomers.map((o) => o.itemAsList()).toList(),

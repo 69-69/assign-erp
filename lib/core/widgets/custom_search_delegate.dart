@@ -105,8 +105,8 @@ class CustomSearchDelegate<T> extends SearchDelegate<T?> {
         ? []
         : allData
               .where(
-                (item) => (item.toString().toLowerCase()).contains(
-                  query.toLowerCase(),
+                (item) => (item.toString().toLowercaseAll).contains(
+                  query.toLowercaseAll,
                 ),
               )
               .toList();

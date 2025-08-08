@@ -31,7 +31,7 @@ class PrintSReport {
   late final PrintPDFColors _pdfColors;
   late final IssuerCompany _company;
 
-  String get _reportTitle => title.toUpperCase();
+  String get _reportTitle => title.toUpperCaseAll;
 
   /// Generate PDF-Doc [buildPdf]
   Future<Uint8List> buildPdf(PdfPageFormat pageFormat) async {
@@ -171,7 +171,7 @@ class PrintSReport {
           crossAxisAlignment: pw.CrossAxisAlignment.end,
           children: [
             pw.Text(
-              title.toUpperCase(),
+              title.toUpperCaseAll,
               style: pw.TextStyle(color: hColor, fontSize: 14),
             ),
             pw.SizedBox(height: 2.0),

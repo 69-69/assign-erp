@@ -95,6 +95,10 @@ class UpdateSetup<T> extends SetupEvent<T> {
   List<Object?> get props => [data, documentId];
 }
 
+class OverrideSetup<T> extends UpdateSetup<T> {
+  const OverrideSetup({required super.documentId, super.data, super.mapData});
+}
+
 class DeleteSetup<T> extends SetupEvent<T> {
   final String documentId;
 

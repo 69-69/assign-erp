@@ -1,14 +1,19 @@
-import 'package:assign_erp/core/network/data_sources/models/permission_item_model.dart';
+import 'package:assign_erp/features/access_control/data/model/access_control_model.dart';
+import 'package:assign_erp/features/setup/data/models/permission_model.dart';
+import 'package:assign_erp/features/setup/data/models/role_model.dart';
 
 /// PERMISSION BASED ACCESS-CONTROL
 enum SetupPermission {
+  manageSetup,
   // Company Info
+  manageCompany,
   createCompanyInfo,
   viewCompanyInfo,
   updateCompanyInfo,
   deleteCompanyInfo,
 
   // store Location
+  manageStoreLocation,
   createStoreLocation,
   viewStoreLocation,
   updateStoreLocation,
@@ -16,12 +21,14 @@ enum SetupPermission {
   assignStoreLocation,
 
   // Employee
+  manageEmployee,
   createEmployee,
   viewEmployee,
   updateEmployee,
   deleteEmployee,
 
   // Role
+  manageRole,
   createRole,
   viewRole,
   updateRole,
@@ -31,18 +38,24 @@ enum SetupPermission {
   assignPermission,
 
   // backup
+  manageBackup,
   createBackup,
   deleteBackup,
   restoreBackup,
   historyBackup,
 
+  // license
+  viewLicense,
+
   // product suppliers
+  manageProductSupplier,
   createProductSupplier,
   viewProductSupplier,
   updateProductSupplier,
   deleteProductSupplier,
 
   // product categories
+  manageProductCategory,
   createProductCategory,
   viewProductCategory,
   updateProductCategory,
@@ -50,224 +63,302 @@ enum SetupPermission {
 
   // print settings
   updatePrintSetting,
+  viewSetupSecrets, // For viewing configuration IDs
+  // For unspecified permissions
 }
 
-final List<PermissionItem> _companyInfoPermissions = [
-  PermissionItem(
+final List<AccessControl> _setupPermissions = [
+  AccessControl(
+    module: "setup",
+    title: "Manage setup",
+    description:
+        "Grants users the ability to create, modify, and remove workspace setup configurations",
+    access: SetupPermission.manageSetup,
+  ),
+];
+
+final List<AccessControl> _companyInfoPermissions = [
+  AccessControl(
+    module: "company info",
+    title: "Manage company info",
+    description: "Allow users to create, edit, and delete company information.",
+    access: SetupPermission.manageCompany,
+  ),
+  AccessControl(
     module: "company info",
     title: "Create company info",
-    subtitle: "Allow users to create new company information.",
-    permission: SetupPermission.createCompanyInfo,
+    description: "Allow users to create new company information.",
+    access: SetupPermission.createCompanyInfo,
   ),
-  PermissionItem(
+  AccessControl(
     module: "company info",
     title: "View company info",
-    subtitle: "Allow access to a list of all company information.",
-    permission: SetupPermission.viewCompanyInfo,
+    description: "Allow access to a list of all company information.",
+    access: SetupPermission.viewCompanyInfo,
   ),
-  PermissionItem(
+  AccessControl(
     module: "company info",
     title: "Edit company info",
-    subtitle: "Allow users to modify details of an existing company info.",
-    permission: SetupPermission.updateCompanyInfo,
+    description: "Allow users to modify details of an existing company info.",
+    access: SetupPermission.updateCompanyInfo,
   ),
-  PermissionItem(
+  AccessControl(
     module: "company info",
     title: "Delete company info",
-    subtitle: "Allow users to permanently remove a company info record.",
-    permission: SetupPermission.deleteCompanyInfo,
+    description: "Allow users to permanently remove a company info record.",
+    access: SetupPermission.deleteCompanyInfo,
   ),
 ];
 
-final List<PermissionItem> _storeLocationPermissions = [
-  PermissionItem(
+final List<AccessControl> _storeLocationPermissions = [
+  AccessControl(
+    module: "store location",
+    title: "Manage store locations",
+    description: "Allow users to create, edit, and delete store locations.",
+    access: SetupPermission.manageStoreLocation,
+  ),
+  AccessControl(
     module: "store location",
     title: "Create new store location",
-    subtitle: "Allow users to create new store locations.",
-    permission: SetupPermission.createStoreLocation,
+    description: "Allow users to create new store locations.",
+    access: SetupPermission.createStoreLocation,
   ),
-  PermissionItem(
+  AccessControl(
     module: "store location",
     title: "View store locations",
-    subtitle: "Allow access to a list of all store locations.",
-    permission: SetupPermission.viewStoreLocation,
+    description: "Allow access to a list of all store locations.",
+    access: SetupPermission.viewStoreLocation,
   ),
-  PermissionItem(
+  AccessControl(
     module: "store location",
     title: "Edit store locations",
-    subtitle: "Allow users to modify details of an existing store location.",
-    permission: SetupPermission.updateStoreLocation,
+    description: "Allow users to modify details of an existing store location.",
+    access: SetupPermission.updateStoreLocation,
   ),
-  PermissionItem(
+  AccessControl(
     module: "store location",
     title: "Delete store locations",
-    subtitle: "Allow users to permanently remove a store location record.",
-    permission: SetupPermission.deleteStoreLocation,
+    description: "Allow users to permanently remove a store location record.",
+    access: SetupPermission.deleteStoreLocation,
   ),
-  PermissionItem(
+  AccessControl(
     module: "store location",
     title: "Assign store locations",
-    subtitle: "Allow users to assign store locations to employees.",
-    permission: SetupPermission.assignStoreLocation,
+    description: "Allow users to assign store locations to employees.",
+    access: SetupPermission.assignStoreLocation,
   ),
 ];
 
-final List<PermissionItem> _employeePermissions = [
-  PermissionItem(
+final List<AccessControl> _employeePermissions = [
+  AccessControl(
+    module: "employee",
+    title: "Manage employees",
+    description: "Allow users to create, edit, and delete employees.",
+    access: SetupPermission.manageEmployee,
+  ),
+  AccessControl(
     module: "employee",
     title: "Create new employee",
-    subtitle: "Allow users to create new employees account.",
-    permission: SetupPermission.createEmployee,
+    description: "Allow users to create new employees account.",
+    access: SetupPermission.createEmployee,
   ),
-  PermissionItem(
+  AccessControl(
     module: "employee",
     title: "View employees",
-    subtitle: "Allow access to a list of all employees account.",
-    permission: SetupPermission.viewEmployee,
+    description: "Allow access to a list of all employees account.",
+    access: SetupPermission.viewEmployee,
   ),
-  PermissionItem(
+  AccessControl(
     module: "employee",
     title: "Edit employees",
-    subtitle: "Allow users to modify details of an existing employee account.",
-    permission: SetupPermission.updateEmployee,
+    description:
+        "Allow users to modify details of an existing employee account.",
+    access: SetupPermission.updateEmployee,
   ),
-  PermissionItem(
+  AccessControl(
     module: "employee",
     title: "Delete employees",
-    subtitle: "Allow users to permanently remove an employee record.",
-    permission: SetupPermission.deleteEmployee,
+    description: "Allow users to permanently remove an employee record.",
+    access: SetupPermission.deleteEmployee,
   ),
 ];
 
-final List<PermissionItem> _rolePermissions = [
-  PermissionItem(
+final List<AccessControl> _rolePermissions = [
+  AccessControl(
+    module: "role",
+    title: "Manage roles",
+    description: "Allow users to create, edit, and delete roles.",
+    access: SetupPermission.manageRole,
+  ),
+  AccessControl(
     module: "role",
     title: "Create new role",
-    subtitle: "Allow users to create new roles.",
-    permission: SetupPermission.createRole,
+    description: "Allow users to create new roles.",
+    access: SetupPermission.createRole,
   ),
-  PermissionItem(
+  AccessControl(
     module: "role",
     title: "View roles",
-    subtitle: "Allow access to a list of all roles.",
-    permission: SetupPermission.viewRole,
+    description: "Allow access to a list of all roles.",
+    access: SetupPermission.viewRole,
   ),
-  PermissionItem(
+  AccessControl(
     module: "role",
     title: "Edit roles",
-    subtitle: "Allow users to modify details of an existing role.",
-    permission: SetupPermission.updateRole,
+    description: "Allow users to modify details of an existing role.",
+    access: SetupPermission.updateRole,
   ),
-  PermissionItem(
+  AccessControl(
     module: "role",
     title: "Delete roles",
-    subtitle: "Allow users to permanently remove a role record.",
-    permission: SetupPermission.deleteRole,
+    description: "Allow users to permanently remove a role record.",
+    access: SetupPermission.deleteRole,
   ),
 ];
 
-final List<PermissionItem> _assignPermissions = [
-  PermissionItem(
+final List<AccessControl> _assignPermissions = [
+  AccessControl(
     module: "assign permission",
     title: "Assign permissions to roles",
-    subtitle: "Allow users to assign permissions to roles.",
-    permission: SetupPermission.assignPermission,
+    description: "Allow users to assign permissions to roles.",
+    access: SetupPermission.assignPermission,
   ),
 ];
 
-final List<PermissionItem> _backupPermissions = [
-  PermissionItem(
+final List<AccessControl> _backupPermissions = [
+  AccessControl(
+    module: "backup",
+    title: "Manage backups",
+    description: "Allow users to create, edit, and delete backups.",
+    access: SetupPermission.manageBackup,
+  ),
+  AccessControl(
     module: "backup",
     title: "Create new backup",
-    subtitle: "Allow users to create new backups.",
-    permission: SetupPermission.createBackup,
+    description: "Allow users to create new backups.",
+    access: SetupPermission.createBackup,
   ),
-  PermissionItem(
+  AccessControl(
     module: "backup",
     title: "Restore backups",
-    subtitle: "Allow users to restore backups from a cloud.",
-    permission: SetupPermission.restoreBackup,
+    description: "Allow users to restore backups from a cloud.",
+    access: SetupPermission.restoreBackup,
   ),
-  PermissionItem(
+  AccessControl(
     module: "backup",
     title: "backup history",
-    subtitle: "Allow users to view the history of previous backups.",
-    permission: SetupPermission.historyBackup,
+    description: "Allow users to view the history of previous backups.",
+    access: SetupPermission.historyBackup,
   ),
-  PermissionItem(
+  AccessControl(
     module: "backup",
     title: "Delete backups",
-    subtitle: "Allow users to permanently remove a backup record.",
-    permission: SetupPermission.deleteBackup,
+    description: "Allow users to permanently remove a backup record.",
+    access: SetupPermission.deleteBackup,
   ),
 ];
 
-final List<PermissionItem> _productSupplierPermissions = [
-  PermissionItem(
+final List<AccessControl> _productSupplierPermissions = [
+  AccessControl(
+    module: "product supplier",
+    title: "Manage product suppliers",
+    description: "Allow users to create, edit, and delete product suppliers.",
+    access: SetupPermission.manageProductSupplier,
+  ),
+  AccessControl(
     module: "product supplier",
     title: "Create new product supplier",
-    subtitle: "Allow users to create new product suppliers.",
-    permission: SetupPermission.createProductSupplier,
+    description: "Allow users to create new product suppliers.",
+    access: SetupPermission.createProductSupplier,
   ),
-  PermissionItem(
+  AccessControl(
     module: "product supplier",
     title: "View product suppliers",
-    subtitle: "Allow access to a list of all product suppliers.",
-    permission: SetupPermission.viewProductSupplier,
+    description: "Allow access to a list of all product suppliers.",
+    access: SetupPermission.viewProductSupplier,
   ),
-  PermissionItem(
+  AccessControl(
     module: "product supplier",
     title: "Edit product suppliers",
-    subtitle: "Allow users to modify details of an existing product supplier.",
-    permission: SetupPermission.updateProductSupplier,
+    description:
+        "Allow users to modify details of an existing product supplier.",
+    access: SetupPermission.updateProductSupplier,
   ),
-  PermissionItem(
+  AccessControl(
     module: "product supplier",
     title: "Delete product suppliers",
-    subtitle: "Allow users to permanently remove a product supplier record.",
-    permission: SetupPermission.deleteProductSupplier,
+    description: "Allow users to permanently remove a product supplier record.",
+    access: SetupPermission.deleteProductSupplier,
   ),
 ];
 
-final List<PermissionItem> _productCategoryPermissions = [
-  PermissionItem(
+final List<AccessControl> _productCategoryPermissions = [
+  AccessControl(
+    module: "product category",
+    title: "Manage product categories",
+    description: "Allow users to create, edit, and delete product categories.",
+    access: SetupPermission.manageProductCategory,
+  ),
+  AccessControl(
     module: "product category",
     title: "Create new product category",
-    subtitle: "Allow users to create new product categories.",
-    permission: SetupPermission.createProductCategory,
+    description: "Allow users to create new product categories.",
+    access: SetupPermission.createProductCategory,
   ),
-  PermissionItem(
+  AccessControl(
     module: "product category",
     title: "View product categories",
-    subtitle: "Allow access to a list of all product categories.",
-    permission: SetupPermission.viewProductCategory,
+    description: "Allow access to a list of all product categories.",
+    access: SetupPermission.viewProductCategory,
   ),
-  PermissionItem(
+  AccessControl(
     module: "product category",
     title: "Edit product categories",
-    subtitle: "Allow users to modify details of an existing product category.",
-    permission: SetupPermission.updateProductCategory,
+    description:
+        "Allow users to modify details of an existing product category.",
+    access: SetupPermission.updateProductCategory,
   ),
-  PermissionItem(
+  AccessControl(
     module: "product category",
     title: "Delete product categories",
-    subtitle: "Allow users to permanently remove a product category record.",
-    permission: SetupPermission.deleteProductCategory,
+    description: "Allow users to permanently remove a product category record.",
+    access: SetupPermission.deleteProductCategory,
   ),
 ];
 
-final List<PermissionItem> _printSettingPermissions = [
-  PermissionItem(
+final List<AccessControl> _printSettingPermissions = [
+  AccessControl(
     module: "print setting",
     title: "Update print settings",
-    subtitle: "Allow users to update print settings.",
-    permission: SetupPermission.updatePrintSetting,
+    description: "Allow users to update print settings.",
+    access: SetupPermission.updatePrintSetting,
+  ),
+];
+
+final List<AccessControl> _licensePermissions = [
+  AccessControl(
+    module: "license",
+    title: "View license",
+    description: "Allow users to view the license.",
+    access: SetupPermission.viewLicense,
+  ),
+];
+
+final List<AccessControl> _secretPermissionDetails = [
+  AccessControl(
+    module: "Setup Secrets",
+    title: "View Configuration IDs",
+    description: "Allow users to view the IDs of configuration.",
+    access: SetupPermission.viewSetupSecrets,
   ),
 ];
 
 final setupDisplayName = 'setup';
 
-final List<PermissionItem> setupPermissions = [
+/// High-level = access the section (Manage)
+/// Low-level = control button-level permissions (Create, Edit, Delete)
+final List<AccessControl> setupPermissions = [
+  ..._setupPermissions,
   ..._companyInfoPermissions,
   ..._storeLocationPermissions,
   ..._employeePermissions,
@@ -277,4 +368,23 @@ final List<PermissionItem> setupPermissions = [
   ..._productSupplierPermissions,
   ..._productCategoryPermissions,
   ..._printSettingPermissions,
+  ..._licensePermissions,
+  ..._secretPermissionDetails,
 ];
+
+Set<Permission> _defaultStoreOwnerPermissions = setupPermissions
+    .map(
+      (permission) => Permission(
+        module: permission.module,
+        permission: permission.accessName,
+      ),
+    )
+    .toSet();
+
+/// [defaultStoreOwnerPermissions] This is the default permissions for the store owner
+/// during first-time workspace setup(Workspace Creation)
+Map<String, dynamic> get defaultStoreOwnerPermissions => Role(
+  name: 'store owner',
+  permissions: _defaultStoreOwnerPermissions,
+  createdBy: 'system default',
+).toMap();

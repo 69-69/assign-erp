@@ -1,17 +1,18 @@
-import 'package:assign_erp/core/util/debug_printify.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
-import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/form_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/prompt_user_for_action.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
-import 'package:assign_erp/features/index.dart';
+import 'package:assign_erp/features/setup/data/models/permission_model.dart';
 import 'package:assign_erp/features/setup/data/models/role_model.dart';
-import 'package:assign_erp/features/setup/data/models/role_permission_model.dart';
+import 'package:assign_erp/features/setup/presentation/bloc/create_roles/role_bloc.dart';
+import 'package:assign_erp/features/setup/presentation/bloc/setup_bloc.dart';
 import 'package:assign_erp/features/setup/presentation/screen/manage_roles/widget/form_inputs.dart';
 import 'package:assign_erp/features/setup/presentation/screen/manage_roles/widget/permission_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 extension CreateNewRole<T> on BuildContext {
   Future<void> openCreateNewRole() => openBottomSheet(
@@ -31,24 +32,16 @@ class _CreateNewRoleForm extends StatefulWidget {
 }
 
 class _CreateNewRoleFormState extends State<_CreateNewRoleForm> {
-  final Set<String> _touchedModules = {};
+  // final Set<String> _touchedModules = {};
   final _formKey = GlobalKey<FormState>();
-  final Set<RolePermission> _assignedPermissions = {};
+  final Set<Permission> _assignedPermissions = {};
   final _nameController = TextEditingController();
-
-  Role get _newRole {
-    return Role(
-      name: _nameController.text,
-      permissions: _assignedPermissions,
-      createdBy: context.employee?.fullName ?? 'unknown',
-    );
-  }
 
   Future<void> _onSubmit() async {
     final noPermissionsSelected = _assignedPermissions.isEmpty;
 
     if (noPermissionsSelected) {
-      final result = await context.confirmAction(
+      final result = await context.confirmAction<bool>(
         const Text('Permissions are required to create a role.'),
         title: 'Assign Permissions',
       );
@@ -57,8 +50,12 @@ class _CreateNewRoleFormState extends State<_CreateNewRoleForm> {
 
     if (mounted && _formKey.currentState!.validate()) {
       /// Create New Role
-      final item = _newRole;
-      context.read<RoleBloc>().add(AddSetup<Role>(data: item));
+      final newRole = Role(
+        name: _nameController.text,
+        permissions: _assignedPermissions,
+        createdBy: context.employee?.fullName ?? 'unknown',
+      );
+      context.read<RoleBloc>().add(AddSetup<Role>(data: newRole));
 
       _formKey.currentState!.reset();
 
@@ -108,22 +105,15 @@ class _CreateNewRoleFormState extends State<_CreateNewRoleForm> {
     );
   }
 
-  void _onSelectedFunc(
-    String displayName, {
-    required Set<RolePermission> permissions,
-  }) {
-    _touchedModules.add(displayName);
-
+  void _onSelectedFunc(Set<Permission> permissions) {
     // Find all modules involved in this permission set
     final touchedModules = permissions.map((p) => p.module).toSet();
-    prettyPrint('OLD-PERMISSIONS', '$permissions');
 
     // Remove all permissions that belong to any of these modules
     _assignedPermissions.removeWhere((p) => touchedModules.contains(p.module));
 
     // Add newly selected permissions (can be empty if all toggled off)
     _assignedPermissions.addAll(permissions);
-    prettyPrint('NEW-PERMISSIONS', '$_assignedPermissions');
   }
 
   @override

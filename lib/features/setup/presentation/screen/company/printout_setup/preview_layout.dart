@@ -1,8 +1,8 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/bottom_sheet_header.dart';
-import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/bottom_sheet_header.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
 extension PrintoutLayout on BuildContext {
@@ -41,14 +41,12 @@ class _Layout extends StatelessWidget {
           'Print Layout',
           textAlign: TextAlign.center,
           semanticsLabel: 'Print Layout',
-          style: context.ofTheme.textTheme.titleLarge?.copyWith(
-            color: kLightColor,
-          ),
+          style: context.textTheme.titleLarge?.copyWith(color: kLightColor),
         ),
         subtitle: Text(
           layoutName.toTitleCase,
           textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.titleMedium?.copyWith(
+          style: context.textTheme.titleMedium?.copyWith(
             color: kLightBlueColor,
           ),
         ),

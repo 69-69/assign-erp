@@ -1,7 +1,4 @@
-import 'package:assign_erp/core/network/data_sources/models/permission_item_model.dart';
-import 'package:assign_erp/features/setup/data/models/employee_model.dart';
-import 'package:assign_erp/features/setup/data/models/role_permission_model.dart';
-import 'package:assign_erp/features/setup/data/role/employee_role.dart';
+import 'package:assign_erp/features/access_control/data/model/access_control_model.dart';
 
 /// PERMISSION BASED ACCESS-CONTROL
 /*enum PosPermission {
@@ -20,13 +17,26 @@ import 'package:assign_erp/features/setup/data/role/employee_role.dart';
 }
 */
 enum PosPermission {
-  // fullAccess,
+  managePointOfSales,
+
+  /*🔹 Sales:
+    A sale represents a transaction where goods or services are sold to a customer.
+    It records what was sold, how much was sold, and at what price.
+    A sale includes details like:
+    Items purchased
+    Quantity
+    Discounts
+    Tax
+    Total amount owed by the customer
+  */
+  managePosSales,
   createPosSale,
   viewPosSale,
   updatePosSale,
   deletePosSale,
   applyDiscount,
   // Order
+  managePosOrders,
   viewPosOrder,
   createPosOrder,
   updatePosOrder,
@@ -42,159 +52,234 @@ enum PosPermission {
   updatePosInventory,
   deletePosInventory,
   // Transaction
+  /*🔹 Payment
+    A payment is the money received from the customer to settle the sale.
+    It can be:
+    In full or partial
+    In various forms: cash, credit card, debit, gift card, mobile payment, etc.
+    A payment is what clears the customer’s debt from the sale.
+  */
+  managePosPayments,
+
+  /*🔹 3. Finance (in POS context)
+    Definition: This refers to the financial management features within or connected to the POS system.
+
+    Covers:
+    Sales summaries
+    Cash flow tracking
+    Accounts receivable (credit sales)
+    Loans, credit terms, or installment plans
+    Profit & loss reporting
+    Integration with accounting software (e.g., QuickBooks, Xero)
+    Example: A POS may show total revenue this month, outstanding payments (credit sales), expenses, and net profit.
+    ✅ Key Role in POS: Enables businesses to understand financial health and plan accordingly.
+   */
+  managePosFinance,
+
   reprintReceipt,
   viewSalesHistory,
   viewPosReport,
+  viewPosSecrets, // For viewing items IDs
 }
 
-final List<PermissionItem> _salesPermissions = [
+final List<AccessControl> _posPermissions = [
+  AccessControl(
+    module: "pos",
+    title: "Manage point of sales",
+    description:
+        "Grants users the ability to create, update, and delete point of sale entries.",
+    access: PosPermission.managePointOfSales,
+  ),
+];
+
+final List<AccessControl> _salesPermissions = [
   // Sales
-  PermissionItem(
+  AccessControl(
+    module: "all sales",
+    title: "Manage sales",
+    description:
+        "Allow users to create, update, and delete sales, including discounts and refunds.",
+    access: PosPermission.managePosSales,
+  ),
+  AccessControl(
     module: "pos sales",
     title: "Create new sales",
-    subtitle: "Allow users to process new sales at any location.",
-    permission: PosPermission.createPosSale,
+    description: "Allow users to process new sales at any location.",
+    access: PosPermission.createPosSale,
   ),
-  PermissionItem(
+  AccessControl(
     module: "pos sales",
     title: "View sales records",
-    subtitle: "Allow access to a list of all completed sales.",
-    permission: PosPermission.viewPosSale,
+    description: "Allow access to a list of all completed sales.",
+    access: PosPermission.viewPosSale,
   ),
-  PermissionItem(
+  AccessControl(
     module: "pos sales",
     title: "Edit existing sales",
-    subtitle: "Allow users to modify details of an existing sale.",
-    permission: PosPermission.updatePosSale,
+    description: "Allow users to modify details of an existing sale.",
+    access: PosPermission.updatePosSale,
   ),
-  PermissionItem(
+  AccessControl(
     module: "pos sales",
     title: "Delete sales",
-    subtitle: "Allow users to permanently remove a sale record.",
-    permission: PosPermission.deletePosSale,
+    description: "Allow users to permanently remove a sale record.",
+    access: PosPermission.deletePosSale,
   ),
-  PermissionItem(
-    module: "pos",
+  AccessControl(
+    module: "pos discounts",
     title: "Apply Discount",
-    subtitle: "Allow users to apply discounts to items or total.",
-    permission: PosPermission.applyDiscount,
+    description: "Allow users to apply discounts to items or total.",
+    access: PosPermission.applyDiscount,
   ),
 ];
 
-final List<PermissionItem> _ordersPermissions = [
-  PermissionItem(
+final List<AccessControl> _ordersPermissions = [
+  AccessControl(
+    module: "all orders",
+    title: "Manage orders",
+    description: "Allow users to create, update, and delete orders.",
+    access: PosPermission.managePosOrders,
+  ),
+  AccessControl(
     module: "pos orders",
     title: "View order details",
-    subtitle: "Allow access to a list of placed and fulfilled orders.",
-    permission: PosPermission.viewPosOrder,
+    description: "Allow access to a list of placed and fulfilled orders.",
+    access: PosPermission.viewPosOrder,
   ),
-  PermissionItem(
+  AccessControl(
     module: "pos orders",
     title: "Create new orders",
-    subtitle: "Allow users to place new customer orders.",
-    permission: PosPermission.createPosOrder,
+    description: "Allow users to place new customer orders.",
+    access: PosPermission.createPosOrder,
   ),
-  PermissionItem(
+  AccessControl(
     module: "pos orders",
     title: "Edit existing orders",
-    subtitle: "Allow users to update order details or statuses.",
-    permission: PosPermission.updatePosOrder,
+    description: "Allow users to update order details or statuses.",
+    access: PosPermission.updatePosOrder,
   ),
-  PermissionItem(
+  AccessControl(
     module: "pos orders",
     title: "Delete orders",
-    subtitle: "Allow users to delete orders from the system.",
-    permission: PosPermission.deletePosOrder,
+    description: "Allow users to delete orders from the system.",
+    access: PosPermission.deletePosOrder,
   ),
 ];
 
-final List<PermissionItem> _customersPermissions = [
-  PermissionItem(
+final List<AccessControl> _customersPermissions = [
+  AccessControl(
     module: "pos customers",
     title: "View customers",
-    subtitle: "Allow access to customer lists, profiles, and contact details.",
-    permission: PosPermission.viewPosCustomer,
+    description:
+        "Allow access to customer lists, profiles, and contact details.",
+    access: PosPermission.viewPosCustomer,
   ),
-  PermissionItem(
+  AccessControl(
     module: "pos customers",
     title: "Add new customers",
-    subtitle: "Allow users to create new customer records.",
-    permission: PosPermission.createPosCustomer,
+    description: "Allow users to create new customer records.",
+    access: PosPermission.createPosCustomer,
   ),
-  PermissionItem(
+  AccessControl(
     module: "pos customers",
     title: "Edit customer information",
-    subtitle: "Allow updates to customer contact info, tags, and notes.",
-    permission: PosPermission.updatePosCustomer,
+    description: "Allow updates to customer contact info, tags, and notes.",
+    access: PosPermission.updatePosCustomer,
   ),
-  PermissionItem(
+  AccessControl(
     module: "pos customers",
     title: "Delete customers",
-    subtitle: "Allow permanent removal of customer records from the system.",
-    permission: PosPermission.deletePosCustomer,
+    description: "Allow permanent removal of customer records from the system.",
+    access: PosPermission.deletePosCustomer,
   ),
 ];
 
-final List<PermissionItem> _inventoryPermissions = [
-  PermissionItem(
+final List<AccessControl> _inventoryPermissions = [
+  AccessControl(
     module: "pos inventory",
     title: "View inventory",
-    subtitle:
+    description:
         "Allow access to inventory items, stock levels, and product details.",
-    permission: PosPermission.viewPosInventory,
+    access: PosPermission.viewPosInventory,
   ),
-  PermissionItem(
+  AccessControl(
     module: "pos inventory",
     title: "Add new inventory items",
-    subtitle: "Allow users to create new products or stock items.",
-    permission: PosPermission.createPosInventory,
+    description: "Allow users to create new products or stock items.",
+    access: PosPermission.createPosInventory,
   ),
-  PermissionItem(
+  AccessControl(
     module: "pos inventory",
     title: "Edit inventory items",
-    subtitle: "Allow users to update product names, prices, or stock details.",
-    permission: PosPermission.updatePosInventory,
+    description:
+        "Allow users to update product names, prices, or stock details.",
+    access: PosPermission.updatePosInventory,
   ),
-  PermissionItem(
+  AccessControl(
     module: "pos inventory",
     title: "Delete inventory items",
-    subtitle: "Allow users to remove items from the inventory database.",
-    permission: PosPermission.deletePosInventory,
+    description: "Allow users to remove items from the inventory database.",
+    access: PosPermission.deletePosInventory,
   ),
 ];
 
-final List<PermissionItem> _metricsPermissions = [
-  PermissionItem(
+final List<AccessControl> _metricsPermissions = [
+  AccessControl(
+    module: "pos transactions",
+    title: "Manage payments",
+    description:
+        "Allow users to manage payment methods and transactions in various forms: cash, credit card, debit, gift card, mobile payment.",
+    access: PosPermission.managePosPayments,
+  ),
+  AccessControl(
+    module: "pos transactions",
+    title: 'Manage finance',
+    description:
+        'Allow users to manage financial transactions, like Sales summaries, Cash flow tracking, Accounts receivable (credit sales), Loans, credit terms, or installment plans, Profit & loss reporting.',
+    access: PosPermission.managePosFinance,
+  ),
+  AccessControl(
     module: "pos transactions",
     title: "Print receipts",
-    subtitle: "Allow users to view customer receipts and print copies.",
-    permission: PosPermission.reprintReceipt,
+    description: "Allow users to view customer receipts and print copies.",
+    access: PosPermission.reprintReceipt,
   ),
-  PermissionItem(
+  AccessControl(
     module: "pos transactions",
     title: "View Sales History",
-    subtitle: "Allow users to browse past sales transactions.",
-    permission: PosPermission.viewSalesHistory,
+    description: "Allow users to browse past sales transactions.",
+    access: PosPermission.viewSalesHistory,
   ),
-  PermissionItem(
+  AccessControl(
     module: "pos transactions",
     title: "Access reports and analytics",
-    subtitle: "Allow users to access sales, order, and product reports.",
-    permission: PosPermission.viewPosReport,
+    description: "Allow users to access sales, order, and product reports.",
+    access: PosPermission.viewPosReport,
+  ),
+];
+
+final List<AccessControl> _secretPermissionDetails = [
+  AccessControl(
+    module: "POS Secrets",
+    title: "View POS IDs",
+    description: "Allow users to view the reference numbers or IDs of items.",
+    access: PosPermission.viewPosSecrets,
   ),
 ];
 
 final posDisplayName = 'point of sales';
 
-final List<PermissionItem> posPermissions = [
+final List<AccessControl> posPermissions = [
+  ..._posPermissions,
   ..._salesPermissions,
   ..._ordersPermissions,
   ..._customersPermissions,
   ..._inventoryPermissions,
   ..._metricsPermissions,
+  ..._secretPermissionDetails,
 ];
 
-/// Set Up Permissions for Each Role [rolePermissions]
+/*/// Set Up Permissions for Each Role [rolePermissions]
 final Map<EmployeeRole, RolePermissionContext<PosPermission>> rolePermissions =
     {
       EmployeeRole.storeOwner: RolePermissionContext<PosPermission>(
@@ -219,7 +304,7 @@ final Map<EmployeeRole, RolePermissionContext<PosPermission>> rolePermissions =
 bool hasPOSPermission(Employee employee, {required PosPermission perm}) {
   final rolePerms = rolePermissions[employee.role];
   return hasPermission<PosPermission>(rolePerms, perm: perm);
-}
+}*/
 
 /* USAGE Example: Implement Permission-Access Control in Your App
   * final currentUser = Employee(userpermission: 'JohnDoe', role: EmployeeRole.developer,  email: 'john.doe@example.com',);

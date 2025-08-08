@@ -1,3 +1,4 @@
+import 'package:assign_erp/config/routes/route_logger.dart';
 import 'package:assign_erp/core/network/data_sources/local/cache_db_adaptor.dart';
 import 'package:assign_erp/features/app.dart';
 import 'package:assign_erp/features/auth/domain/repository/auth_repository.dart';
@@ -37,9 +38,13 @@ Future<void> main({bool testing = false}) async {
   // Check if App is not in TEST MODE(Integration, Widget, Unit Testing)
   // isTesting = testing;
 
+  /// Track visited Routes/Screens
+  final RouteLogger routeLogger = RouteLogger();
+
   final AuthRepository authRepository = AuthRepository(
     firebaseAuth: firebaseAuth,
     firestore: firestore,
+    routeLogger: routeLogger,
   );
 
   // Observe bloc changes
@@ -48,7 +53,11 @@ Future<void> main({bool testing = false}) async {
   // Reload App via this Custom ReloadApp(child: App())
   runApp(
     RefreshEntireApp(
-      child: App(fireStore: firestore, authRepo: authRepository),
+      child: App(
+        fireStore: firestore,
+        authRepo: authRepository,
+        routeLogger: routeLogger,
+      ),
     ),
   );
 }

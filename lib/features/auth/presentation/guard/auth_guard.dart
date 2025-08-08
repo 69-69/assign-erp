@@ -103,10 +103,10 @@ class WorkspaceRoleGuard {
     return false;
   }
 
-  static bool canAccessInitialSetup(BuildContext context) {
+  static bool canAccessOnboarding(BuildContext context) {
     return _canAccess(
       context,
-      (workspace) => workspace.canAccessInitialSetup(workspace),
+      (workspace) => workspace.canAccessOnboarding(workspace),
     );
   }
 

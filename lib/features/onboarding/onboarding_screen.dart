@@ -1,5 +1,6 @@
 import 'package:assign_erp/config/routes/route_names.dart';
 import 'package:assign_erp/core/constants/app_colors.dart';
+import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/network/data_sources/local/index.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
 import 'package:assign_erp/features/onboarding/data/onboarding_data.dart';
@@ -28,7 +29,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       int newPage = currentPage + 1;
       _pageController.animateToPage(
         newPage,
-        duration: const Duration(milliseconds: 300),
+        duration: kAnimateDuration,
         curve: Curves.easeIn,
       );
     }
@@ -143,7 +144,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             Text(
               '${currentPage + 1}',
               semanticsLabel: '${currentPage + 1}',
-              style: context.ofTheme.textTheme.bodyLarge?.copyWith(
+              style: context.textTheme.bodyLarge?.copyWith(
                 color: kLightBlueColor,
               ),
             ),
@@ -151,7 +152,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             Text(
               '/${OnBoardingData.boards.length}',
               semanticsLabel: '${OnBoardingData.boards.length}',
-              style: context.ofTheme.textTheme.bodyLarge?.copyWith(
+              style: context.textTheme.bodyLarge?.copyWith(
                 color: kGrayBlueColor,
               ),
             ),

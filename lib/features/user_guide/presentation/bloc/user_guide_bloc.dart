@@ -75,7 +75,7 @@ class GuideBloc<T> extends Bloc<GuideEvent, GuideState<T>> {
       await _guideRepository.refreshCacheData();
 
       // Fetch the updated data from the repository
-      final snapshot = await _guideRepository.getAllData().first;
+      final snapshot = await _guideRepository.getAllCacheData().first;
       final data = _toList(snapshot);
 
       // Emit the loaded state with the refreshed data
@@ -94,7 +94,7 @@ class GuideBloc<T> extends Bloc<GuideEvent, GuideState<T>> {
     emit(LoadingGuides<T>());
 
     try {
-      _subscription = _guideRepository.getAllData().listen(
+      _subscription = _guideRepository.getAllCacheData().listen(
         (snapshot) async {
           final data = _toList(snapshot);
 

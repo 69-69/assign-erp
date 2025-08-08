@@ -1,6 +1,7 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
-import 'package:assign_erp/core/widgets/custom_tab.dart';
+import 'package:assign_erp/core/widgets/nav/custom_tab.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/orders/misc_order_model.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/bloc/inventory_bloc.dart';
@@ -17,7 +18,7 @@ class MiscOrderScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<MiscOrderBloc, InventoryState<MiscOrder>>(
       builder: (context, state) => CustomScaffold(
-        title: miscOrderScreenTitle.toUpperCase(),
+        title: miscOrderScreenTitle.toUpperCaseAll,
         body: _buildBody(),
         floatingActionButton: context.buildFloatingBtn(
           'Create Misc Order',

@@ -3,12 +3,12 @@ import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/generate_new_uid.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/async_progress_dialog.dart';
 import 'package:assign_erp/core/widgets/barcode_scanner.dart';
-import 'package:assign_erp/core/widgets/bottom_sheet_header.dart';
-import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
+import 'package:assign_erp/core/widgets/dialog/async_progress_dialog.dart';
+import 'package:assign_erp/core/widgets/dialog/bottom_sheet_header.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/inventory_ims/data/data_sources/remote/get_products.dart';
@@ -138,9 +138,7 @@ class ScanToAddOrder extends StatelessWidget {
       title: Text(
         'Scan Product'.toTitleCase,
         semanticsLabel: 'Scan Product',
-        style: context.ofTheme.textTheme.titleLarge?.copyWith(
-          color: kGrayColor,
-        ),
+        style: context.textTheme.titleLarge?.copyWith(color: kGrayColor),
       ),
       btnText: ElevatedButton(
         onPressed: () async {
@@ -329,7 +327,7 @@ class _ScannedItemsState extends State<_ScannedItems> {
     return RichText(
       text: TextSpan(
         text: 'Total Amount: ',
-        style: context.ofTheme.textTheme.titleLarge,
+        style: context.textTheme.titleLarge,
         children: [
           TextSpan(
             text: '$ghanaCedis${_finalAmount.toCurrency}',
@@ -352,12 +350,12 @@ class _ScannedItemsState extends State<_ScannedItems> {
       title: Text(
         softWrap: true,
         order.productName.toTitleCase,
-        style: context.ofTheme.textTheme.titleMedium,
+        style: context.textTheme.titleMedium,
       ),
       subtitle: Text(
         softWrap: true,
         '$ghanaCedis${order.unitPrice.toCurrency} X ${order.quantity} = $ghanaCedis${order.totalAmount.toCurrency}',
-        style: context.ofTheme.textTheme.labelSmall,
+        style: context.textTheme.labelSmall,
       ),
       trailing: _QtyCount(
         quantity: order.quantity,
@@ -380,12 +378,12 @@ class _ScannedItemsState extends State<_ScannedItems> {
       title: Text(
         softWrap: true,
         order.productName.toTitleCase,
-        style: context.ofTheme.textTheme.titleMedium,
+        style: context.textTheme.titleMedium,
       ),
       subtitle: Text(
         softWrap: true,
         '$ghanaCedis${order.unitPrice.toCurrency} X ${order.quantity} = $ghanaCedis${order.totalAmount.toCurrency}',
-        style: context.ofTheme.textTheme.labelSmall,
+        style: context.textTheme.labelSmall,
       ),
     );
   }
@@ -408,7 +406,7 @@ class _ScannedItemsState extends State<_ScannedItems> {
         _removeOrderAt(index);
 
         context.showAlertOverlay(
-          '${order.productName.toUpperCase()} removed from list',
+          '${order.productName.toUpperCaseAll} removed from list',
           label: 'Undo',
           onPressed: () => _addOrderAt(index, order),
         );
@@ -487,7 +485,7 @@ class _ScannedItemsState extends State<_ScannedItems> {
   }
 
   Future<void> _confirmPrintoutDialog() async {
-    final isConfirmed = await context.confirmAction(
+    final isConfirmed = await context.confirmAction<bool>(
       const Text('Would you prefer to print out the receipt?'),
       title: "Receipt Option",
       onAccept: "Print",
@@ -569,7 +567,7 @@ class _QtyCountState extends State<_QtyCount> {
           onPressed: _decrement,
         ),
         const SizedBox(width: 10),
-        Text('$_count', style: context.ofTheme.textTheme.labelLarge),
+        Text('$_count', style: context.textTheme.labelLarge),
         const SizedBox(width: 10),
         _buildIconButton(
           'Decrease quantity',

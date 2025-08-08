@@ -87,7 +87,7 @@ class _ReportScreenState extends State<ReportScreen> {
   _buildTitle(BuildContext context, String label) => Text(
     label,
     textAlign: TextAlign.center,
-    style: context.ofTheme.textTheme.titleLarge?.copyWith(
+    style: context.textTheme.titleLarge?.copyWith(
       color: kPrimaryColor,
       fontWeight: FontWeight.bold,
     ),

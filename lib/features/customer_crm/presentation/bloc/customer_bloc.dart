@@ -75,7 +75,7 @@ class CustomerBloc<T> extends Bloc<CustomerEvent, CustomerState<T>> {
       await _customerRepository.refreshCacheData();
 
       // Fetch the updated data from the repository
-      final snapshot = await _customerRepository.getAllData().first;
+      final snapshot = await _customerRepository.getAllCacheData().first;
       final data = _toList(snapshot);
 
       // Emit the loaded state with the refreshed data
@@ -94,7 +94,7 @@ class CustomerBloc<T> extends Bloc<CustomerEvent, CustomerState<T>> {
     emit(LoadingCustomers<T>());
 
     try {
-      _subscription = _customerRepository.getAllData().listen(
+      _subscription = _customerRepository.getAllCacheData().listen(
         (snapshot) async {
           final data = _toList(snapshot);
 

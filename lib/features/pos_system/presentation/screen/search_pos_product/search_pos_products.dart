@@ -2,7 +2,7 @@ import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_search_delegate.dart';
-import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
+import 'package:assign_erp/core/widgets/dialog/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/product_model.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/bloc/product/product_bloc.dart';
@@ -74,7 +74,7 @@ class SearchPosProducts extends StatelessWidget {
           Text(
             product.name.toTitleCase,
             textAlign: TextAlign.start,
-            style: context.ofTheme.textTheme.titleLarge,
+            style: context.textTheme.titleLarge,
           ),
 
           RichText(
@@ -82,24 +82,24 @@ class SearchPosProducts extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             text: TextSpan(
               text: 'Price ',
-              style: context.ofTheme.textTheme.titleSmall,
+              style: context.textTheme.titleSmall,
               children: [
                 TextSpan(
                   text: '$ghanaCedis${product.sellingPrice}\n',
-                  style: context.ofTheme.textTheme.titleSmall?.copyWith(
+                  style: context.textTheme.titleSmall?.copyWith(
                     color: kTextColor,
                   ),
                 ),
                 TextSpan(
                   text: product.category.toTitleCase,
-                  style: context.ofTheme.textTheme.titleSmall?.copyWith(
+                  style: context.textTheme.titleSmall?.copyWith(
                     color: kTextColor,
                   ),
                 ),
                 if (product.barcode.isNotEmpty) ...{
                   TextSpan(
                     text: '\nCode: ${product.barcode}',
-                    style: context.ofTheme.textTheme.titleSmall?.copyWith(
+                    style: context.textTheme.titleSmall?.copyWith(
                       color: kTextColor,
                     ),
                   ),

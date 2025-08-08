@@ -100,11 +100,14 @@ class CompanyStores extends Equatable {
   String get itemAsString => '$name - $storeNumber'.toTitleCase;
 
   /// Filter Search
-  bool filterByAny(String filter) =>
-      name.contains(filter) ||
-      storeNumber.contains(filter) ||
-      location.contains(filter) ||
-      phone.contains(filter);
+  bool filterByAny(String filter) {
+    final f = filter.toLowercaseAll;
+
+    return name.toLowercaseAll.contains(f) ||
+        location.toLowercaseAll.contains(f) ||
+        storeNumber.contains(f) ||
+        phone.contains(f);
+  }
 
   /// [findStoresById]
   static Iterable<CompanyStores> findStoresById(

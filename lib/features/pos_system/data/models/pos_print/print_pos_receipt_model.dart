@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/network/data_sources/models/print_util_model.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -40,7 +41,7 @@ class PrintPOSReceipt {
 
   double get _grandTotalPrice => _subTotal + _taxAmount;
 
-  String get _receiptTitle => title.toUpperCase();
+  String get _receiptTitle => title.toUpperCaseAll;
 
   /// Generate PDF-Doc [buildPdf]
   Future<Uint8List> buildPdf(PdfPageFormat pageFormat) async {

@@ -1,5 +1,3 @@
-import 'package:assign_erp/features/setup/data/models/employee_model.dart';
-
 /*const appRoles = [
   'admin',
   'sales',
@@ -22,7 +20,7 @@ const appPermissions = [
   'manager', // Create, read, update, delete (CRUD)
   'ceo',
 ];
-*/
+
 enum EmployeeRole {
   /* 1- Full access to read, write, and execute operations.*/
   storeOwner,
@@ -66,6 +64,7 @@ enum EmployeeRole {
 }
 
 /// Function to convert enum values to a list of strings [employeeRolesToList]
+
 List<String> employeeRolesToList<T>() {
   // Convert the unmodifiable list to a modifiable list
   List<EmployeeRole> modifiableRoles = List.from(EmployeeRole.values);
@@ -77,4 +76,4 @@ List<String> employeeRolesToList<T>() {
 
   // Convert the modified list to a list of strings
   return modifiableRoles.map((e) => Employee.roleAsString(e)).toList();
-}
+}*/

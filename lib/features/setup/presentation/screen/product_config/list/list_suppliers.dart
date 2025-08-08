@@ -60,7 +60,7 @@ class _ListSuppliersState extends State<ListSuppliers> {
   Widget _buildCard(BuildContext c, List<Supplier> suppliers) {
     return DynamicDataTable(
       skip: true,
-      toggleHideID: true,
+      showIDToggle: true,
       headers: Supplier.dataHeader,
       anyWidget: _buildAnyWidget(suppliers),
       rows: suppliers.map((d) => d.toListL()).toList(),

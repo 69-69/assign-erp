@@ -932,7 +932,7 @@ void checkUsageAndWarn(BuildContext context, WorkspaceUsage usage) {
           TextButton(
             child: const Text("Upgrade"),
             onPressed: () {
-              Navigator.pop(context);
+              context.pop();
               // Navigate to upgrade page
             },
           ),

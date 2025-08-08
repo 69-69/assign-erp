@@ -1,5 +1,5 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/widgets/prompt_user_for_action.dart';
+import 'package:assign_erp/core/widgets/dialog/prompt_user_for_action.dart';
 import 'package:flutter/material.dart';
 
 extension Custombutton on BuildContext {
@@ -19,6 +19,7 @@ extension Custombutton on BuildContext {
     VoidCallback? onPressed,
     bool isDisabled = false,
     String? tooltip,
+    ButtonStyle? style,
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -34,15 +35,19 @@ extension Custombutton on BuildContext {
                     }
                   }
                 : onPressed,
-            style: ButtonStyle(
-              padding: const WidgetStatePropertyAll(EdgeInsets.all(20)),
-              backgroundColor: WidgetStatePropertyAll(
-                ofTheme.colorScheme.primary.withAlpha(
-                  ((isDisabled ? 0.4 : 1) * 255).toInt(),
+            style:
+                style ??
+                ButtonStyle(
+                  padding: const WidgetStatePropertyAll(EdgeInsets.all(20)),
+                  backgroundColor: WidgetStatePropertyAll(
+                    ofTheme.colorScheme.primary.withAlpha(
+                      ((isDisabled ? 0.4 : 1) * 255).toInt(),
+                    ),
+                  ),
+                  elevation: isDisabled
+                      ? const WidgetStatePropertyAll(0)
+                      : null,
                 ),
-              ),
-              elevation: isDisabled ? const WidgetStatePropertyAll(0) : null,
-            ),
             child: Tooltip(
               message: tooltip ?? label,
               child: Text(
@@ -64,12 +69,13 @@ extension Custombutton on BuildContext {
     Color? bgColor,
     Color? color,
     String? tooltip,
+    ButtonStyle? style,
   }) {
     return ElevatedButton.icon(
       onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: bgColor ?? Colors.white70,
-      ),
+      style:
+          style ??
+          ElevatedButton.styleFrom(backgroundColor: bgColor ?? Colors.white70),
 
       icon: icon is IconData ? Icon(icon) : icon,
       label: Tooltip(
@@ -92,13 +98,16 @@ extension Custombutton on BuildContext {
     Color? color,
     String? tooltip,
     EdgeInsetsGeometry? padding,
+    ButtonStyle? style,
   }) {
     return ElevatedButton(
       onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: bgColor ?? kLightGrayColor,
-        padding: padding,
-      ),
+      style:
+          style ??
+          ElevatedButton.styleFrom(
+            backgroundColor: bgColor ?? kLightGrayColor,
+            padding: padding,
+          ),
       child: Tooltip(
         message: tooltip ?? label,
         child: Text(
@@ -110,7 +119,7 @@ extension Custombutton on BuildContext {
     );
   }
 
-  Future<bool> _confirmUpdateDialog() async => await confirmAction(
+  Future<bool> _confirmUpdateDialog() async => await confirmAction<bool>(
     const Text('Would you like to proceed?'),
     title: "Confirm Changes",
     onAccept: "Save",

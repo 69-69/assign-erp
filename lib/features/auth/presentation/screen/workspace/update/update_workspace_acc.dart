@@ -1,17 +1,14 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/constants/hosting_type.dart';
-import 'package:assign_erp/core/network/data_sources/models/subscription_licenses_enum.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/bottom_sheet_header.dart';
-import 'package:assign_erp/core/widgets/custom_button.dart';
-import 'package:assign_erp/core/widgets/custom_dialog.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
+import 'package:assign_erp/core/widgets/dialog/bottom_sheet_header.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_dialog.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
-import 'package:assign_erp/features/agent/presentation/bloc/agent_bloc.dart';
-import 'package:assign_erp/features/agent/presentation/bloc/system_wide/system_wide_bloc.dart';
 import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
 import 'package:assign_erp/features/auth/presentation/screen/widget/workspace_form_inputs.dart';
+import 'package:assign_erp/features/trouble_shooting/presentation/bloc/all_tenants/all_tenants_bloc.dart';
+import 'package:assign_erp/features/trouble_shooting/presentation/bloc/tenant_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,28 +35,7 @@ class WorkspaceScreen extends StatefulWidget {
 class _WorkspaceScreenState extends State<WorkspaceScreen> {
   late Workspace _workspace;
 
-  String? _selectedPackage;
-  String? _hostingType;
-  DateTime? _selectedExpiryDate;
-  DateTime? _selectedEffectiveDate;
   final _formKey = GlobalKey<FormState>();
-  late final _totalDevicesController = TextEditingController(
-    text: '${_workspace.maxAllowedDevices}',
-  );
-  late final _subscribeFeeController = TextEditingController(
-    text: _workspace.subscriptionFee,
-  );
-
-  Workspace get _workspaceData => _workspace.copyWith(
-    license: getLicenseByString(_selectedPackage ?? _workspace.license.name),
-    hostingType: getHostingByString(
-      _hostingType ?? _workspace.hostingType.label,
-    ),
-    expiresOn: _selectedExpiryDate,
-    effectiveFrom: _selectedEffectiveDate,
-    subscriptionFee: _subscribeFeeController.text,
-    maxAllowedDevices: int.tryParse(_totalDevicesController.text) ?? 1,
-  );
 
   @override
   void initState() {
@@ -67,42 +43,18 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     _workspace = widget.workspace;
   }
 
-  void _onSubmit() {
-    if (_formKey.currentState!.validate()) {
-      final item = _workspaceData;
-
-      // Update Client Workspace
-      context.read<SystemWideBloc>().add(
-        UpdateClient<Workspace>(documentId: _workspace.id, data: item),
-      );
-
-      _toastMsg('workspace');
-
-      Navigator.of(context).pop();
-    }
-  }
-
   void _toastMsg(String title) {
     context.showAlertOverlay(
       label: 'Success Message',
-      '${_workspace.workspaceName.toTitleCase} $title updated',
+      '${_workspace.name.toTitleCase} $title updated',
     );
   }
 
   /// Update Specific Field [_modifySpecificField]
   void _modifySpecificField(Map<String, dynamic> data) {
-    context.read<SystemWideBloc>().add(
-      UpdateClient<Workspace>(documentId: _workspace.id, mapData: data),
+    context.read<AllTenantsBloc>().add(
+      UpdateTenant<Workspace>(documentId: _workspace.id, mapData: data),
     );
-  }
-
-  /// Update Workspace Status [_updateWorkspaceStatus]
-  void _updateWorkspaceStatus(String status) {
-    _workspace.copyWith(status: status);
-
-    _modifySpecificField({'status': status});
-
-    _toastMsg('status');
   }
 
   /// Update Workspace Role [_updateWorkspaceRole]
@@ -116,14 +68,14 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     _toastMsg('role');
   }
 
-  /// Dispatches an event to reset workspace authorized device IDs for the clients workspace.
+  /// Dispatches an event to reset workspace authorized device IDs for Tenants workspace.
   ///
   /// If a specific [did] (device ID) is provided, it will be removed from the
   /// list of authorized devices. If [did] is null, the event will trigger
-  /// removal of all authorized device IDs. [_removeAuthorizedDeviceId]
-  void _removeAuthorizedDeviceId({String? did}) {
-    context.read<SystemWideBloc>().add(
-      RemoveAuthorizedDeviceIds<String>(documentId: _workspace.id, data: did),
+  /// removal of all authorized device IDs. [_revokeAuthorizedDeviceId]
+  void _revokeAuthorizedDeviceId({String? did}) {
+    context.read<AllTenantsBloc>().add(
+      RevokeAuthorizedDeviceId<String>(documentId: _workspace.id, data: did),
     );
 
     setState(() {
@@ -145,7 +97,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   Widget build(BuildContext context) {
     return CustomDialog(
       title: DialogTitle(
-        title: _workspace.workspaceName.toTitleCase,
+        title: _workspace.name.toTitleCase,
         subtitle: 'Workspace Role & Status',
       ),
       body: Form(
@@ -161,14 +113,11 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        WorkspaceRoleAndStatus(
-          key: const Key('edit-workspace-role-status'),
+        WorkspaceRole(
+          key: const Key('edit-workspace-role'),
           serverRole: _workspace.role.name,
-          serverStatus: _workspace.status,
           onRoleChanged: (v) =>
               v.isNullOrEmpty ? null : _updateWorkspaceRole(v!),
-          onStatusChanged: (v) =>
-              v.isNullOrEmpty ? null : _updateWorkspaceStatus(v!),
         ),
 
         if (_workspace.authorizedDeviceIds.isNotEmpty) ...[
@@ -176,68 +125,39 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           Text(
             'Authorized Devices Ids',
             textAlign: TextAlign.center,
-            style: context.ofTheme.textTheme.bodyLarge,
+            style: context.textTheme.bodyLarge,
           ),
           SizedBox(height: 60, child: _buildAuthorizedDevicesChips()),
         ],
-        divLine,
-        _formBody(),
+        /*divLine,
+        _formBody(),*/
       ],
     );
   }
 
-  ExpansionTile _formBody() {
+  /*ExpansionTile _formBody() {
     return ExpansionTile(
       dense: true,
       expandedAlignment: Alignment.center,
       title: Text(
         'Manage Workspace',
         textAlign: TextAlign.center,
-        style: context.ofTheme.textTheme.titleLarge?.copyWith(
+        style: context.textTheme.titleLarge?.copyWith(
           color: kPrimaryLightColor,
         ),
       ),
       subtitle: Text(
-        _workspace.workspaceName.toTitleCase,
+        _workspace.name.toTitleCase,
         textAlign: TextAlign.center,
-        style: context.ofTheme.textTheme.bodySmall,
+        style: context.textTheme.bodySmall,
       ),
       childrenPadding: const EdgeInsets.only(bottom: 20.0),
       children: <Widget>[
         const SizedBox(height: 20.0),
-        SubscribeFeeAndHostingType(
-          serverHosting: _workspace.hostingType.label,
-          subscribeFeeController: _subscribeFeeController,
-          onSubscribeFeeChanged: (s) {
-            if (_formKey.currentState!.validate()) setState(() {});
-          },
-          onHostingChanged: (s) => setState(() => _hostingType = s),
-        ),
-        const SizedBox(height: 20.0),
-        LicenseAndTotalDevices(
-          onPackageChange: (s) => setState(() => _selectedPackage = s),
-          serverPackage: _workspace.license.name,
-          totalDevicesController: _totalDevicesController,
-          onTotalDevicesChanged: (i) {
-            if (_formKey.currentState!.validate()) {
-              setState(() {});
-            }
-          },
-        ),
-        const SizedBox(height: 20.0),
-        ExpiryAndEffectiveDateInput(
-          labelExpiry: "Expiry date",
-          labelManufacture: "Effective date",
-          serverExpiryDate: _workspace.getExpiresOn,
-          serverEffectiveDate: _workspace.getEffectiveFrom,
-          onExpiryChanged: (d) => setState(() => _selectedExpiryDate = d),
-          onEffectiveChanged: (d) => setState(() => _selectedEffectiveDate = d),
-        ),
-        const SizedBox(height: 20.0),
-        context.confirmableActionButton(onPressed: _onSubmit),
+        context.confirmableActionButton(onPressed: null),
       ],
     );
-  }
+  }*/
 
   /// Main widget that includes reset button and chips list
   Widget _buildAuthorizedDevicesChips() {
@@ -246,7 +166,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       children: [
         Expanded(child: _buildDeviceChips()),
         context.resetAuthorizedDevicesIdsButton(
-          onPressed: () => _removeAuthorizedDeviceId(),
+          onPressed: () => _revokeAuthorizedDeviceId(),
         ),
       ],
     );
@@ -279,7 +199,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         padding: EdgeInsets.zero,
         label: Text(
           deviceId,
-          style: context.ofTheme.textTheme.bodySmall?.copyWith(
+          style: context.textTheme.bodySmall?.copyWith(
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -290,7 +210,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           final isConfirmed = await context.confirmUserActionDialog(
             onAccept: 'Remove IDs',
           );
-          if (isConfirmed) _removeAuthorizedDeviceId(did: deviceId);
+          if (isConfirmed) _revokeAuthorizedDeviceId(did: deviceId);
         },
       ),
     );

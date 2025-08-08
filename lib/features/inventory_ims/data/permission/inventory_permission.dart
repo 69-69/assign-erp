@@ -1,4 +1,4 @@
-import 'package:assign_erp/core/network/data_sources/models/permission_item_model.dart';
+import 'package:assign_erp/features/access_control/data/model/access_control_model.dart';
 
 /// PERMISSION BASED ACCESS-CONTROL
 /*enum InventoryPermission {
@@ -15,27 +15,53 @@ import 'package:assign_erp/core/network/data_sources/models/permission_item_mode
 }
 */
 enum InventoryPermission {
+  manageInventory,
   // Stock/Product
+  manageStock,
   createStock,
   updateStock,
   deleteStock,
   viewStock,
   // Sale
+  manageSales,
   createSale,
   updateSale,
   deleteSale,
   viewSale,
-  // Order
-  createOrder,
-  viewOrder,
-  updateOrder,
-  deleteOrder,
+  // Orders = High Level Orders
+  manageOrders,
+  //SOs = Sales Orders
+  manageSOs,
+  createSO,
+  updateSO,
+  deleteSO,
+  viewSO,
+  //POs = Purchase Orders
+  managePOs,
+  createPO,
+  updatePO,
+  deletePO,
+  viewPO,
+  //MOs = Misc Orders
+  manageMOs,
+  createMO,
+  viewMO,
+  updateMO,
+  deleteMO,
+  // RFQs = Request for Quotation
+  manageRFQs,
+  createRFQ,
+  viewRFQ,
+  updateRFQ,
+  deleteRFQ,
   // Customer
+  manageCustomers,
   createCustomer,
   viewCustomer,
   updateCustomer,
   deleteCustomer,
   // Delivery
+  manageDeliveries,
   createDelivery,
   updateDelivery,
   deleteDelivery,
@@ -45,173 +71,345 @@ enum InventoryPermission {
   viewInvoice,
   // Report
   viewReport,
+  viewImsSecrets, // For viewing items IDs
 }
 
-final List<PermissionItem> _salesPermissionDetails = [
+final List<AccessControl> _inventoryPermissionDetails = [
+  AccessControl(
+    module: "inventory",
+    title: "Manage inventory",
+    description: "Allow users to create, edit, and delete inventory items.",
+    access: InventoryPermission.manageInventory,
+  ),
+];
+
+final List<AccessControl> _salesPermissionDetails = [
   // Sales
-  PermissionItem(
+  AccessControl(
+    module: "ims sales",
+    title: "Manage sales",
+    description: "Allow users to create, edit, and delete sales.",
+    access: InventoryPermission.manageSales,
+  ),
+  AccessControl(
     module: "ims sales",
     title: "Create new sales",
-    subtitle: "Allow users to process new sales at any location.",
-    permission: InventoryPermission.createSale,
+    description: "Allow users to process new sales at any location.",
+    access: InventoryPermission.createSale,
   ),
-  PermissionItem(
+  AccessControl(
     module: "ims sales",
     title: "View sales records",
-    subtitle: "Allow access to a list of all completed sales.",
-    permission: InventoryPermission.viewSale,
+    description: "Allow access to a list of all completed sales.",
+    access: InventoryPermission.viewSale,
   ),
-  PermissionItem(
+  AccessControl(
     module: "ims sales",
     title: "Edit existing sales",
-    subtitle: "Allow users to modify details of an existing sale.",
-    permission: InventoryPermission.updateSale,
+    description: "Allow users to modify details of an existing sale.",
+    access: InventoryPermission.updateSale,
   ),
-  PermissionItem(
+  AccessControl(
     module: "ims sales",
     title: "Delete sales",
-    subtitle: "Allow users to permanently remove a sale record.",
-    permission: InventoryPermission.deleteSale,
+    description: "Allow users to permanently remove a sale record.",
+    access: InventoryPermission.deleteSale,
   ),
 ];
 
-final List<PermissionItem> _ordersPermissionDetails = [
-  PermissionItem(
+final List<AccessControl> _ordersPermissionDetails = [
+  AccessControl(
     module: "ims orders",
-    title: "View order details",
-    subtitle: "Allow access to a list of placed and fulfilled orders.",
-    permission: InventoryPermission.viewOrder,
-  ),
-  PermissionItem(
-    module: "ims orders",
-    title: "Create new orders",
-    subtitle: "Allow users to place new customer orders.",
-    permission: InventoryPermission.createOrder,
-  ),
-  PermissionItem(
-    module: "ims orders",
-    title: "Edit existing orders",
-    subtitle: "Allow users to update order details or statuses.",
-    permission: InventoryPermission.updateOrder,
-  ),
-  PermissionItem(
-    module: "ims orders",
-    title: "Delete orders",
-    subtitle: "Allow users to delete orders from the system.",
-    permission: InventoryPermission.deleteOrder,
+    title: "Manage orders",
+    description: "Allow users to create, edit, and delete all orders.",
+    access: InventoryPermission.manageOrders,
   ),
 ];
 
-final List<PermissionItem> _customersPermissionDetails = [
-  PermissionItem(
+final List<AccessControl> _salesOrderPermissionDetails = [
+  AccessControl(
+    module: "ims sales orders",
+    title: "Manage sales orders",
+    description: "Allow users to create, edit, and delete sales orders.",
+    access: InventoryPermission.manageSOs,
+  ),
+  AccessControl(
+    module: "ims sales orders",
+    title: "Create new sales orders",
+    description: "Allow users to process new sales orders at any location.",
+    access: InventoryPermission.createSO,
+  ),
+  AccessControl(
+    module: "ims sales orders",
+    title: "View sales orders",
+    description: "Allow access to a list of all completed sales orders.",
+    access: InventoryPermission.viewSO,
+  ),
+  AccessControl(
+    module: "ims sales orders",
+    title: "Edit existing sales orders",
+    description: "Allow users to modify details of an existing sales order.",
+    access: InventoryPermission.updateSO,
+  ),
+  AccessControl(
+    module: "ims sales orders",
+    title: "Delete sales orders",
+    description: "Allow users to permanently remove a sales order record.",
+    access: InventoryPermission.deleteSO,
+  ),
+];
+
+final List<AccessControl> _purchaseOrderPermissionDetails = [
+  AccessControl(
+    module: "ims purchase orders",
+    title: "Manage purchase orders",
+    description: "Allow users to create, edit, and delete purchase orders.",
+    access: InventoryPermission.managePOs,
+  ),
+  AccessControl(
+    module: "ims purchase orders",
+    title: "Create new purchase orders",
+    description: "Allow users to process new purchase orders at any location.",
+    access: InventoryPermission.createPO,
+  ),
+  AccessControl(
+    module: "ims purchase orders",
+    title: "View purchase orders",
+    description: "Allow access to a list of all completed purchase orders.",
+    access: InventoryPermission.viewPO,
+  ),
+  AccessControl(
+    module: "ims purchase orders",
+    title: "Edit existing purchase orders",
+    description: "Allow users to modify details of an existing purchase order.",
+    access: InventoryPermission.updatePO,
+  ),
+  AccessControl(
+    module: "ims purchase orders",
+    title: "Delete purchase orders",
+    description: "Allow users to permanently remove a purchase order record.",
+    access: InventoryPermission.deletePO,
+  ),
+];
+
+final List<AccessControl> _miscOrderPermissionDetails = [
+  AccessControl(
+    module: "ims misc orders",
+    title: "Manage misc orders",
+    description: "Allow users to create, edit, and delete misc orders.",
+    access: InventoryPermission.manageMOs,
+  ),
+  AccessControl(
+    module: "ims misc orders",
+    title: "Create new misc orders",
+    description: "Allow users to process new misc orders at any location.",
+    access: InventoryPermission.createMO,
+  ),
+  AccessControl(
+    module: "ims misc orders",
+    title: "View misc orders",
+    description: "Allow access to a list of all completed misc orders.",
+    access: InventoryPermission.viewMO,
+  ),
+  AccessControl(
+    module: "ims misc orders",
+    title: "Edit existing misc orders",
+    description: "Allow users to modify details of an existing misc order.",
+    access: InventoryPermission.updateMO,
+  ),
+  AccessControl(
+    module: "ims misc orders",
+    title: "Delete misc orders",
+    description: "Allow users to permanently remove a misc order record.",
+    access: InventoryPermission.deleteMO,
+  ),
+];
+
+final List<AccessControl> _requestForQuotePermissionDetails = [
+  AccessControl(
+    module: "ims request for quotes",
+    title: "Manage request for quotes",
+    description: "Allow users to create, edit, and delete request for quotes.",
+    access: InventoryPermission.manageRFQs,
+  ),
+  AccessControl(
+    module: "ims request for quotes",
+    title: "Create new request for quotes",
+    description:
+        "Allow users to process new request for quotes at any location.",
+    access: InventoryPermission.createRFQ,
+  ),
+  AccessControl(
+    module: "ims request for quotes",
+    title: "View request for quotes",
+    description: "Allow access to a list of all completed request for quotes.",
+    access: InventoryPermission.viewRFQ,
+  ),
+  AccessControl(
+    module: "ims request for quotes",
+    title: "Edit existing request for quotes",
+    description:
+        "Allow users to modify details of an existing request for quote.",
+    access: InventoryPermission.updateRFQ,
+  ),
+  AccessControl(
+    module: "ims request for quotes",
+    title: "Delete request for quotes",
+    description:
+        "Allow users to permanently remove a request for quote record.",
+    access: InventoryPermission.deleteRFQ,
+  ),
+];
+
+final List<AccessControl> _customersPermissionDetails = [
+  AccessControl(
+    module: "ims customers",
+    title: "Manage customers",
+    description: "Allow users to create, edit, and delete customers.",
+    access: InventoryPermission.manageCustomers,
+  ),
+  AccessControl(
     module: "ims customers",
     title: "View customers",
-    subtitle: "Allow access to customer lists, profiles, and contact details.",
-    permission: InventoryPermission.viewCustomer,
+    description:
+        "Allow access to customer lists, profiles, and contact details.",
+    access: InventoryPermission.viewCustomer,
   ),
-  PermissionItem(
+  AccessControl(
     module: "ims customers",
     title: "Add new customers",
-    subtitle: "Allow users to create new customer records.",
-    permission: InventoryPermission.createCustomer,
+    description: "Allow users to create new customer records.",
+    access: InventoryPermission.createCustomer,
   ),
-  PermissionItem(
+  AccessControl(
     module: "ims customers",
     title: "Edit customer information",
-    subtitle: "Allow updates to customer contact info, tags, and notes.",
-    permission: InventoryPermission.updateCustomer,
+    description: "Allow updates to customer contact info, tags, and notes.",
+    access: InventoryPermission.updateCustomer,
   ),
-  PermissionItem(
+  AccessControl(
     module: "ims customers",
     title: "Delete customers",
-    subtitle: "Allow permanent removal of customer records from the system.",
-    permission: InventoryPermission.deleteCustomer,
+    description: "Allow permanent removal of customer records from the system.",
+    access: InventoryPermission.deleteCustomer,
   ),
 ];
 
-final List<PermissionItem> _stockPermissionDetails = [
-  PermissionItem(
+final List<AccessControl> _stockPermissionDetails = [
+  AccessControl(
+    module: "ims stock",
+    title: "Manage inventory",
+    description: "Allow users to create, edit, and delete inventory items.",
+    access: InventoryPermission.manageStock,
+  ),
+  AccessControl(
     module: "ims stock",
     title: "View inventory",
-    subtitle:
+    description:
         "Allow access to inventory items, stock levels, and product details.",
-    permission: InventoryPermission.viewStock,
+    access: InventoryPermission.viewStock,
   ),
-  PermissionItem(
+  AccessControl(
     module: "ims stock",
     title: "Add new inventory items",
-    subtitle: "Allow users to create new products or stock items.",
-    permission: InventoryPermission.createStock,
+    description: "Allow users to create new products or stock items.",
+    access: InventoryPermission.createStock,
   ),
-  PermissionItem(
+  AccessControl(
     module: "ims stock",
     title: "Edit inventory items",
-    subtitle: "Allow users to update product names, prices, or stock details.",
-    permission: InventoryPermission.updateStock,
+    description:
+        "Allow users to update product names, prices, or stock details.",
+    access: InventoryPermission.updateStock,
   ),
-  PermissionItem(
+  AccessControl(
     module: "ims stock",
     title: "Delete inventory items",
-    subtitle: "Allow users to remove items from the inventory database.",
-    permission: InventoryPermission.deleteStock,
+    description: "Allow users to remove items from the inventory database.",
+    access: InventoryPermission.deleteStock,
   ),
 ];
 
-final List<PermissionItem> _deliveryPermissionDetails = [
-  PermissionItem(
+final List<AccessControl> _deliveryPermissionDetails = [
+  AccessControl(
+    module: "ims delivery",
+    title: "Manage deliveries",
+    description: "Allow users to create, edit, and delete deliveries.",
+    access: InventoryPermission.manageDeliveries,
+  ),
+  AccessControl(
     module: "ims delivery",
     title: "View delivery records",
-    subtitle: "Allow access to a list of all completed deliveries.",
-    permission: InventoryPermission.viewDelivery,
+    description: "Allow access to a list of all completed deliveries.",
+    access: InventoryPermission.viewDelivery,
   ),
-  PermissionItem(
+  AccessControl(
     module: "ims delivery",
     title: "Create new deliveries",
-    subtitle: "Allow users to process new deliveries at any location.",
-    permission: InventoryPermission.createDelivery,
+    description: "Allow users to process new deliveries at any location.",
+    access: InventoryPermission.createDelivery,
   ),
-  PermissionItem(
+  AccessControl(
     module: "ims delivery",
     title: "Edit existing deliveries",
-    subtitle: "Allow users to modify details of an existing delivery.",
-    permission: InventoryPermission.updateDelivery,
+    description: "Allow users to modify details of an existing delivery.",
+    access: InventoryPermission.updateDelivery,
   ),
-  PermissionItem(
+  AccessControl(
     module: "ims delivery",
     title: "Delete deliveries",
-    subtitle: "Allow users to permanently remove a delivery record.",
-    permission: InventoryPermission.deleteDelivery,
+    description: "Allow users to permanently remove a delivery record.",
+    access: InventoryPermission.deleteDelivery,
   ),
 ];
 
-final List<PermissionItem> _metricsPermissionDetails = [
-  PermissionItem(
+final List<AccessControl> _metricsPermissionDetails = [
+  AccessControl(
     module: "ims metrics",
     title: "Print Invoices",
-    subtitle: "Allow users to view customer invoices and print copies.",
-    permission: InventoryPermission.printInvoice,
+    description: "Allow users to view customer invoices and print copies.",
+    access: InventoryPermission.printInvoice,
   ),
-  PermissionItem(
+  AccessControl(
     module: "ims metrics",
     title: "View financial data",
-    subtitle: "Allow access to financial reports and summaries.",
-    permission: InventoryPermission.viewInvoice,
+    description: "Allow access to financial reports and summaries.",
+    access: InventoryPermission.viewInvoice,
   ),
-  PermissionItem(
+  AccessControl(
     module: "ims metrics",
     title: "Access reports and analytics",
-    subtitle: "Allow users to access sales, order, and product reports.",
-    permission: InventoryPermission.viewReport,
+    description: "Allow users to access sales, order, and product reports.",
+    access: InventoryPermission.viewReport,
+  ),
+];
+
+final List<AccessControl> _secretPermissionDetails = [
+  AccessControl(
+    module: "IMS Secrets",
+    title: "View Item IDs",
+    description: "Allow users to view the reference numbers or IDs of items.",
+    access: InventoryPermission.viewImsSecrets,
   ),
 ];
 
 final inventoryDisplayName = 'inventory';
 
-final List<PermissionItem> inventoryPermissionDetails = [
+final List<AccessControl> inventoryPermissionDetails = [
+  ..._inventoryPermissionDetails,
   ..._stockPermissionDetails,
   ..._ordersPermissionDetails,
   ..._salesPermissionDetails,
+  ..._salesOrderPermissionDetails,
+  ..._purchaseOrderPermissionDetails,
+  ..._miscOrderPermissionDetails,
+  ..._requestForQuotePermissionDetails,
   ..._deliveryPermissionDetails,
   ..._customersPermissionDetails,
   ..._metricsPermissionDetails,
+  ..._secretPermissionDetails,
 ];
+
+/* can I use PageStorage to store user permissions...
+NOTE: for security issues I don't want to persist
+permissions in local storage so user can manipulate the data */

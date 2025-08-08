@@ -1,8 +1,8 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/size_config.dart';
-import 'package:assign_erp/core/widgets/bottom_sheet_header.dart';
-import 'package:assign_erp/core/widgets/custom_dialog.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
+import 'package:assign_erp/core/widgets/dialog/bottom_sheet_header.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_dialog.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/sign_in/workspace/workspace_sign_in_bloc.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/auth/presentation/screen/widget/workspace_form_inputs.dart';
@@ -43,7 +43,7 @@ class ChangeWorkspacePassword extends StatelessWidget {
       title: DialogTitle(
         title: 'Change Workspace Password',
         subtitle:
-            "This is your Organization Password: ${context.workspace?.workspaceName ?? ''}",
+            "This is your Organization Password: ${context.workspace?.name ?? ''}",
       ),
       body: _buildFormBody(context),
       actions: const [UpdateWorkspacePasswordButton()],
@@ -76,7 +76,7 @@ class ChangeWorkspacePassword extends StatelessWidget {
         context.showAlertOverlay(msg, bgColor: kDangerColor);
       });
     } else if (state.status.isSuccess) {
-      context.showAlertOverlay('Successfully updated Workspace password!');
+      context.showAlertOverlay('Workspace password updated!');
     }
   }
 }

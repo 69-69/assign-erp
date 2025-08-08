@@ -1,0 +1,156 @@
+import 'package:assign_erp/core/constants/app_db_collect.dart';
+import 'package:assign_erp/core/constants/collection_type_enum.dart';
+import 'package:assign_erp/core/network/data_sources/remote/repository/firestore_helper.dart';
+import 'package:assign_erp/core/result/result_data.dart';
+import 'package:assign_erp/core/util/debug_printify.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class AccessControlRepository {
+  final FirebaseFirestore _firestore;
+
+  AccessControlRepository(this._firestore);
+
+  /// Fetches workspace licenses (subscriptions) for a given workspace.
+  Future<LoadResult<String>> fetchLicensesForSubscription(
+    String subscriptionId,
+  ) async {
+    final noData = LoadResult<String>(meta: 'unknown', data: {});
+
+    final doc = await _firestore
+        .collection(subscriptionDBCollectionPath)
+        .doc(subscriptionId)
+        .get();
+
+    final data = doc.data();
+    if (data == null || data['licenses'] == null) {
+      return noData;
+    }
+
+    final rawLicenses = data['licenses'] as List<dynamic>;
+    final subscriptionName = data['name'] as String? ?? 'unknown';
+
+    final licenses = rawLicenses
+        // .whereType<Map<String, String>>() // Optional extra safe typecast
+        .map((e) {
+          prettyPrint('one-license', '${e['license']}');
+          return e['license'] as String;
+        })
+        .whereType<String>()
+        .toSet();
+    // 7aWSYccafliZawzlbUJ3
+    prettyPrint('subscription-name-only', subscriptionName);
+    prettyPrint('licenses-only', '$rawLicenses');
+
+    return LoadResult<String>(meta: subscriptionName, data: licenses);
+    // return List<String>.from(data['licenses']).toSet();
+  }
+
+  /// Fetches permissions for a given role within a workspace context.
+  Future<LoadResult<String>> fetchPermissionsForRole(
+    String roleId, {
+    String? workspaceId,
+    String? workspaceRole,
+  }) async {
+    final noData = LoadResult<String>(meta: 'unknown', data: {});
+
+    if (workspaceId == null || workspaceRole == null) {
+      return noData;
+    }
+
+    final doc = await _genericCollection(
+      workspaceId,
+      workspaceRole,
+    ).doc(roleId).get();
+
+    final data = doc.data();
+    if (data == null || data['permissions'] == null) {
+      return noData;
+    }
+
+    final rawPermissions = data['permissions'] as List<dynamic>;
+    final roleName = data['name'] as String? ?? 'unknown';
+
+    final permissions = rawPermissions
+        // .whereType<Map<String, dynamic>>() // Optional extra safe typecast
+        .map((e) => e['permission'] as String)
+        .whereType<String>()
+        .toSet();
+
+    prettyPrint('role-name-only', roleName);
+    prettyPrint('permissions-only', permissions);
+
+    return LoadResult<String>(meta: roleName, data: permissions);
+  }
+
+  /// Provides a Firestore CollectionReference to the roles collection.
+  CollectionReference<Map<String, dynamic>> _genericCollection(
+    String workspaceId,
+    String workspaceRole,
+  ) {
+    return FirestoreHelper(
+      firestore: _firestore,
+      workspaceRole: workspaceRole,
+      workspaceId: workspaceId,
+    ).getCollectionRef(
+      collectionType: CollectionType.workspace,
+      rolesDBCollectionPath,
+    );
+  }
+}
+
+/*class RolePermissionRepository {
+  final FirebaseFirestore _firestore;
+
+  RolePermissionRepository(this._firestore);
+
+  /// Fetches workspace licenses (subscriptions) for a given workspaceId.
+  Future<Set<String>> fetchSubscriptionLicenses(String workspaceId) async {
+    final doc = await _firestore
+        .collection(licenseDBCollectionPath)
+        .doc(workspaceId)
+        .get();
+
+    final data = doc.data();
+    if (data == null || data['subscriptions'] == null) return {};
+
+    return List<String>.from(data['subscriptions']).toSet();
+  }
+
+  /// Fetches permissions for a given role within a workspace context.
+  Future<Set<String>> fetchPermissionsForRole(
+    String roleId, {
+    required String workspaceId,
+    required String workspaceRole,
+  }) async {
+    if (workspaceId.isEmpty || workspaceRole.isEmpty) return {};
+
+    final doc = await _genericCollection(workspaceId, workspaceRole)
+        .doc(roleId)
+        .get();
+
+    final data = doc.data();
+    if (data == null || data['permissions'] == null) return {};
+
+    final rawPermissions = data['permissions'] as List<dynamic>;
+    return rawPermissions
+        .map((e) => e['permission'] as String)
+        .whereType<String>()
+        .toSet();
+  }
+
+  /// Provides a Firestore CollectionReference to the roles collection.
+  CollectionReference<Map<String, dynamic>> _genericCollection(
+    String workspaceId,
+    String workspaceRole,
+  ) {
+    return FirestoreHelper(
+      firestore: _firestore,
+      workspaceRole: workspaceRole,
+      workspaceId: workspaceId,
+    ).getCollectionRef(
+      collectionType: CollectionType.workspace,
+      rolesDBCollectionPath,
+    );
+  }
+}
+*/

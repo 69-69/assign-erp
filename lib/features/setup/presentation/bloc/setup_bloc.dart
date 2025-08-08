@@ -60,6 +60,7 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
     on<AddSetup<T>>(_onAddSetup);
     on<AddSetup<List<T>>>(_onAddMultiSetup);
     on<UpdateSetup>(_onUpdateSetup);
+    on<OverrideSetup>(_onOverrideSetup);
     on<DeleteSetup>(_onDeleteSetup);
     on<_ShortIDLoaded<T>>(_onShortUIDLoaded);
     on<_SetupLoaded<T>>(_onSetupLoaded);
@@ -77,7 +78,7 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
       await _setupRepository.refreshCacheData();
 
       // Fetch the updated data from the repository
-      final snapshot = await _setupRepository.getAllData().first;
+      final snapshot = await _setupRepository.getAllCacheData().first;
       final data = _toList(snapshot);
 
       // Emit the loaded state with the refreshed data
@@ -96,7 +97,7 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
     emit(LoadingSetup<T>());
 
     try {
-      _subscription = _setupRepository.getAllData().listen(
+      _subscription = _setupRepository.getAllCacheData().listen(
         (snapshot) async {
           final data = _toList(snapshot);
 
@@ -271,6 +272,26 @@ class SetupBloc<T> extends Bloc<SetupEvent, SetupState<T>> {
 
       // Update State: Notify that data updated
       emit(SetupUpdated<T>(message: 'data updated successfully'));
+    } catch (e) {
+      emit(SetupError<T>(e.toString()));
+    }
+  }
+
+  /// Note:: use Generic or Map data update
+  Future<void> _onOverrideSetup(
+    OverrideSetup event,
+    Emitter<SetupState<T>> emit,
+  ) async {
+    try {
+      var mapData = event.mapData;
+      final data = mapData != null && mapData.isNotEmpty
+          ? {'data': mapData}
+          : toCache(event.data as T);
+
+      await _setupRepository.overrideData(event.documentId, data: data);
+
+      // Update State: Notify that data updated
+      emit(SetupOverridden<T>(message: 'data successfully overridden'));
     } catch (e) {
       emit(SetupError<T>(e.toString()));
     }

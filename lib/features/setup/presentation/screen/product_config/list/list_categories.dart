@@ -58,7 +58,7 @@ class _ListCategoriesState extends State<ListCategories> {
   Widget _buildCard(BuildContext c, List<Category> categories) {
     return DynamicDataTable(
       skip: true,
-      toggleHideID: true,
+      showIDToggle: true,
       headers: Category.dataHeader,
       anyWidget: _buildAnyWidget(categories),
       rows: categories.map((d) => d.toListL()).toList(),

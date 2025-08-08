@@ -1,6 +1,7 @@
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/features/setup/data/models/role_permission_model.dart';
+import 'package:assign_erp/features/setup/data/models/permission_model.dart';
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 
 var _today = DateTime.now();
@@ -9,7 +10,7 @@ var _today = DateTime.now();
 class Role extends Equatable {
   final String id;
   final String name;
-  final Set<RolePermission> permissions;
+  final Set<Permission> permissions;
   final String createdBy;
   final String updatedBy;
   final DateTime createdAt;
@@ -34,12 +35,12 @@ class Role extends Equatable {
 
     final perms = rawPermissions
         .map((perm) => Map<String, dynamic>.from(perm as Map))
-        .map(RolePermission.fromMap)
+        .map(Permission.fromMap)
         .toSet();
 
     return Role(
       id: (id ?? map['id']) ?? '',
-      name: map['role'] ?? '',
+      name: map['name'] ?? '',
       permissions: perms,
       createdBy: map['createdBy'] ?? '',
       createdAt: toDateTimeFn(map['createdAt']),
@@ -51,7 +52,7 @@ class Role extends Equatable {
   // map template
   Map<String, dynamic> _mapTemp() => {
     'id': id,
-    'role': name,
+    'name': name,
     'permissions': permissions.map((p) => p.toMap()).toList(),
     'createdBy': createdBy,
     'createdAt': createdAt,
@@ -80,7 +81,7 @@ class Role extends Equatable {
   Role copyWith({
     String? id,
     String? name,
-    Set<RolePermission>? permissions,
+    Set<Permission>? permissions,
     String? updatedBy,
     String? createdBy,
     DateTime? createdAt,
@@ -104,10 +105,8 @@ class Role extends Equatable {
   String get getUpdatedAt => updatedAt.toStandardDT;
 
   /// [findById]
-  static Role findById(List<Role> roles, String id) => roles.firstWhere(
-    (r) => r.id == id,
-    orElse: () => throw Exception('Role not found for id: $id'),
-  );
+  static Role? findById(List<Role> roles, String id) =>
+      roles.firstWhereOrNull((r) => r.id == id);
 
   String get itemAsString => name.toTitleCase;
 
@@ -130,6 +129,7 @@ class Role extends Equatable {
   List<String> itemAsList() => [
     id,
     name.toTitleCase,
+    permissions.length.toString(),
     getCreatedAt,
     createdBy.toTitleCase,
     updatedBy.toTitleCase,
@@ -139,6 +139,7 @@ class Role extends Equatable {
   static List<String> get dataTableHeader => const [
     'ID',
     'Role',
+    'Permissions',
     'Create At',
     'Created By',
     'Updated By',

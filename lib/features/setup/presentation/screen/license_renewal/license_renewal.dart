@@ -1,12 +1,13 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/network/data_sources/models/subscription_licenses_enum.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
-import 'package:assign_erp/features/agent/data/data_sources/remote/get_agent.dart';
+import 'package:assign_erp/features/access_control/presentation/cubit/access_control_cubit.dart';
 import 'package:assign_erp/features/agent/data/models/agent_client_model.dart';
 import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
+import 'package:assign_erp/features/trouble_shooting/data/data_sources/remote/get_tenant_by.dart';
 import 'package:flutter/material.dart';
 
 class LicenseRenewal extends StatefulWidget {
@@ -28,7 +29,7 @@ class _LicenseRenewalState extends State<LicenseRenewal> {
   }
 
   _getAgent() async {
-    final info = (await GetAgent.byAgentId(context.workspace!.agentID));
+    final info = (await GetTenant.byWorkspaceId(context.workspace!.agentId));
     setState(() => myAgent = info);
   }
 
@@ -41,7 +42,7 @@ class _LicenseRenewalState extends State<LicenseRenewal> {
           : Center(
               child: Text(
                 'License Agent not found!',
-                style: context.ofTheme.textTheme.titleLarge,
+                style: context.textTheme.titleLarge,
               ),
             ),
       bottomNavigationBar: const SizedBox.shrink(),
@@ -55,7 +56,7 @@ class _LicenseRenewalState extends State<LicenseRenewal> {
         padding: const EdgeInsets.only(top: 28.0),
         child: GenericCard(
           headTitle: 'Subscription License',
-          title: '[ ${licenseAsString(context.workspace!.license)} ]',
+          title: '[ ${context.getSubscriptionName.toUpperCaseAll} ]',
           subTitle: 'License Agent Contact',
           extra: [
             {'title': '-', 'value': '${myAgent!.clientName} :-'},

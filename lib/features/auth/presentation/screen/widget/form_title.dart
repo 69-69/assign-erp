@@ -27,7 +27,7 @@ class FormTitle extends StatelessWidget {
               title: Text(
                 title.toTitleCase,
                 textAlign: TextAlign.center,
-                style: context.ofTheme.textTheme.bodyMedium?.copyWith(
+                style: context.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w500,
                   color: kPrimaryColor,
                 ),
@@ -36,7 +36,7 @@ class FormTitle extends StatelessWidget {
               subtitle: Text(
                 subtitle,
                 textAlign: TextAlign.center,
-                style: context.ofTheme.textTheme.titleSmall?.copyWith(
+                style: context.textTheme.titleSmall?.copyWith(
                   color: kTextColor,
                 ),
               ),

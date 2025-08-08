@@ -3,6 +3,7 @@ import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
+import 'package:assign_erp/features/access_control/presentation/cubit/access_control_cubit.dart';
 import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/live_support/data/models/live_chat_model.dart';
@@ -57,13 +58,12 @@ class _ClientChatDashboardState extends State<ClientChatDashboard> {
     });
   }
 
-  Future<void> _sendMessage() async {
+  Future<void> _sendMessage(String? senderRole) async {
     final msg = _controller.text.trim();
-    if (msg.isEmpty) return;
+    if (msg.isEmpty || senderRole == null) return;
 
     final workspaceId = _workspace?.id ?? '';
     final employeeId = _employee?.id ?? '';
-    final senderRole = _employee?.role.name ?? '';
     final userName = _employee?.username ?? 'Unknown User';
 
     /// 2. Create message with embedded summary
@@ -92,6 +92,8 @@ class _ClientChatDashboardState extends State<ClientChatDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    final senderRole = context.getRoleName;
+
     return CustomScaffold(
       title: liveSupportScreenTitle,
       body: _buildMessageList(),
@@ -101,7 +103,7 @@ class _ClientChatDashboardState extends State<ClientChatDashboard> {
         child: ChatInput(
           controller: _controller,
           focusNode: _focusNode,
-          onFieldSubmitted: _sendMessage,
+          onFieldSubmitted: () => _sendMessage(senderRole),
         ),
       ),
       floatingActionBtnLocation: FloatingActionButtonLocation.miniCenterFloat,

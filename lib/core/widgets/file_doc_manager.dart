@@ -2,11 +2,21 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:assign_erp/core/constants/app_db_collect.dart';
-import 'package:assign_erp/core/result/result.dart';
+import 'package:assign_erp/core/result/result_data.dart';
+import 'package:assign_erp/core/util/debug_printify.dart';
+import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+
+class CellValue {
+  final String? value;
+
+  // Constructor that accepts a nullable value
+  CellValue(this.value);
+}
 
 class FileDocManager {
   /// File exist in local directory [fileExist]
@@ -61,8 +71,12 @@ class FileDocManager {
       '$userAuthCache.lock',
       '$deviceInfoCache.hive',
       '$deviceInfoCache.lock',
-      '$workspaceUserDBCollectionPath.hive',
-      '$workspaceUserDBCollectionPath.lock',
+      '$rolesDBCollectionPath.hive',
+      '$rolesDBCollectionPath.lock',
+      '$workspaceAccDBCollectionPath.hive',
+      '$workspaceAccDBCollectionPath.lock',
+      '$subscriptionDBCollectionPath.hive',
+      '$subscriptionDBCollectionPath.lock',
       ...skipFileNames,
     };
 
@@ -89,9 +103,13 @@ class FileDocManager {
 
     // Encode the archive data to a zip format
     final zipData = ZipEncoder().encode(archive);
+    if (zipData == null) {
+      return Failure(message: 'Failed to encode zip data');
+    }
+
     // Output directory for the zip file
     final outputDir = (await getTemporaryDir()).path;
-    debugPrint('temp-outputDir: $outputDir');
+    prettyPrint('temp-outputDir', outputDir);
 
     final zipFile = File(p.join(outputDir, zipFileName));
 
@@ -136,7 +154,7 @@ class FileDocManager {
           await Directory(filePath).create(recursive: true);
         }
 
-        debugPrint('Extracted to: $filePath');
+        prettyPrint('Extracted to', filePath);
       }
 
       return Success(data: outputDir);
@@ -158,12 +176,12 @@ class FileDocManager {
 
       if (savePath != null && savePath.isNotEmpty) {
         await zipFile.copy(savePath);
-        debugPrint('UNZIP file saved to $savePath');
+        prettyPrint('UNZIP file saved to', savePath);
       } else {
-        debugPrint('No file selected for saving.');
+        prettyPrint('No file selected for saving', 'Error');
       }
     } catch (e) {
-      debugPrint('Error saving file: $e');
+      prettyPrint('Error saving file', '$e');
     }
   }
 
@@ -176,13 +194,13 @@ class FileDocManager {
         allowedExtensions: ['zip'],
       );
       if (result == null || result.files.isEmpty) {
-        debugPrint('No file selected for saving.');
+        prettyPrint('No file selected for saving', 'Error');
         return Failure(message: 'No file selected for saving.');
       }
       final file = File(result.files.single.path!);
       return Success(data: file);
     } catch (e) {
-      debugPrint('Error picking file: $e');
+      prettyPrint('Error picking file', '$e');
       return Failure(message: 'Error picking file: $e');
     }
   }
@@ -192,8 +210,8 @@ class FileDocManager {
   * final filePath = '/path/to/file.txt';
   * final result = await DataBackupManager.deleteFile(filePath: filePath);
   * result.when(
-  *   success: (data) => print(data),
-  *   failure: (message) => print(message),
+  *   success: (data) => prettyPrint(data),
+  *   failure: (message) => prettyPrint(message),
   * );
   * */
   static Future<Result<String>> deleteFile({required String filePath}) async {
@@ -203,10 +221,10 @@ class FileDocManager {
     }
     try {
       await file.delete();
-      debugPrint('File deleted: $filePath');
+      prettyPrint('File deleted', filePath);
       return Success(data: 'File deleted');
     } catch (e) {
-      debugPrint('Failed to delete $filePath: $e');
+      prettyPrint('Failed to delete $filePath', '$e');
       return Failure(message: 'Failed to delete');
     }
   }
@@ -245,16 +263,128 @@ class FileDocManager {
         try {
           if (fileExist(entity)) {
             await entity.delete();
-            debugPrint('File deleted: ${entity.path}');
+            prettyPrint('File deleted', entity.path);
             return Success(data: 'File deleted');
           }
           return Failure(message: 'File not found: Failed to delete');
         } catch (e) {
-          debugPrint('Failed to delete ${entity.path}: $e');
+          prettyPrint('Failed to delete ${entity.path}', '$e');
           return Failure(message: 'Failed to delete');
         }
       }
     }
     return Failure(message: 'Failed to delete files in directory');
+  }
+
+  /// Export data to excel file
+  static Future<void> exportDataToExcel({
+    List<String>? headers,
+    List<List<String>>? data,
+  }) async {
+    try {
+      final excel = Excel.createExcel();
+      final sheet = excel['mySheet'];
+
+      // Add headers
+      if (headers != null) {
+        final headerRow = headers.map((e) => TextCellValue(e)).toList();
+        sheet.appendRow(headerRow);
+      }
+
+      // Add data
+      if (data != null) {
+        for (var row in data) {
+          final rowCells = row.map((e) => TextCellValue(e)).toList();
+          sheet.appendRow(rowCells);
+        }
+      }
+
+      await saveExcel(excel);
+    } catch (e) {
+      prettyPrint("Error exporting to Excel", "$e");
+    }
+  }
+
+  static Future<void> exportDataToPdf({
+    required List<String> headers,
+    required List<List<String>> data,
+  }) async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.TableHelper.fromTextArray(
+            headers: headers,
+            data: data,
+            cellStyle: const pw.TextStyle(fontSize: 10),
+            headerStyle: pw.TextStyle(
+              fontSize: 12,
+              fontWeight: pw.FontWeight.bold,
+            ),
+            border: pw.TableBorder.all(color: PdfColors.grey),
+            headerDecoration: const pw.BoxDecoration(color: PdfColors.blue50),
+            cellAlignment: pw.Alignment.centerLeft,
+          );
+        },
+      ),
+    );
+
+    // You can either share or save
+    await savePdf(pdf);
+  }
+
+  /// Save binary data to a user-selected location
+  static Future<void> saveFileToUserLocation({
+    required List<int> bytes,
+    required String defaultFileName,
+    required String dialogTitle,
+    String? successMessage,
+    String? errorMessage,
+  }) async {
+    try {
+      final savePath = await FilePicker.platform.saveFile(
+        dialogTitle: dialogTitle,
+        fileName: defaultFileName,
+      );
+
+      if (savePath != null && savePath.isNotEmpty) {
+        final file = File(savePath);
+        file
+          ..createSync(recursive: true)
+          ..writeAsBytesSync(bytes);
+        prettyPrint(successMessage ?? 'File saved to', savePath);
+      } else {
+        prettyPrint('No file selected.', errorMessage ?? 'Error');
+      }
+    } catch (e) {
+      prettyPrint(errorMessage ?? 'Error saving file', '$e');
+    }
+  }
+
+  /// Save Excel file
+  static Future<void> saveExcel(Excel excel) async {
+    final bytes = excel.save();
+
+    if (bytes != null) {
+      await saveFileToUserLocation(
+        bytes: bytes,
+        defaultFileName: 'exported_excel_data.xlsx',
+        dialogTitle: 'Save Excel File',
+      );
+    } else {
+      prettyPrint('Failed to generate Excel file', 'Error');
+    }
+  }
+
+  /// Save PDF file
+  static Future<void> savePdf(pw.Document pdf) async {
+    final bytes = await pdf.save();
+
+    await saveFileToUserLocation(
+      bytes: bytes,
+      defaultFileName: 'exported_pdf_data.pdf',
+      dialogTitle: 'Save PDF File',
+    );
   }
 }

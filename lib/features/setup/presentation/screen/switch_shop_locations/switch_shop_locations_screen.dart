@@ -6,8 +6,9 @@ import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
-import 'package:assign_erp/core/widgets/horizontal_line.dart';
+import 'package:assign_erp/core/widgets/horizontal_divider.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
+import 'package:assign_erp/features/access_control/presentation/cubit/access_control_cubit.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/setup/data/models/company_stores_model.dart';
 import 'package:assign_erp/features/setup/presentation/bloc/company/company_stores_bloc.dart';
@@ -31,7 +32,7 @@ class SwitchShopLocationsScreen extends StatelessWidget {
             ..add(GetSetups<CompanyStores>()),
       child: CustomScaffold(
         isGradientBg: true,
-        title: storeSwitcherAppTitle.toUpperCase(),
+        title: storeSwitcherAppTitle.toUpperCaseAll,
         body: CustomScrollBar(
           controller: ScrollController(),
           child: Padding(
@@ -169,7 +170,7 @@ class SwitchShopLocationsScreen extends StatelessWidget {
   Text _buildSubtitle(BuildContext context, {required String subtitle}) {
     return Text(
       subtitle.toTitleCase,
-      style: context.ofTheme.textTheme.bodyLarge?.copyWith(
+      style: context.textTheme.bodyLarge?.copyWith(
         color: kPrimaryColor,
         fontWeight: FontWeight.w500,
       ),
@@ -186,19 +187,17 @@ class SwitchShopLocationsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildTitle(
-                context,
-                title: workspace.workspaceName.toUpperCase(),
-              ),
+              _buildTitle(context, title: workspace.name.toUpperCaseAll),
 
-              HorizontalLine(
+              HorizontalDivider(
                 width: context.screenWidth * 0.01,
                 thickness: 4,
                 color: kLightBlueColor,
               ),
               _buildListTile(
                 context,
-                title: 'SUBSCRIPTION: ${workspace.license.name.toUpperCase()}',
+                title:
+                    'SUBSCRIPTION: ${context.getSubscriptionName.toUpperCaseAll}',
                 subtitle: 'Valid Until: ${workspace.expiresOn.toStandardDT}',
               ),
               _buildListTile(
@@ -218,7 +217,7 @@ class SwitchShopLocationsScreen extends StatelessWidget {
                   child: _buildTitle(
                     context,
                     title: 'Switch Store Locations',
-                    style: context.ofTheme.textTheme.titleMedium?.copyWith(
+                    style: context.textTheme.titleMedium?.copyWith(
                       color: kLightColor,
                       fontWeight: FontWeight.normal,
                     ),
@@ -237,7 +236,7 @@ class SwitchShopLocationsScreen extends StatelessWidget {
   }) {
     var deco =
         style ??
-        context.ofTheme.textTheme.titleMedium?.copyWith(
+        context.textTheme.titleMedium?.copyWith(
           color: kLightColor,
           fontWeight: FontWeight.w500,
           overflow: TextOverflow.ellipsis,
@@ -264,7 +263,7 @@ class SwitchShopLocationsScreen extends StatelessWidget {
         child: Text(
           title,
           textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.bodySmall?.copyWith(
+          style: context.textTheme.bodySmall?.copyWith(
             color: kLightColor,
             overflow: TextOverflow.ellipsis,
           ),
@@ -275,7 +274,7 @@ class SwitchShopLocationsScreen extends StatelessWidget {
         child: Text(
           subtitle,
           textAlign: TextAlign.center,
-          style: context.ofTheme.textTheme.bodyLarge?.copyWith(
+          style: context.textTheme.bodyLarge?.copyWith(
             color: kLightColor,
             overflow: TextOverflow.ellipsis,
             fontWeight: FontWeight.normal,

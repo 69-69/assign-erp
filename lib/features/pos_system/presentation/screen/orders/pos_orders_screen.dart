@@ -1,4 +1,5 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
 import 'package:assign_erp/features/pos_system/data/models/pos_order_model.dart';
 import 'package:assign_erp/features/pos_system/presentation/bloc/orders/pos_order_bloc.dart';
@@ -19,7 +20,7 @@ class PosOrdersScreen extends StatelessWidget {
           POSOrderBloc(firestore: FirebaseFirestore.instance)
             ..add(GetPOSs<POSOrder>()),
       child: CustomScaffold(
-        title: posOrdersScreenTitle.toUpperCase(),
+        title: posOrdersScreenTitle.toUpperCaseAll,
         body: const ListPOSOrders(),
         floatingActionBtnLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: context.buildPOSGroupBtn(),

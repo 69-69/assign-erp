@@ -15,7 +15,7 @@ class GetRoles {
     return state.data.isEmpty ? [] : state.data;
   }
 
-  /// Get by RoleId [byRoleId]
+  /*/// Get by RoleId [byRoleId]
   static Future<Role> byRoleId(roleId) async {
     final roleBloc = RoleBloc(firestore: FirebaseFirestore.instance);
 
@@ -28,5 +28,5 @@ class GetRoles {
             as SetupLoaded<Role>;
 
     return state.data;
-  }
+  }*/
 }

@@ -132,7 +132,7 @@ class TextToSpeechState extends State<TextToSpeech> {
           Expanded(
             child: Text(
               key,
-              style: context.ofTheme.textTheme.titleMedium?.copyWith(
+              style: context.textTheme.titleMedium?.copyWith(
                 color: kPrimaryColor,
                 fontWeight: FontWeight.w600,
                 overflow: TextOverflow.ellipsis,

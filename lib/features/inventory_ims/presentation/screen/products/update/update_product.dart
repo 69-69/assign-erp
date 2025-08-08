@@ -1,10 +1,10 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/barcode_scanner.dart';
-import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/form_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/product_model.dart';
@@ -154,7 +154,7 @@ class _UpdateProductFormState extends State<_UpdateProductForm> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Text('Update Category', style: context.ofTheme.textTheme.titleLarge),
+        Text('Update Category', style: context.textTheme.titleLarge),
         const SizedBox(height: 10.0),
         CategoryDropdown(
           key: const Key('Update-Category'),
@@ -173,7 +173,7 @@ class _UpdateProductFormState extends State<_UpdateProductForm> {
       title: Text(
         'Modify this Product',
         textAlign: TextAlign.center,
-        style: context.ofTheme.textTheme.titleLarge,
+        style: context.textTheme.titleLarge,
       ),
       subtitle: Text(_product.name.toTitleCase, textAlign: TextAlign.center),
       childrenPadding: const EdgeInsets.only(bottom: 20.0),

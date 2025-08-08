@@ -3,10 +3,10 @@ import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/calculate_extras.dart';
 import 'package:assign_erp/core/util/generate_new_uid.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/form_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/pos_system/data/models/pos_sale_model.dart';
@@ -21,7 +21,7 @@ extension UpdatePOSSaleForm on BuildContext {
     isExpand: false,
     child: FormBottomSheet(
       title: 'Edit Sale',
-      subtitle: 'ID: ${sale.id}'.toUpperCase(),
+      subtitle: 'ID: ${sale.id}'.toUpperCaseAll,
       body: _UpdateSaleForm(sale: sale),
     ),
   );
@@ -181,10 +181,7 @@ class _UpdateSaleFormState extends State<_UpdateSaleForm> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Text(
-          'Update Sales Status',
-          style: context.ofTheme.textTheme.titleLarge,
-        ),
+        Text('Update Sales Status', style: context.textTheme.titleLarge),
         const SizedBox(height: 10.0),
         SaleStatusDropdown(
           serverValue: _sale.status,
@@ -202,7 +199,7 @@ class _UpdateSaleFormState extends State<_UpdateSaleForm> {
       title: Text(
         'Modify this Sales',
         textAlign: TextAlign.center,
-        style: context.ofTheme.textTheme.titleLarge,
+        style: context.textTheme.titleLarge,
       ),
       subtitle: Text(
         'ID ${_sale.id}'.toUpperCaseAll,
@@ -266,7 +263,7 @@ class _UpdateSaleFormState extends State<_UpdateSaleForm> {
           title: Text(
             'Additional Charges:',
             textAlign: TextAlign.center,
-            style: context.ofTheme.textTheme.titleMedium,
+            style: context.textTheme.titleMedium,
           ),
           subtitle: const Text('Optional', textAlign: TextAlign.center),
         ),

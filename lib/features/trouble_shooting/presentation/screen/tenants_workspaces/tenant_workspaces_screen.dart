@@ -1,0 +1,34 @@
+import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/core/widgets/custom_scaffold.dart';
+import 'package:assign_erp/core/widgets/screen_helper.dart';
+import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
+import 'package:assign_erp/features/auth/presentation/screen/workspace/create/create_workspace_acc.dart';
+import 'package:assign_erp/features/trouble_shooting/presentation/bloc/all_tenants/all_tenants_bloc.dart';
+import 'package:assign_erp/features/trouble_shooting/presentation/bloc/tenant_bloc.dart';
+import 'package:assign_erp/features/trouble_shooting/presentation/screen/tenants_workspaces/list_tenant_workspaces.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class TenantWorkspacesScreen extends StatelessWidget {
+  const TenantWorkspacesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider<AllTenantsBloc>(
+      create: (context) =>
+          AllTenantsBloc(firestore: FirebaseFirestore.instance)
+            ..add(LoadTenants<Workspace>()),
+      child: CustomScaffold(
+        title: allWorkspacesScreenTitle.toUpperCaseAll,
+        body: ListTenantWorkspaces(),
+        floatingActionButton: context.buildFloatingBtn(
+          'setup new workspace',
+          icon: Icons.workspaces_outline,
+          onPressed: () => context.openCreateWorkspacePopUp(),
+        ),
+      ),
+    );
+  }
+}

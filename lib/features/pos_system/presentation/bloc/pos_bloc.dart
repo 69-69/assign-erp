@@ -78,7 +78,7 @@ class POSBloc<T> extends Bloc<POSEvent, POSState<T>> {
       await _posRepository.refreshCacheData();
 
       // Fetch the updated data from the repository
-      final snapshot = await _posRepository.getAllData().first;
+      final snapshot = await _posRepository.getAllCacheData().first;
       final data = _toList(snapshot);
 
       // Emit the loaded state with the refreshed data
@@ -94,7 +94,7 @@ class POSBloc<T> extends Bloc<POSEvent, POSState<T>> {
     emit(LoadingPOS<T>());
 
     try {
-      _getDataStreamObserver = _posRepository.getAllData().listen(
+      _getDataStreamObserver = _posRepository.getAllCacheData().listen(
         (snapshot) async {
           final data = _toList(snapshot);
 

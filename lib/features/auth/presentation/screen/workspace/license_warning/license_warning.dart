@@ -1,7 +1,8 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/size_config.dart';
-import 'package:assign_erp/core/widgets/bottom_sheet_header.dart';
-import 'package:assign_erp/core/widgets/custom_dialog.dart';
+import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/core/widgets/dialog/bottom_sheet_header.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_dialog.dart';
 import 'package:flutter/material.dart';
 
 extension LicenseWarningDialog on BuildContext {
@@ -22,7 +23,7 @@ class LicenseWarning extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomDialog(
       title: DialogTitle(
-        title: 'Upgrade your Plan'.toUpperCase(),
+        title: 'Upgrade your Plan'.toUpperCaseAll,
         subtitle: "Oops, Device Limit Reached!",
         txtColor: kLightColor,
         fontSize: 18,
@@ -50,7 +51,7 @@ class LicenseWarning extends StatelessWidget {
       child: Text(
         "You've reached the limit of devices for your current plan. To continue using your account, please remove a device or upgrade your subscription to support more devices. If you need help, our 24/7 support team is here for you.\n\nThank You!",
         textAlign: TextAlign.center,
-        style: context.ofTheme.textTheme.bodyLarge?.copyWith(
+        style: context.textTheme.bodyLarge?.copyWith(
           color: kLightColor,
           fontSize: 13,
           fontWeight: FontWeight.normal,

@@ -1,8 +1,7 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
-import 'package:assign_erp/core/widgets/tile_card.dart';
+import 'package:assign_erp/core/widgets/nav/dashboard_tile_card.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/customer_crm/presentation/customer_tiles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,12 +37,12 @@ class CustomerApp extends StatelessWidget {
   }
 
   Widget _buildTiles(BuildContext context) {
+    /* Role Based Access Control
     final employee = context.employee;
+    final tiles = [...?customerTiles[employee?.role]?.tiles];*/
 
-    /* Role Based Access Control */
-    final tiles = [...?customerTiles[employee?.role]?.tiles];
-    return TileCard(
-      tiles: tiles,
+    return DashboardTileCard(
+      tiles: customerTiles,
       metricsTitle: "CRM Metrics",
       metricsSubtitle:
           "Manage leads, customers, interactions, and support tickets.",

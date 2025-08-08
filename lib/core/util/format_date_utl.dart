@@ -26,7 +26,7 @@ extension ConvertDateTime on dynamic {
     return formatter.format(dateTime);
   }
 
-  /// Convert microsecondsSinceEpoch to DateTime object [toStandardDT]
+  /// Convert microsecondsSinceEpoch to DateTime object [dateOnly]
   String get dateOnly {
     if (this == null || this == "" || this == "null" || this == "null null") {
       return '0000-00-00';

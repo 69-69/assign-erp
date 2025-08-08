@@ -1,10 +1,10 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/calculate_extras.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
-import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/form_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/orders/request_price_quotation_model.dart';
@@ -20,7 +20,7 @@ extension UpdateRequestForQuotationForm on BuildContext {
         isExpand: false,
         child: FormBottomSheet(
           title: 'Edit Request For Quote',
-          subtitle: quote.rfqNumber.toUpperCase(),
+          subtitle: quote.rfqNumber.toUpperCaseAll,
           body: _UpdateRequestForQuote(quote: quote),
         ),
       );
@@ -163,7 +163,7 @@ class _UpdateRequestForQuoteState extends State<_UpdateRequestForQuote> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Text('Update RFQ Status', style: context.ofTheme.textTheme.titleLarge),
+        Text('Update RFQ Status', style: context.textTheme.titleLarge),
         const SizedBox(height: 10.0),
         RFQStatusDropdown(
           serverValue: _quote.status,
@@ -181,7 +181,7 @@ class _UpdateRequestForQuoteState extends State<_UpdateRequestForQuote> {
       title: Text(
         'Modify this RFQ',
         textAlign: TextAlign.center,
-        style: context.ofTheme.textTheme.titleLarge,
+        style: context.textTheme.titleLarge,
       ),
       subtitle: Text(
         'ID ${_quote.id}'.toUpperCaseAll,

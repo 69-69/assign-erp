@@ -1,7 +1,7 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/network/data_sources/models/subscription_licenses_enum.dart';
-import 'package:assign_erp/core/widgets/custom_bottom_sheet.dart';
-import 'package:assign_erp/core/widgets/form_bottom_sheet.dart';
+import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/core/widgets/dialog/custom_bottom_sheet.dart';
+import 'package:assign_erp/core/widgets/dialog/form_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/text_to_speech.dart';
 import 'package:assign_erp/features/setup/data/models/company_info_model.dart';
 import 'package:assign_erp/features/setup/presentation/bloc/company/company_bloc.dart';
@@ -42,7 +42,7 @@ class _SubscriptionDetailsBody extends StatelessWidget {
         children: [
           Text(
             'Features of $subscriptionName Subscription',
-            style: context.ofTheme.textTheme.titleLarge?.copyWith(
+            style: context.textTheme.titleLarge?.copyWith(
               color: kDarkTextColor,
               fontWeight: FontWeight.w500,
             ),
@@ -56,8 +56,7 @@ class _SubscriptionDetailsBody extends StatelessWidget {
   }
 
   Widget buildDetails() {
-    final subscription =
-        subscriptionDetails[getLicenseByString(subscriptionName.toLowerCase())];
+    final subscription = subscriptionDetails[subscriptionName.toLowercaseAll];
 
     if (subscription != null) {
       final description = subscription.description;

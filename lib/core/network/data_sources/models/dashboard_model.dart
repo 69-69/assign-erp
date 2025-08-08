@@ -1,36 +1,33 @@
 import 'package:assign_erp/core/util/str_util.dart';
 import 'package:flutter/material.dart';
 
-class DashboardTile<T> {
+class DashboardTile {
   DashboardTile({
     required this.icon,
     required this.label,
     required this.action,
     this.param = const {},
+    required this.access,
     this.description,
-    this.permission,
   });
 
-  final Map<String, String> param;
-  final String? description;
   final String label;
   final dynamic icon;
-  final dynamic action;
-  final T? permission;
 
-  factory DashboardTile.fromMap(
-    Map<String, dynamic> map, {
-    T? Function(String)? permissionResolver,
-  }) {
-    return DashboardTile<T>(
+  /// [access] Access level required to use this tile: Permission/License checks
+  final String access;
+  final dynamic action;
+  final String? description;
+  final Map<String, String> param;
+
+  factory DashboardTile.fromMap(Map<String, dynamic> map) {
+    return DashboardTile(
       icon: map['icon'] as IconData,
       label: map['label'] as String,
       action: map['action'] as String,
       param: createNewMap(map['param']),
+      access: map['access'] ?? '',
       description: map['description'] as String?,
-      permission: permissionResolver != null && map['permission'] != null
-          ? permissionResolver(map['permission'])
-          : null,
     );
   }
 
@@ -39,8 +36,8 @@ class DashboardTile<T> {
     'label': label,
     'action': action,
     'param': param,
+    'access': access,
     'description': description,
-    'permission': permission,
   };
 
   /*
@@ -51,6 +48,7 @@ class DashboardTile<T> {
   * filter(tiles, [RegExp(r'^Admin'), RegExp(r'log$', caseSensitive: false)]);
   * --OR--
   * filter(tiles, ['Admin', 'log'], exclude: true);*/
+
   static List<DashboardTile> filter(
     List<DashboardTile> tiles,
     List<dynamic> patterns, { // Can be List<String> or List<RegExp>
@@ -70,15 +68,6 @@ class DashboardTile<T> {
       ),
     );
   }
-}
-
-List<DashboardTile<T>> filterTilesByPermissions<T>(
-  List<DashboardTile<T>> tiles,
-  List<T> userPermissions,
-) {
-  return tiles.where((t) {
-    return t.permission == null || userPermissions.contains(t.permission);
-  }).toList();
 }
 
 class RoleBasedDashboardTile<T> {

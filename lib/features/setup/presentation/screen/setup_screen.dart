@@ -1,6 +1,7 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
-import 'package:assign_erp/core/widgets/custom_tab.dart';
+import 'package:assign_erp/core/widgets/nav/custom_tab.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/auth/presentation/screen/workspace/update/update_workspace_password.dart';
 import 'package:assign_erp/features/setup/presentation/index.dart';
@@ -8,7 +9,7 @@ import 'package:flutter/material.dart';
 
 const _sideTabs = [
   {'label': 'company', 'icon': Icons.info_outline},
-  {'label': 'staff account', 'icon': Icons.manage_accounts},
+  {'label': 'employees', 'icon': Icons.manage_accounts},
   {'label': 'manage roles', 'icon': Icons.admin_panel_settings},
   {'label': 'product config', 'icon': Icons.category},
   {'label': 'back up', 'icon': Icons.backup},
@@ -23,7 +24,7 @@ class SetupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      title: setupAppTitle.toUpperCase(),
+      title: setupAppTitle.toUpperCaseAll,
       body: _buildBody(context),
       floatingActionBtnLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: context.buildFloatingBtn(
@@ -45,7 +46,7 @@ class SetupScreen extends StatelessWidget {
       tabs: _sideTabs,
       children: [
         const CompanyScreen(),
-        const CreateUserAccScreen(),
+        const AllEmployeesScreen(),
         const ManageRolesScreen(),
         const ProductConfigScreen(),
         const BackUp(),

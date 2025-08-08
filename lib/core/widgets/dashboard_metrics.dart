@@ -8,12 +8,14 @@ class DashboardMetrics extends StatelessWidget {
   final Map<String, int> metrics;
   final String title;
   final String subtitle;
+  final VoidCallback? onPressed;
 
   const DashboardMetrics({
     super.key,
     required this.metrics,
     required this.title,
     required this.subtitle,
+    this.onPressed,
   });
 
   @override
@@ -38,7 +40,7 @@ class DashboardMetrics extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildListTile(context, title: title, subtitle: subtitle),
+          _buildHeader(context),
           const SizedBox(height: 16),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -66,6 +68,23 @@ class DashboardMetrics extends StatelessWidget {
     );
   }
 
+  Row _buildHeader(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: _buildListTile(context, title: title, subtitle: subtitle),
+        ),
+        IconButton(
+          tooltip: 'Pin Metrics',
+          onPressed: onPressed,
+          icon: Icon(Icons.push_pin, color: kBrightPrimaryColor),
+          hoverColor: kLightBlueColor.toAlpha(0.3),
+        ),
+      ],
+    );
+  }
+
   ListTile _buildListTile(
     BuildContext context, {
     String title = '',
@@ -77,7 +96,7 @@ class DashboardMetrics extends StatelessWidget {
       titleAlignment: ListTileTitleAlignment.center,
       title: Text(
         title,
-        style: context.ofTheme.textTheme.bodySmall?.copyWith(
+        style: context.textTheme.bodySmall?.copyWith(
           color: kLightColor,
           fontWeight: FontWeight.w500,
           overflow: TextOverflow.ellipsis,
@@ -86,7 +105,7 @@ class DashboardMetrics extends StatelessWidget {
       ),
       subtitle: Text(
         subtitle.toTitleCase,
-        style: context.ofTheme.textTheme.bodyLarge?.copyWith(
+        style: context.textTheme.bodyLarge?.copyWith(
           color: kLightColor,
           fontWeight: FontWeight.normal,
           overflow: TextOverflow.ellipsis,

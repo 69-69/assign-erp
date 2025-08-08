@@ -14,7 +14,8 @@ extension CollectionTypeExtension on CollectionType {
       CollectionType.chats => 'chats', // Chat conversations
       CollectionType.stores => 'stores', // Company-specific stores/shops
       CollectionType.clients => 'clients', // Agent-clients mapping
-      CollectionType.workspace => 'workspace', // Workspace-specific collections
+      /// Workspace-specific collections: is based on WorkspaceRole (eg.: developer, agentFranchise, subscriber)
+      CollectionType.workspace => 'workspace',
     };
   }
 }

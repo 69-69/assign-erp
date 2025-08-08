@@ -336,7 +336,7 @@ class _ScannerSettingState extends State<ScannerSetting>
         'SETTINGS',
         semanticsLabel: 'Settings',
         style:
-            context.ofTheme.textTheme.titleLarge?.copyWith(color: kGrayColor),
+            context.textTheme.titleLarge?.copyWith(color: kGrayColor),
       ),
       btnText: 'Close',
       onPress: () => Navigator.pop(context),

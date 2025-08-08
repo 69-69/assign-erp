@@ -7,17 +7,11 @@ extension UserGuideTiles on dynamic {
   List<DashboardTile> get userGuideTiles {
     final tilesData = [
       {
-        'label': 'Dashboard',
-        'icon': Icons.dashboard,
-        'action': RouteNames.mainDashboard,
-        'param': {},
-        'description': 'Access to dashboard',
-      },
-      {
         'label': 'guide to',
         'icon': Icons.how_to_reg,
         'action': RouteNames.howToConfigApp,
         'param': {},
+        'access': '',
         'description':
             'software user guide providing instructions on software usage and configuration',
       },
@@ -26,6 +20,7 @@ extension UserGuideTiles on dynamic {
         'icon': Icons.local_police,
         'action': RouteNames.howToRenewLicense,
         'param': {},
+        'access': '',
         'description': 'guide on renewing or activating software',
       },
     ];

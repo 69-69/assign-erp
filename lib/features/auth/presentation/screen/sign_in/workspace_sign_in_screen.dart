@@ -72,9 +72,10 @@ class WorkspaceSignInScreen extends StatelessWidget {
               children: [
                 FormTitle(
                   title: welcomeTitle,
-                  subtitle: 'All-in-one Productivity Tool',
+                  subtitle: 'Everything you need to run your business',
+                  // All-in-one Productivity Tool
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 6),
                 _leftColumnPane(),
               ],
             ),
@@ -128,9 +129,7 @@ class _RightColumnPane extends StatelessWidget {
         "Forgot Password?",
         semanticsLabel: "Forgot Password",
         overflow: TextOverflow.ellipsis,
-        style: context.ofTheme.textTheme.titleLarge?.copyWith(
-          color: kLightColor,
-        ),
+        style: context.textTheme.titleLarge?.copyWith(color: kLightColor),
       ),
       onPressed: () async => await context.openForgotWorkspacePopUp(),
     );

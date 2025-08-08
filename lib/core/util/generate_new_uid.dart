@@ -1,12 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:assign_erp/core/constants/app_db_collect.dart';
 import 'package:assign_erp/core/network/data_sources/remote/bloc/firestore_bloc.dart';
-import 'package:assign_erp/features/inventory_ims/data/models/short_id_model.dart';
 import 'package:assign_erp/core/network/data_sources/remote/bloc/short_id_bloc.dart';
+import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/features/inventory_ims/data/models/short_id_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 extension GenerateUID on String {
   static final _dbCollectionPaths = {
-    'user': workspaceUserDBCollectionPath,
+    'user': workspaceAccDBCollectionPath,
     'product': productsDBCollectionPath,
     'order': ordersDBCollectionPath,
     'purchase': purchaseOrdersDBCollectionPath,
@@ -24,13 +25,17 @@ extension GenerateUID on String {
   String get _dbCollectionPath => _dbCollectionPaths[this] ?? 'unknownPath';
 
   Future<String> _checkReturn() async {
-    final shortIdBloc =
-        ShortIDBloc(_dbCollectionPath, firestore: FirebaseFirestore.instance);
+    final shortIdBloc = ShortIDBloc(
+      _dbCollectionPath,
+      firestore: FirebaseFirestore.instance,
+    );
     shortIdBloc.add(GetShortID<ShortUID>());
 
-    final allData = await shortIdBloc.stream.firstWhere(
-      (state) => state is SingleDataLoaded<ShortUID>,
-    ) as SingleDataLoaded<ShortUID>;
+    final allData =
+        await shortIdBloc.stream.firstWhere(
+              (state) => state is SingleDataLoaded<ShortUID>,
+            )
+            as SingleDataLoaded<ShortUID>;
 
     return allData.data.shortId;
   }
@@ -39,7 +44,7 @@ extension GenerateUID on String {
     final newId = await _checkReturn();
 
     if (newId.isNotEmpty) {
-      final prefix = isNotEmpty ? substring(0, 3).toUpperCase() : '';
+      final prefix = isNotEmpty ? substring(0, 3).toUpperCaseAll : '';
       final formattedId = '$prefix-$newId';
 
       if (onChanged != null) {
@@ -56,7 +61,7 @@ extension GenerateUID on String {
   Future<void> getShortUID({required Function(String) onChanged}) async =>
       await _generateAndHandleId(onChanged: onChanged);
 
-/*String get _replaceSpecialCharsWithRandomNumbers {
+  /*String get _replaceSpecialCharsWithRandomNumbers {
     // Create a random number generator
     final Random random = Random();
 

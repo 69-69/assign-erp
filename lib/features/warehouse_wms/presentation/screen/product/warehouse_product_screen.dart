@@ -1,4 +1,5 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +9,7 @@ class WarehouseProductScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      title: warehouseScreenTitle.toUpperCase(),
+      title: warehouseScreenTitle.toUpperCaseAll,
       body: const Padding(
         padding: EdgeInsets.all(8.0),
         child: Text('Warehouse'),

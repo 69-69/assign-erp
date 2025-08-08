@@ -170,8 +170,9 @@ extension ScaffoldSnackBar on BuildContext {
 
 class ShowToast extends StatefulWidget {
   final String message;
+  final Color? bgColor;
 
-  const ShowToast({super.key, required this.message});
+  const ShowToast({super.key, required this.message, this.bgColor});
 
   @override
   State<ShowToast> createState() => _ShowToastState();
@@ -198,7 +199,7 @@ class _ShowToastState extends State<ShowToast> {
   Widget build(BuildContext context) {
     return _isVisible
         ? Card(
-            color: Colors.green,
+            color: widget.bgColor ?? Colors.green,
             elevation: 5.0,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
