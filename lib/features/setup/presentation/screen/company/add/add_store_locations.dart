@@ -16,8 +16,8 @@ import 'package:assign_erp/features/setup/presentation/screen/company/widget/for
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-extension AddShopLocations<T> on BuildContext {
-  Future<void> openAddShopLocations({Widget? header}) => openBottomSheet(
+extension AddStoreLocations<T> on BuildContext {
+  Future<void> openAddStoreLocations({Widget? header}) => openBottomSheet(
     isExpand: false,
     child: FormBottomSheet(
       title: 'Add Store Locations',

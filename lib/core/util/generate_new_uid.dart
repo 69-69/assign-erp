@@ -17,7 +17,7 @@ extension GenerateUID on String {
     'delivery': deliveryDBCollectionPath,
     'invoice': invoiceDBCollectionPath,
     'customer': customersDBCollectionPath,
-    'store': companyStoreDBCollectionPath,
+    'store': storeLocationsDBCollectionPath,
     'pOrder': posOrdersDBCollectionPath,
     'pSale': posSalesDBCollectionPath,
   };

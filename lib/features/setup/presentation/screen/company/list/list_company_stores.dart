@@ -4,7 +4,7 @@ import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/setup/data/models/company_stores_model.dart';
 import 'package:assign_erp/features/setup/presentation/bloc/company/company_stores_bloc.dart';
 import 'package:assign_erp/features/setup/presentation/bloc/setup_bloc.dart';
-import 'package:assign_erp/features/setup/presentation/screen/company/add/add_shop_locations.dart';
+import 'package:assign_erp/features/setup/presentation/screen/company/add/add_store_locations.dart';
 import 'package:assign_erp/features/setup/presentation/screen/company/update/update_store.dart';
 import 'package:assign_erp/features/setup/presentation/screen/company/widget/can_add_more_stores.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,7 +31,7 @@ class _ListCompanyStoresState extends State<ListCompanyStores> {
         floatingActionButton: context.canAddMoreStores
             ? context.buildFloatingBtn(
                 'Add Stores',
-                onPressed: () => context.openAddShopLocations(),
+                onPressed: () => context.openAddStoreLocations(),
               )
             : const SizedBox.shrink(),
         bottomNavigationBar: const SizedBox.shrink(),
@@ -48,7 +48,7 @@ class _ListCompanyStoresState extends State<ListCompanyStores> {
             results.isEmpty
                 ? context.buildAddButton(
                     'Add Stores',
-                    onPressed: () => context.openAddShopLocations(),
+                    onPressed: () => context.openAddStoreLocations(),
                   )
                 : _buildCard(results),
           SetupError<CompanyStores>(error: final error) => context.buildError(
@@ -63,17 +63,21 @@ class _ListCompanyStoresState extends State<ListCompanyStores> {
   Widget _buildCard(List<CompanyStores> stores) {
     return DynamicDataTable(
       skip: true,
+      skipPos: 2,
       showIDToggle: true,
       headers: CompanyStores.dataTableHeader,
       anyWidget: _buildAnyWidget(stores),
       rows: stores.map((d) => d.itemAsList()).toList(),
-      onEditTap: (row) async => _onEditTap(stores, row),
-      onDeleteTap: (row) async => _onDeleteTap(stores, row),
+      onEditTap: (row) async => _onEditTap(stores, row[1]),
+      onDeleteTap: (row) async => _onDeleteTap(stores, row[1]),
       optButtonIcon: Icons.store,
       optButtonLabel: 'Switch Store',
       onOptButtonTap: (row) async {
-        final storeNumber = row[1];
-        await context.onSwitchStore(context, storeNumber: storeNumber);
+        final store = _findStoresById(stores, row[1]);
+        await context.onSwitchStore(
+          store.storeNumber,
+          location: store.location,
+        );
       },
     );
   }
@@ -83,27 +87,22 @@ class _ListCompanyStoresState extends State<ListCompanyStores> {
       'Refresh Stores',
       label: 'Stores',
       count: sales.length,
-      onPressed: () {
-        // Refresh Stores Data
-        context.read<CompanyStoresBloc>().add(RefreshSetups<CompanyStores>());
-      },
+      onPressed: () =>
+          context.read<CompanyStoresBloc>().add(RefreshSetups<CompanyStores>()),
     );
   }
 
-  CompanyStores _findStoresById(List<CompanyStores> stores, List<String> row) =>
-      CompanyStores.findStoresById(stores, row.first).first;
+  CompanyStores _findStoresById(List<CompanyStores> stores, String id) =>
+      CompanyStores.findStoresById(stores, id).first;
 
-  Future<void> _onEditTap(List<CompanyStores> stores, List<String> row) async {
-    final store = _findStoresById(stores, row);
+  Future<void> _onEditTap(List<CompanyStores> stores, String id) async {
+    final store = _findStoresById(stores, id);
     await context.openUpdateStore(store: store);
   }
 
-  Future<void> _onDeleteTap(
-    List<CompanyStores> stores,
-    List<String> row,
-  ) async {
+  Future<void> _onDeleteTap(List<CompanyStores> stores, String id) async {
     {
-      final store = _findStoresById(stores, row);
+      final store = _findStoresById(stores, id);
 
       final isConfirmed = await context.confirmUserActionDialog();
       if (mounted && isConfirmed) {

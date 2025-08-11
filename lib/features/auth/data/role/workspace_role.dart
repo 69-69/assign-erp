@@ -14,6 +14,7 @@ enum WorkspaceRole {
 }
 
 extension WorkspaceRoleExtension on WorkspaceRole {
+  /// USAGE: `WorkspaceRole.onboarding.label`
   String get label {
     var role = switch (this) {
       WorkspaceRole.onboarding => 'onboarding',
@@ -22,6 +23,29 @@ extension WorkspaceRoleExtension on WorkspaceRole {
       WorkspaceRole.developer => 'developer',
     };
     return role;
+  }
+
+  /// [assign] Determines the role for a "New Workspace Setup" based on the
+  /// currently signed-in user's role (cached workspace role).
+  ///
+  /// - NOTE: `WorkspaceRole.onboarding` role is used as first-time login during initial APP or WorkSpace setup.
+  ///
+  /// Role Assignment Logic:
+  /// - If the currently signed-in workspace's role is:
+  ///   - `onboarding`, assigns `WorkspaceRole.agentFranchise`.
+  ///   - `agentFranchise`, assigns `WorkspaceRole.subscriber`.
+  ///   - `developer`, retains `WorkspaceRole.developer`.
+  ///   - If the role is `null`, defaults to `WorkspaceRole.subscriber`.
+  ///
+  /// Used during the "Setup/Create New Workspace" flow. [assign]
+  /// USAGE: `WorkspaceRole.onboarding.assign`
+  WorkspaceRole get assign {
+    return switch (this) {
+      WorkspaceRole.onboarding => WorkspaceRole.agentFranchise,
+      WorkspaceRole.agentFranchise => WorkspaceRole.subscriber,
+      WorkspaceRole.developer => WorkspaceRole.developer,
+      _ => WorkspaceRole.subscriber,
+    };
   }
 }
 

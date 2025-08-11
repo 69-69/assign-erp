@@ -5,7 +5,7 @@ import 'package:assign_erp/features/setup/presentation/bloc/setup_bloc.dart';
 class CompanyStoresBloc extends SetupBloc<CompanyStores> {
   CompanyStoresBloc({required super.firestore})
     : super(
-        collectionPath: companyStoreDBCollectionPath,
+        collectionPath: storeLocationsDBCollectionPath,
         fromFirestore: (data, id) => CompanyStores.fromMap(data, id),
         toFirestore: (store) => store.toMap(),
         toCache: (store) => store.toCache(),

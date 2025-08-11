@@ -210,21 +210,18 @@ extension ScreenHelper on BuildContext {
     int count = 0,
     VoidCallback? onPressed,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: FilledButton.icon(
-        icon: RefreshButton(tooltip: tooltip, callback: onPressed),
-        onPressed: null,
-        style: OutlinedButton.styleFrom(
-          elevation: 30,
-          shape: const StadiumBorder(),
-          padding: const EdgeInsets.fromLTRB(1, 1, 10, 1),
-          backgroundColor: colorScheme.error,
-        ),
-        label: Text(
-          'TOTAL: $count'.toUpperCaseAll,
-          style: ofTheme.textTheme.titleMedium?.copyWith(color: kLightColor),
-        ),
+    return FilledButton.icon(
+      icon: RefreshButton(tooltip: tooltip, callback: onPressed),
+      onPressed: null,
+      style: OutlinedButton.styleFrom(
+        elevation: 30,
+        shape: const StadiumBorder(),
+        padding: const EdgeInsets.fromLTRB(1, 1, 10, 1),
+        backgroundColor: colorScheme.error,
+      ),
+      label: Text(
+        'TOTAL: $count'.toUpperCaseAll,
+        style: ofTheme.textTheme.titleMedium?.copyWith(color: kLightColor),
       ),
     );
   }
@@ -374,6 +371,7 @@ class AnimatedSync extends AnimatedWidget {
         tooltip: tooltip,
         style: IconButton.styleFrom(
           elevation: 30,
+          minimumSize: const Size(35, 35),
           padding: EdgeInsets.zero,
           backgroundColor: kDangerColor,
         ),

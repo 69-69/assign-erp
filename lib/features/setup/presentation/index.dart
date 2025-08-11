@@ -5,5 +5,5 @@ export 'screen/license_renewal/license_renewal.dart';
 export 'screen/manage_roles/manage_roles_screen.dart';
 export 'screen/product_config/product_config_screen.dart';
 export 'screen/setup_screen.dart';
-export 'screen/switch_shop_locations/switch_shop_locations_screen.dart';
+export 'screen/switch_store_locations/switch_store_locations_screen.dart';
 export 'setup_app.dart';

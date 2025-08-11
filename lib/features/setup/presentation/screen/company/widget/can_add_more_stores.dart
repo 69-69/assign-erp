@@ -1,5 +1,6 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
+import 'package:assign_erp/core/util/str_util.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/dialog/async_progress_dialog.dart';
 import 'package:assign_erp/core/widgets/dialog/prompt_user_for_action.dart';
@@ -32,19 +33,22 @@ extension CompanyStoreX on BuildContext {
     return canAddMoreStores;
   }
 
-  Future<void> onSwitchStore(
-    BuildContext context, {
-    required String storeNumber,
-  }) async {
+  Future<void> onSwitchStore(String storeNumber, {String location = ''}) async {
     // Confirm the action
     final isConfirmed = await confirmUserActionDialog(onAccept: 'Switch Store');
 
     if (mounted && isConfirmed) {
+      final msg =
+          'Store location changed to ${location.toTitleCase}\nstore number $storeNumber';
       // Show progress dialog while updating store number
       await progressBarDialog(
         child: const Text('Please wait...while switching store'),
-        request: _updateStoreNumber(context, storeNumber: storeNumber),
-        onSuccess: (_) => showAlertOverlay('Store switching successful'),
+        request: _updateStoreNumber(
+          msg,
+          storeNumber: storeNumber,
+          location: location,
+        ),
+        onSuccess: (_) => showAlertOverlay(msg),
         onError: (error) =>
             showAlertOverlay('Store switching failed', bgColor: kDangerColor),
       );
@@ -59,7 +63,8 @@ extension CompanyStoreX on BuildContext {
   /// Returns:
   /// - A [Future] that completes after the navigation.
   Future<void> _updateStoreNumber(
-    BuildContext context, {
+    String msg, {
+    String location = '',
     required String storeNumber,
   }) async {
     try {
@@ -68,7 +73,16 @@ extension CompanyStoreX on BuildContext {
       await Future.delayed(kRProgressDelay);
 
       if (isSwitched) {
-        if (mounted) RefreshEntireApp.restartApp(this);
+        if (mounted) {
+          final isDone = await confirmDone(
+            Text(msg),
+            title: 'Store Location Changed',
+            barrierDismissible: false,
+          );
+          if (isDone) {
+            RefreshEntireApp.restartApp(this);
+          }
+        }
       } else {
         throw Exception("Switching store failed. Employee not found.");
       }

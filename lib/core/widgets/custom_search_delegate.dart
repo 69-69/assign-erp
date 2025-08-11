@@ -89,7 +89,7 @@ class CustomSearchDelegate<T> extends SearchDelegate<T?> {
       bloc: firestoreBloc,
       builder: (context, state) {
         return switch (state) {
-          LoadingInventories<T>() => context.loader,
+          LoadingInventory<T>() => context.loader,
           InventoriesLoaded<T>(data: var results) =>
             results.isEmpty ? context.buildNoResult() : _buildListView(results),
           InventoryError<T>(error: final error) => context.buildError(error),

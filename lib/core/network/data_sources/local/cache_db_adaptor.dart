@@ -7,7 +7,7 @@ const cacheDataBoxes = [
   employeesDBCollectionPath,
   rolesDBCollectionPath,
   employeeSessionLogsCollectionPath,
-  companyStoreDBCollectionPath,
+  storeLocationsDBCollectionPath,
   companyInfoDBCollectionPath,
   supplierDBCollectionPath,
   categoryDBCollectionPath,

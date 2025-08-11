@@ -39,7 +39,7 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
          collectionPath: collectionPath,
          collectionType: CollectionType.stores,
        ),
-       super(LoadingInventories<T>()) {
+       super(LoadingInventory<T>()) {
     _initialize();
 
     _inventoryRepository.dataStream.listen(
@@ -70,7 +70,7 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
     RefreshInventories<T> event,
     Emitter<InventoryState> emit,
   ) async {
-    emit(LoadingInventories<T>());
+    emit(LoadingInventory<T>());
     try {
       // Trigger data refresh in the DataRepository
       await _inventoryRepository.refreshCacheData();
@@ -92,7 +92,7 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
     GetInventories<T> event,
     Emitter<InventoryState<T>> emit,
   ) async {
-    emit(LoadingInventories<T>());
+    emit(LoadingInventory<T>());
 
     try {
       _getDataStreamObserver = _inventoryRepository.getAllCacheData().listen(
@@ -134,7 +134,7 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
     GetInventoriesByIds<T> event,
     Emitter<InventoryState<T>> emit,
   ) async {
-    emit(LoadingInventories<T>());
+    emit(LoadingInventory<T>());
     try {
       final localDataList = await _inventoryRepository.getMultipleDataByIDs(
         event.documentIDs,
@@ -155,7 +155,7 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
     GetInventoryById<T> event,
     Emitter<InventoryState<T>> emit,
   ) async {
-    emit(LoadingInventories<T>());
+    emit(LoadingInventory<T>());
     try {
       final localData = await _inventoryRepository.getDataById(
         event.documentId,
@@ -177,7 +177,7 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
     GetInventoriesWithSameId<T> event,
     Emitter<InventoryState<T>> emit,
   ) async {
-    emit(LoadingInventories<T>());
+    emit(LoadingInventory<T>());
     try {
       final localData = await _inventoryRepository.getAllDataWithSameId(
         event.documentId,
@@ -199,7 +199,7 @@ class InventoryBloc<T> extends Bloc<InventoryEvent, InventoryState<T>> {
     SearchInventory<T> event,
     Emitter<InventoryState<T>> emit,
   ) async {
-    emit(LoadingInventories<T>());
+    emit(LoadingInventory<T>());
     try {
       List<CacheData> data = await _inventoryRepository.searchData(
         field: event.field ?? '',

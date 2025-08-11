@@ -40,7 +40,7 @@ class _ListProductsState extends State<ListProducts> {
     return BlocBuilder<ProductBloc, InventoryState<Product>>(
       builder: (context, state) {
         return switch (state) {
-          LoadingInventories<Product>() => context.loader,
+          LoadingInventory<Product>() => context.loader,
           InventoriesLoaded<Product>(data: var results) =>
             results.isEmpty
                 ? context.buildAddButton(
@@ -66,30 +66,22 @@ class _ListProductsState extends State<ListProducts> {
 
     return DynamicDataTable(
       skip: true,
+      skipPos: 2,
       showIDToggle: true,
       headers: Product.dataTableHeader,
       anyWidget: _buildAnyWidget(products),
       rows: inStockProducts.map((p) => p.itemAsList()).toList(),
       childrenRow: outOfStockProducts.map((p) => p.itemAsList()).toList(),
-      onChecked: (bool? isChecked, row) => _onChecked(products, row, isChecked),
+      onChecked: (bool? isChecked, row) =>
+          _onChecked(products, row[1], isChecked),
       onAllChecked:
           (
             bool isChecked,
             List<bool> isAllChecked,
             List<List<String>> checkedRows,
-          ) {
-            // if all unChecked, empty _groupReportsForPrintout List
-            if (!isAllChecked.first) {
-              setState(() => _groupMultiDelete.clear());
-            }
-            if (checkedRows.isNotEmpty) {
-              for (int i = 0; i < checkedRows.length; i++) {
-                _onChecked(products, checkedRows[i], isChecked);
-              }
-            }
-          },
-      onEditTap: (row) async => await _onEditTap(products, row),
-      onDeleteTap: (row) async => await _onDeleteTap(row),
+          ) => _isCheckedAll(products, isChecked, isAllChecked, checkedRows),
+      onEditTap: (row) async => await _onEditTap(products, row[1]),
+      onDeleteTap: (row) async => await _onDeleteTap(row[1]),
     );
   }
 
@@ -119,14 +111,38 @@ class _ListProductsState extends State<ListProducts> {
     );
   }
 
-  // Handle onChecked Deliveries
-  void _onChecked(
+  void _isCheckedAll(
     List<Product> products,
-    List<String> row,
-    bool? isChecked,
-  ) async {
+    bool isChecked,
+    List<bool> isAllChecked,
+    List<List<String>> checkedRows,
+  ) {
+    if (isAllChecked.isEmpty || isAllChecked.every((e) => e == false)) {
+      // If none are checked, clear the selected items
+      _clearSelectedItems();
+    } else if (checkedRows.isNotEmpty && isAllChecked.length > 1) {
+      // Handle case where multiple rows are checked
+      _processMultipleCheckedItems(products, checkedRows, isChecked);
+    }
+  }
+
+  void _clearSelectedItems() => setState(() => _groupMultiDelete.clear());
+
+  void _processMultipleCheckedItems(
+    List<Product> products,
+    List<List<String>> checkedRows,
+    bool isChecked,
+  ) {
+    for (int i = 0; i < checkedRows.length; i++) {
+      final id = checkedRows[i][1];
+      _onChecked(products, id, isChecked);
+    }
+  }
+
+  // Handle onChecked Deliveries
+  void _onChecked(List<Product> products, String id, bool? isChecked) async {
     setState(() {
-      final product = products.firstWhere((p) => p.id == row.first);
+      final product = products.firstWhere((p) => p.id == id);
 
       if (isChecked != null && isChecked) {
         _groupMultiDelete.add(product);
@@ -136,22 +152,18 @@ class _ListProductsState extends State<ListProducts> {
     });
   }
 
-  Future<void> _onEditTap(List<Product> products, List<String> row) async {
-    final product = Product.findProductById(products, row.first).first;
+  Future<void> _onEditTap(List<Product> products, String id) async {
+    final product = Product.findProductById(products, id).first;
     await context.openUpdateProduct(product: product);
   }
 
-  Future<void> _onDeleteTap(List<String> row) async {
-    {
-      final productId = row.first;
-
-      final isConfirmed = await context.confirmUserActionDialog();
-      if (mounted && isConfirmed) {
-        /// Remove product from stock
-        context.read<ProductBloc>().add(
-          DeleteInventory<String>(documentId: productId),
-        );
-      }
+  Future<void> _onDeleteTap(String productId) async {
+    final isConfirmed = await context.confirmUserActionDialog();
+    if (mounted && isConfirmed) {
+      /// Remove product from stock
+      context.read<ProductBloc>().add(
+        DeleteInventory<String>(documentId: productId),
+      );
     }
   }
 }
@@ -165,9 +177,9 @@ class _IssueMultiDelete extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return products.isEmpty
-        ? const SizedBox.shrink()
-        : Center(child: _buildBody(context));
+    return products.isNotEmpty && products.length > 1
+        ? Center(child: _buildBody(context))
+        : const SizedBox.shrink();
   }
 
   _buildBody(BuildContext context) {

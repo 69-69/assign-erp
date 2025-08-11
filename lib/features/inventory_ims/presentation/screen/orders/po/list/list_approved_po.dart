@@ -38,7 +38,7 @@ class _ListApprovedPOState extends State<ListApprovedPO> {
     return BlocBuilder<PurchaseOrderBloc, InventoryState<PurchaseOrder>>(
       builder: (context, state) {
         return switch (state) {
-          LoadingInventories<PurchaseOrder>() => context.loader,
+          LoadingInventory<PurchaseOrder>() => context.loader,
           InventoriesLoaded<PurchaseOrder>(data: var results) =>
             results.isEmpty
                 ? context.buildAddButton(

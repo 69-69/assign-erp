@@ -3,6 +3,8 @@ import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:flutter/material.dart';
 
+import 'master_reset.dart';
+
 class RightColumnPane extends StatelessWidget {
   final Widget? signOutButton;
   final List<Widget> children;
@@ -44,7 +46,7 @@ class RightColumnPane extends StatelessWidget {
               ),
               const SizedBox(width: 5),
               // Sign out button
-              ?signOutButton,
+              signOutButton ?? MasterResetButton(),
             ],
           ),
           divLine,

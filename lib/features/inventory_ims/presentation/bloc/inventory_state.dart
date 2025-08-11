@@ -9,7 +9,7 @@ sealed class InventoryState<T> extends Equatable {
   List<Object?> get props => [];
 }
 
-class LoadingInventories<T> extends InventoryState<T> {}
+class LoadingInventory<T> extends InventoryState<T> {}
 
 class InventoriesLoaded<T> extends InventoryState<T> {
   final List<T> data;

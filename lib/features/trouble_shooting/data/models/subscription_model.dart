@@ -48,7 +48,7 @@ class Subscription extends Equatable {
 
     return Subscription(
       id: (id ?? map['id']) ?? '',
-      fee: double.tryParse(map['fee'] ?? '') ?? 0.0,
+      fee: double.tryParse(map['fee']?.toString() ?? '0') ?? 0.0,
       name: map['name'] ?? '',
       licenses: licenses,
       createdBy: map['createdBy'] ?? '',

@@ -47,6 +47,7 @@ class _ErrorLogsState extends State<ErrorLogs> {
       skip: false,
       showIDToggle: true,
       headers: ErrorLog.dataTableHeader,
+      anyWidgetAlignment: WrapAlignment.end,
       rows: logs.map((l) => l.toListL()).toList(),
       onDeleteTap: (row) async => await _onDeleteTap(logs, row),
     );

@@ -38,7 +38,7 @@ class _ListPOByDateState extends State<ListPOByDate> {
     return BlocBuilder<PurchaseOrderBloc, InventoryState<PurchaseOrder>>(
       builder: (context, state) {
         return switch (state) {
-          LoadingInventories<PurchaseOrder>() => context.loader,
+          LoadingInventory<PurchaseOrder>() => context.loader,
           InventoriesLoaded<PurchaseOrder>(data: var results) =>
             results.isEmpty
                 ? context.buildAddButton(

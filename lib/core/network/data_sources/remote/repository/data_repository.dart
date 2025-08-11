@@ -43,6 +43,7 @@ class DataRepository extends FirestoreRepository {
     refreshCacheData();
   }
 
+  final AuthCacheService _authCacheService = AuthCacheService();
   /** PRIVATE METHODS */
 
   /// Track last emitted data
@@ -57,10 +58,7 @@ class DataRepository extends FirestoreRepository {
   }
 
   /// Scope ID to restrict cache-data access to specific scope/context
-  String get _scopeId {
-    final authCacheService = AuthCacheService();
-    return (authCacheService.getWorkspace())?.id ?? '';
-  }
+  String get _scopeId => (_authCacheService.getWorkspace())?.id ?? '';
 
   /// Emit Data / Add Event to Stream [_emitDataToStream]
   void _emitDataToStream({bool isDelete = false}) {
@@ -76,17 +74,26 @@ class DataRepository extends FirestoreRepository {
     }
   }
 
-  // stephen.aryee69@gmail.com
-
   /// Add to Cache/localStorage [_addToCache]
   /// [key] - The ID of the document to be added to the cache.
   Future<void> _addToCache(String key, CacheData cacheData) async {
     await _cacheBox.put(key, cacheData);
   }
 
-  /// Read/Get all cache data [_getFromCache]
+  /// Retrieves all cached data from [_getFromCache].
   List<CacheData> _getFromCache() {
-    return _cacheBox.values.toList();
+    final List<CacheData> data = _cacheBox.values.toList();
+
+    // If the collection type is 'stores', filter the data by store number.
+    if (collectionType == CollectionType.stores) {
+      String storeNumber = (_authCacheService.getEmployee())?.storeNumber ?? '';
+
+      // Return only the cache entries that match the store number.
+      return data.where((i) => i.data['storeNumber'] == storeNumber).toList();
+    }
+
+    // Return all cached data if the collection type is not 'stores'.
+    return data;
   }
 
   /// Read/Get cache data by id [_getCacheById]

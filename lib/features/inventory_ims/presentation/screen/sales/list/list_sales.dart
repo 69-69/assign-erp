@@ -45,7 +45,7 @@ class _ListSalesState extends State<ListSales> {
     return BlocBuilder<SaleBloc, InventoryState<Sale>>(
       builder: (context, state) {
         return switch (state) {
-          LoadingInventories<Sale>() => context.loader,
+          LoadingInventory<Sale>() => context.loader,
           InventoriesLoaded<Sale>(data: var results) =>
             results.isEmpty
                 ? context.buildAddButton(

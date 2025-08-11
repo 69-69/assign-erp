@@ -1,6 +1,7 @@
 import 'package:assign_erp/core/util/debug_printify.dart';
 import 'package:assign_erp/features/access_control/domain/repository/access_control_repository.dart';
 import 'package:assign_erp/features/access_control/presentation/cubit/access_control_state.dart';
+import 'package:assign_erp/features/trouble_shooting/data/data_sources/local/error_logs_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -45,6 +46,9 @@ class AccessControlCubit extends Cubit<AccessControlState> {
       emit(state.copyWith(status: AccessControlStatus.loaded));
     } catch (e) {
       emit(state.copyWith(status: AccessControlStatus.error));
+      final errorLogCache = ErrorLogCache();
+      errorLogCache.setError(error: '$e', fileName: 'access_control_cubit');
+
       prettyPrint("Error loading access control data", "$e");
     }
   }

@@ -16,7 +16,7 @@ class CompanyScreen extends StatelessWidget {
       isColoredTab: false,
       indicatorWeight: 1.0,
       tabs: [
-        {'label': 'company', 'icon': Icons.info_outline},
+        {'label': 'company', 'icon': Icons.home_work},
         {'label': 'add stores', 'icon': Icons.store},
         {'label': 'PDFs / Print Setup', 'icon': Icons.print},
       ],

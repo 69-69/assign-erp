@@ -1,5 +1,6 @@
 import 'package:assign_erp/config/routes/route_logger.dart';
 import 'package:assign_erp/core/network/data_sources/local/cache_db_adaptor.dart';
+import 'package:assign_erp/features/access_control/domain/repository/access_control_repository.dart';
 import 'package:assign_erp/features/app.dart';
 import 'package:assign_erp/features/auth/domain/repository/auth_repository.dart';
 import 'package:assign_erp/features/refresh_entire_app.dart';
@@ -40,11 +41,13 @@ Future<void> main({bool testing = false}) async {
 
   /// Track visited Routes/Screens
   final RouteLogger routeLogger = RouteLogger();
+  final accessControlRepo = AccessControlRepository(firestore);
 
   final AuthRepository authRepository = AuthRepository(
     firebaseAuth: firebaseAuth,
     firestore: firestore,
-    routeLogger: routeLogger,
+    routeLogger: RouteLogger(),
+    accessControlRepo: accessControlRepo,
   );
 
   // Observe bloc changes
@@ -57,6 +60,7 @@ Future<void> main({bool testing = false}) async {
         fireStore: firestore,
         authRepo: authRepository,
         routeLogger: routeLogger,
+        accessControlRepo: accessControlRepo,
       ),
     ),
   );

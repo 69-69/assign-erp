@@ -31,17 +31,18 @@ extension PromptUserFor on BuildContext {
   }
 
   /// Prompt User to agree to Pending Action [confirmDone]
-  Future<void> confirmDone(
+  Future<bool> confirmDone(
     Widget message, {
     String title = 'Confirm',
     String onDone = "OK",
     bool barrierDismissible = true,
   }) async {
-    return showCupertinoDialog<void>(
+    final result = await showCupertinoDialog<bool>(
       context: this,
       barrierDismissible: barrierDismissible,
       builder: (context) => _buildBody(context, title, message, onDone, ''),
     );
+    return result ?? false;
   }
 
   CupertinoAlertDialog _buildBody(

@@ -19,11 +19,6 @@ class FirestoreHelper {
        _workspaceRole = workspaceRole,
        _workspaceId = workspaceId;
 
-  // Common Firestore sub-collection paths
-  static const String chatsPath = 'chats';
-  static const String storesPath = 'stores';
-  static const String clientsPath = 'clients';
-
   /// [_workspaceDetails] Retrieves the current workspace role and ID.
   ///
   /// The workspace represents a user's group or organization. This method fetches the role and ID
@@ -93,7 +88,7 @@ class FirestoreHelper {
     // Collection('workspaceRole/workspaceId/stores/storeNumber/collectionPath')
     // Example: Collection('subscriber/3449854123s/stores/Store-46557-ER/products_db')
     return _getWorkspaceRoleCollectionRef(
-      storesPath,
+      CollectionType.stores.label,
     ).doc(storeNumber).collection(collectionPath);
   }
 
@@ -107,7 +102,7 @@ class FirestoreHelper {
 
     return _getGlobalCollectionRef(
       collectionPath,
-    ).doc(workspaceId).collection(chatsPath);
+    ).doc(workspaceId).collection(CollectionType.chats.label);
   }
 
   /// Returns the agent-clients mapping reference: `/collectionPath/workspaceId/clients`
@@ -117,7 +112,7 @@ class FirestoreHelper {
     final (_, id) = _workspaceDetails;
     return _getGlobalCollectionRef(
       collectionPath,
-    ).doc(id).collection(clientsPath);
+    ).doc(id).collection(CollectionType.clients.label);
   }
 }
 

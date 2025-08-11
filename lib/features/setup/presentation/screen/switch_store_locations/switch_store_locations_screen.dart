@@ -13,16 +13,16 @@ import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
 import 'package:assign_erp/features/setup/data/models/company_stores_model.dart';
 import 'package:assign_erp/features/setup/presentation/bloc/company/company_stores_bloc.dart';
 import 'package:assign_erp/features/setup/presentation/bloc/setup_bloc.dart';
-import 'package:assign_erp/features/setup/presentation/screen/company/add/add_shop_locations.dart';
+import 'package:assign_erp/features/setup/presentation/screen/company/add/add_store_locations.dart';
 import 'package:assign_erp/features/setup/presentation/screen/company/widget/can_add_more_stores.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SwitchShopLocationsScreen extends StatelessWidget {
+class SwitchStoreLocationsScreen extends StatelessWidget {
   final String openTab;
 
-  const SwitchShopLocationsScreen({super.key, this.openTab = '0'});
+  const SwitchStoreLocationsScreen({super.key, this.openTab = '0'});
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +68,7 @@ class SwitchShopLocationsScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const SizedBox(height: 24),
-        _workspaceInfoCard(context, showTitle: stores.isNotEmpty),
+        _WorkspaceInfoCard(showTitle: stores.isNotEmpty),
         _buildStoreSwitchList(context, stores),
       ],
     );
@@ -84,15 +84,16 @@ class SwitchShopLocationsScreen extends StatelessWidget {
         ...stores.asMap().entries.map((entry) {
           int index = entry.key;
           CompanyStores store = entry.value;
+          final ranColor = randomBgColors[index % randomBgColors.length];
 
           return _buildContainer(
             context,
-            title: _buildStoreCircleButton(
+            title: _buildCircleButton(
               context,
-              color: randomBgColors[index % randomBgColors.length],
+              color: ranColor,
               onPressed: () async => await context.onSwitchStore(
-                context,
-                storeNumber: store.storeNumber,
+                store.storeNumber,
+                location: store.location,
               ),
             ),
             subtitle: _buildSubtitle(
@@ -110,12 +111,12 @@ class SwitchShopLocationsScreen extends StatelessWidget {
 
     return _buildContainer(
       context,
-      title: _buildStoreCircleButton(
+      title: _buildCircleButton(
         context,
         color: canAddStores ? kPrimaryLightColor : kGrayBlueColor,
         icon: canAddStores ? Icons.add : Icons.lock,
         onPressed: () async => canAddStores
-            ? await context.openAddShopLocations()
+            ? await context.openAddStoreLocations()
             : await context.showUpgradeDialog(),
       ),
       subtitle: _buildSubtitle(subtitle: 'Add stores\nMulti-Location', context),
@@ -134,7 +135,7 @@ class SwitchShopLocationsScreen extends StatelessWidget {
     );
   }
 
-  _buildStoreCircleButton(
+  _buildCircleButton(
     BuildContext context, {
     IconData? icon,
     required Color color,
@@ -178,8 +179,18 @@ class SwitchShopLocationsScreen extends StatelessWidget {
       textAlign: TextAlign.center,
     );
   }
+}
 
-  _workspaceInfoCard(BuildContext context, {bool showTitle = true}) {
+class _WorkspaceInfoCard extends StatelessWidget {
+  final bool showTitle;
+  const _WorkspaceInfoCard({required this.showTitle});
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildBody(context);
+  }
+
+  _buildBody(BuildContext context) {
     final workspace = context.workspace;
 
     return workspace != null

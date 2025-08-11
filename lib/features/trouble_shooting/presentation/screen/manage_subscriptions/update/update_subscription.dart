@@ -26,7 +26,7 @@ extension UpdateSubscription<T> on BuildContext {
           ? 'Assign Subscriptions'
           : 'Edit ${subscription.name}'.toTitleCase,
       subtitle:
-          'NOTE: Subscriptions are unique specific to each workspaces.\nNot shared or generic!',
+          'NOTE: Subscriptions are specific to each workspaces.\nNot shared or generic!',
       subTitleColor: kDangerColor,
       body: _UpdateSubscriptionForm(
         subscription: subscription,

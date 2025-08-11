@@ -15,13 +15,18 @@ class AccessControlRepository {
   ) async {
     final noData = LoadResult<String>(meta: 'unknown', data: {});
 
-    final doc = await _firestore
-        .collection(subscriptionDBCollectionPath)
-        .doc(subscriptionId)
-        .get();
+    final doc = await _genericCollection(
+      subscriptionDBCollectionPath,
+      collectionType: CollectionType.global,
+    ).doc(subscriptionId).get();
 
     final data = doc.data();
-    if (data == null || data['licenses'] == null) {
+    final licensesData = data?['licenses'];
+
+    if (data == null ||
+        licensesData == null ||
+        licensesData is! List ||
+        licensesData.isEmpty) {
       return noData;
     }
 
@@ -52,12 +57,18 @@ class AccessControlRepository {
     }
 
     final doc = await _genericCollection(
-      workspaceId,
-      workspaceRole,
+      rolesDBCollectionPath,
+      workspaceId: workspaceId,
+      workspaceRole: workspaceRole,
     ).doc(roleId).get();
 
     final data = doc.data();
-    if (data == null || data['permissions'] == null) {
+    final permissionsData = data?['permissions'];
+
+    if (data == null ||
+        permissionsData == null ||
+        permissionsData is! List ||
+        permissionsData.isEmpty) {
       return noData;
     }
 
@@ -76,17 +87,16 @@ class AccessControlRepository {
 
   /// Provides a Firestore CollectionReference to the roles collection.
   CollectionReference<Map<String, dynamic>> _genericCollection(
-    String workspaceId,
-    String workspaceRole,
-  ) {
+    String collectionPath, {
+    String? workspaceId,
+    String? workspaceRole,
+    CollectionType collectionType = CollectionType.workspace,
+  }) {
     return FirestoreHelper(
       firestore: _firestore,
       workspaceRole: workspaceRole,
       workspaceId: workspaceId,
-    ).getCollectionRef(
-      collectionType: CollectionType.workspace,
-      rolesDBCollectionPath,
-    );
+    ).getCollectionRef(collectionPath, collectionType: collectionType);
   }
 }
 

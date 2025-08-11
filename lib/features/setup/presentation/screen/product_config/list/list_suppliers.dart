@@ -1,4 +1,5 @@
-import 'package:assign_erp/core/widgets/custom_scaffold.dart';
+import 'package:assign_erp/core/constants/app_colors.dart';
+import 'package:assign_erp/core/widgets/custom_button.dart';
 import 'package:assign_erp/core/widgets/dynamic_table.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/setup/data/models/supplier_model.dart';
@@ -26,15 +27,7 @@ class _ListSuppliersState extends State<ListSuppliers> {
       create: (context) =>
           SupplierBloc(firestore: FirebaseFirestore.instance)
             ..add(GetSetups<Supplier>()),
-      child: CustomScaffold(
-        noAppBar: true,
-        body: _buildBody(),
-        floatingActionButton: context.buildFloatingBtn(
-          'Add Product Suppliers',
-          onPressed: () => context.openAddSuppliers(),
-        ),
-        bottomNavigationBar: const SizedBox.shrink(),
-      ),
+      child: _buildBody(),
     );
   }
 
@@ -62,6 +55,7 @@ class _ListSuppliersState extends State<ListSuppliers> {
       skip: true,
       showIDToggle: true,
       headers: Supplier.dataHeader,
+      anyWidgetAlignment: WrapAlignment.spaceBetween,
       anyWidget: _buildAnyWidget(suppliers),
       rows: suppliers.map((d) => d.toListL()).toList(),
       onEditTap: (row) async => _onEditTap(suppliers, row),
@@ -70,14 +64,24 @@ class _ListSuppliersState extends State<ListSuppliers> {
   }
 
   _buildAnyWidget(List<Supplier> sales) {
-    return context.buildTotalItems(
-      'Refresh Suppliers',
-      label: 'Suppliers',
-      count: sales.length,
-      onPressed: () {
-        // Refresh Product-Suppliers Data
-        context.read<SupplierBloc>().add(RefreshSetups<Supplier>());
-      },
+    return Wrap(
+      spacing: 10.0,
+      alignment: WrapAlignment.spaceBetween,
+      children: [
+        context.buildTotalItems(
+          'Refresh Suppliers',
+          label: 'Suppliers',
+          count: sales.length,
+          onPressed: () =>
+              context.read<SupplierBloc>().add(RefreshSetups<Supplier>()),
+        ),
+        context.elevatedButton(
+          'Add Suppliers',
+          onPressed: () => context.openAddSuppliers(),
+          bgColor: kDangerColor,
+          color: kLightColor,
+        ),
+      ],
     );
   }
 

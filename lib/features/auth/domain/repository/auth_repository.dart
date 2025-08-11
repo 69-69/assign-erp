@@ -13,6 +13,7 @@ import 'package:assign_erp/core/util/device_info_service.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/secret_hasher.dart';
 import 'package:assign_erp/core/util/str_util.dart';
+import 'package:assign_erp/features/access_control/domain/repository/access_control_repository.dart';
 import 'package:assign_erp/features/auth/data/data_sources/local/auth_cache_service.dart';
 import 'package:assign_erp/features/auth/data/data_sources/remote/geo_location_service.dart';
 import 'package:assign_erp/features/auth/data/model/workspace_model.dart';
@@ -39,11 +40,13 @@ class AuthRepository extends FirestoreRepository {
   final FirebaseAuth _firebaseAuth;
   final FirebaseFirestore firestore;
   final RouteLogger routeLogger;
+  final AccessControlRepository accessControlRepo;
 
   AuthRepository({
     FirebaseAuth? firebaseAuth,
     required this.firestore,
     required this.routeLogger,
+    required this.accessControlRepo,
   }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
        super(
          firestore: firestore,
@@ -134,25 +137,11 @@ class AuthRepository extends FirestoreRepository {
   /// [assignWorkspaceRole] Determines the role for a "New Workspace Setup" based on the
   /// currently signed-in user's role (cached workspace role).
   ///
-  /// - NOTE: `WorkspaceRole.onboarding` role is used as first-time login during initial APP or WorkSpace setup.
-  ///
-  /// Role Assignment Logic:
-  /// - If the currently signed-in workspace's role is:
-  ///   - `onboarding`, assigns `WorkspaceRole.agentFranchise`.
-  ///   - `agentFranchise`, assigns `WorkspaceRole.subscriber`.
-  ///   - `developer`, retains `WorkspaceRole.developer`.
-  ///   - If the role is `null`, defaults to `WorkspaceRole.subscriber`.
-  ///
   /// Used during the "Setup/Create New Workspace" flow. [assignWorkspaceRole]
   WorkspaceRole get assignWorkspaceRole {
     Workspace? cacheWorkspace = _getWorkspaceCache();
 
-    return switch (cacheWorkspace?.role) {
-      WorkspaceRole.onboarding => WorkspaceRole.agentFranchise,
-      WorkspaceRole.agentFranchise => WorkspaceRole.subscriber,
-      WorkspaceRole.developer => WorkspaceRole.developer,
-      _ => WorkspaceRole.subscriber,
-    };
+    return cacheWorkspace?.role.assign ?? WorkspaceRole.subscriber;
   }
 
   Future<void> _cacheWorkspace(Workspace workspace) async =>
@@ -171,15 +160,24 @@ class AuthRepository extends FirestoreRepository {
       if (doc == null) {
         return Failure(
           message:
-              '$errorPrefix:Email is not associated with any existing workspace.',
+              '$errorPrefix:Organization\'s email is not associated with any existing workspace.',
         );
       }
 
       // Convert doc data to Workspace
       final workspace = Workspace.fromMap(doc.data());
 
+      final sub = await accessControlRepo.fetchLicensesForSubscription(
+        workspace.subscriptionId,
+      );
+
       // Validate workspace and license status
-      if (workspace.isExpired || workspace.subscriptionId.isEmpty) {
+      final isUnlicensed =
+          sub.data.isEmpty ||
+          workspace.isExpired ||
+          workspace.subscriptionId.isEmpty;
+
+      if (isUnlicensed) {
         return Failure(
           message: '$errorPrefix:Software is unlicensed / expired',
         );
@@ -478,8 +476,7 @@ class AuthRepository extends FirestoreRepository {
         // Sign out immediately
         await _firebaseAuth.signOut();
 
-        /* FOR LICENSED COMPANY SIGN-IN:
-        * Create and save workspace data in Firestore Database (via Collection).*/
+        // FOR ORGANIZATION'S WORKSPACE CREATION: Create and save workspace data
         await _createWorkspace(
           email: email,
           fullName: fullName,
@@ -489,8 +486,7 @@ class AuthRepository extends FirestoreRepository {
           agentId: _registrarAgentId,
         );
 
-        /* FOR COMPANY EMPLOYEE SIGN-IN:
-        * Create and save employee data in Firestore Database (via Collection).*/
+        // FOR EMPLOYEE CREATION: Create and save employee data
         await _createEmployee(
           email: email,
           fullName: fullName,
@@ -625,34 +621,37 @@ class AuthRepository extends FirestoreRepository {
     required String email,
     required String fullName,
     required String mobileNumber,
-    required String createdBy,
     required String employeePasscode,
+    required String createdBy,
   }) async {
     final workspaceId = _newWorkspaceId;
-    final empRole = getEnumName<WorkspaceRole>(assignWorkspaceRole);
+    final workspaceRole = getEnumName<WorkspaceRole>(assignWorkspaceRole);
 
-    final role = await _defaultStoreOwnerPermissions(empRole, workspaceId);
+    final role = await _defaultStoreOwnerPermissions(
+      workspaceRole,
+      workspaceId,
+    );
 
     // Add a new document to the collection and get its reference
     final DocumentReference docRef = _genericCollection(
-      workspaceRole: empRole,
+      workspaceRole: workspaceRole,
       workspaceId: workspaceId,
     ).doc(); // Generates a new document reference with an auto-generated ID
 
     // Extract the document ID
-    final String documentId = docRef.id;
+
     final byWho = await getEmployee();
 
     // Create an Employee instance with the document ID
-    final Employee employee = Employee(
-      id: documentId,
+    final employee = Employee(
+      id: docRef.id,
       workspaceId: workspaceId,
       roleId: role.id,
       role: role.name,
       email: email,
       fullName: fullName,
       mobileNumber: mobileNumber,
-      storeNumber: mainStore,
+      storeNumber: mainStoreNumber,
       status: AccountStatus.enabled.label,
       createdBy: byWho?.fullName ?? createdBy,
       passCode: SecretHasher.hash(employeePasscode),
@@ -824,14 +823,34 @@ class AuthRepository extends FirestoreRepository {
     // Return the first document if available
     final doc = querySnap.docs.first;
     final data = doc.data();
-    final storedHashPasscode = data['passCode'];
+    final roleId = data['roleId'] ?? '';
+    final storedHashPasscode = data['passCode'] ?? '';
 
-    // Compare the provided passCode with the stored hashed passCode
-    final isSame = SecretHasher.verify(passCode, hashed: storedHashPasscode);
-    if (!isSame) {
+    if (roleId.isEmpty) {
+      return Failure(
+        message: '$errorPrefix:No permissions assigned to the employee\'s role',
+      );
+    }
+
+    final perm = await accessControlRepo.fetchPermissionsForRole(
+      roleId,
+      workspaceId: workId,
+      workspaceRole: workRole,
+    );
+
+    if (perm.data.isEmpty) {
+      return Failure(
+        message: '$errorPrefix:Employee currently unassigned to a role',
+      );
+    }
+
+    // Verify passcode
+    if (storedHashPasscode.isEmpty ||
+        !SecretHasher.verify(passCode, hashed: storedHashPasscode)) {
       return Failure(message: '$errorPrefix:Invalid Passcode.');
     }
 
+    // Log successful authentication
     await _logAuthSession(
       doc.id,
       'sign-in',

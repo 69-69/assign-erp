@@ -8,7 +8,7 @@ import 'package:assign_erp/features/setup/presentation/index.dart';
 import 'package:flutter/material.dart';
 
 const _sideTabs = [
-  {'label': 'company', 'icon': Icons.info_outline},
+  {'label': 'company', 'icon': Icons.home_work},
   {'label': 'employees', 'icon': Icons.manage_accounts},
   {'label': 'manage roles', 'icon': Icons.admin_panel_settings},
   {'label': 'product config', 'icon': Icons.category},

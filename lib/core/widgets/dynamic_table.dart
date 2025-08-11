@@ -594,11 +594,15 @@ class _AnyWidget extends StatelessWidget {
     );
 
     return anyWidget == null
-        ? Padding(padding: EdgeInsets.only(right: 20), child: exportBtn)
+        ? Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: exportBtn,
+          )
         : SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [?anyWidget, const SizedBox(width: 10.0), exportBtn],

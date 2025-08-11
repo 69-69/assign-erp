@@ -36,5 +36,5 @@ final employeeAccountStatusList = [
 const kTemporaryPasscodePrefix = 'TEMP-';
 const int kTemporaryPasscodeLength = 5;
 
-/// 🏬 Default (Main) company store/shop ID for multi-stores locations
-const mainStore = 'main';
+/// 🏬 Default (Main) Tenant's organization store/shop ID for multi-stores locations
+final mainStoreNumber = 'STO-Main-${DateTime.now().year}';

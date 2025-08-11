@@ -16,7 +16,7 @@ class Workspace extends Equatable {
   final String name;
   final String clientName;
   final String mobileNumber;
-  final String subscriptionFee;
+  final double subscriptionFee;
   final HostingType hostingType;
 
   /// [role] Workspace Role: subscriber, agent, etc.
@@ -52,7 +52,7 @@ class Workspace extends Equatable {
     required this.role,
     required this.email,
     required this.category,
-    this.subscriptionFee = '',
+    this.subscriptionFee = 0,
     required this.subscriptionId,
     this.maxAllowedDevices = 1,
     this.authorizedDeviceIds = const [],
@@ -70,11 +70,15 @@ class Workspace extends Equatable {
 
   /// fromFirestore / fromJson Function [Workspace.fromMap]
   factory Workspace.fromMap(Map<String, dynamic> map, {String? id}) {
+    final fee =
+        double.tryParse(map['subscriptionFee']?.toString() ?? '0') ?? 0.0;
+
     return Workspace(
       id: (map['id']) ?? id ?? '',
       agentId: map['agentId'] ?? '',
       email: map['email'] ?? '',
       subscriptionId: map['subscriptionId'] ?? '',
+      subscriptionFee: fee,
       username: '${map['username']}'.emailToUsername,
       hostingType: getHostingByString(
         map['hostingType'] ?? HostingType.onPremise.label,
@@ -84,7 +88,6 @@ class Workspace extends Equatable {
       category: map['category'] ?? '',
       clientName: map['clientName'] ?? '',
       mobileNumber: map['mobileNumber'] ?? '',
-      subscriptionFee: map['subscriptionFee'] ?? '',
       maxAllowedDevices: map['maxAllowedDevices'] ?? 1,
       authorizedDeviceIds: List<String>.from(map['authorizedDeviceIds'] ?? []),
       effectiveFrom: toDateTimeFn(map['effectiveFrom']),
@@ -212,7 +215,7 @@ class Workspace extends Equatable {
     String? username,
     HostingType? hostingType,
     String? category,
-    String? subscriptionFee,
+    double? subscriptionFee,
     String? name,
     String? clientName,
     String? mobileNumber,
@@ -280,7 +283,7 @@ class Workspace extends Equatable {
     mobileNumber,
     '$maxAllowedDevices',
     hostingType.name.toUpperCaseAll,
-    subscriptionFee,
+    '$subscriptionFee',
     subscriptionId,
     getCreatedAt,
     getEffectiveFrom,

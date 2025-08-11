@@ -93,10 +93,10 @@ const employeesDBCollectionPath = 'employee_account_db';
 // for tracking employees auth sessions
 const employeeSessionLogsCollectionPath = 'employee_session_logs';
 
-/// Firebase collection for company store locations
-const companyStoreDBCollectionPath = 'company_stores_db';
+/// Firebase collection for company store locations/branches (Multi-Locations Feature)
+const storeLocationsDBCollectionPath = 'store_locations_db';
 
-/// Firebase collection for general company information
+/// Firebase collection for general company information setup: logo, name, address, etc.
 const companyInfoDBCollectionPath = 'company_info_db';
 
 /// Firebase collection for product suppliers

@@ -106,9 +106,12 @@ extension ScaffoldSnackBar on BuildContext {
                     ),
                   ),
                 ),
-                if (label != null && onPressed != null)
+                if (label != null)
                   TextButton(
-                    onPressed: onPressed,
+                    onPressed: onPressed ?? removeHighlightOverlay,
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.black12,
+                    ),
                     child: Text(
                       label,
                       style: const TextStyle(color: Colors.white),

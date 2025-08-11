@@ -181,7 +181,7 @@ GoRoute _storesSwitcherRoute() {
     name: RouteNames.switchStoresAccount,
     path: RouteNames.switchStoresAccount,
     pageBuilder: (context, state) =>
-        _animateTransition(state, const SwitchShopLocationsScreen()),
+        _animateTransition(state, const SwitchStoreLocationsScreen()),
   );
 }
 

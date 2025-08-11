@@ -21,11 +21,11 @@ extension SetupTiles on dynamic {
     final tilesData = [
       {
         'label': 'company',
-        'icon': Icons.info_outline,
+        'icon': Icons.home_work,
         'action': RouteNames.companyInfo,
         'param': {'openTab': '0'},
         'access': _getValue(SetupPermission.manageCompany),
-        'description': 'enter company information for invoices or receipts',
+        'description': 'enter organization details; name, logo, address, etc.',
       },
       {
         'label': 'employees',

@@ -86,11 +86,13 @@ class EmployeeSignInBloc
         if (data.employee != null && data.workspace != null) {
           emit(state.copyWith(status: FormzSubmissionStatus.success));
         } else {
-          // This case handles if the workspace/employee is null for any reason
+          // Handle the case where workspace or employee data is missing
           emit(
             state.copyWith(
               status: FormzSubmissionStatus.failure,
-              errorMessage: data.message ?? 'Incorrect email or password',
+              errorMessage:
+                  data.message ??
+                  'Something went wrong...Sign out and SignIn again!',
             ),
           );
         }

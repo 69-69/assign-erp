@@ -44,7 +44,7 @@ class _ListAwardedRequestForQuotationState
     >(
       builder: (context, state) {
         return switch (state) {
-          LoadingInventories<RequestForQuotation>() => context.loader,
+          LoadingInventory<RequestForQuotation>() => context.loader,
           InventoriesLoaded<RequestForQuotation>(data: var results) =>
             results.isEmpty
                 ? context.buildAddButton(

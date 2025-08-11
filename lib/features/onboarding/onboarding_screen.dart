@@ -3,6 +3,7 @@ import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/network/data_sources/local/index.dart';
 import 'package:assign_erp/core/widgets/custom_scaffold.dart';
+import 'package:assign_erp/features/auth/presentation/screen/widget/master_reset.dart';
 import 'package:assign_erp/features/onboarding/data/onboarding_data.dart';
 import 'package:assign_erp/features/onboarding/screen/onboarding_content_view.dart';
 import 'package:flutter/material.dart';
@@ -111,6 +112,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             ),
           ),
         ),
+
+        /// Long Press to Reset/Logout from all Sessions
+        MasterResetButton(),
       ],
     );
   }

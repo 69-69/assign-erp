@@ -40,7 +40,7 @@ class _ListExpiredState extends State<ListExpired> {
     return BlocBuilder<ProductBloc, InventoryState<Product>>(
       builder: (context, state) {
         return switch (state) {
-          LoadingInventories<Product>() => context.loader,
+          LoadingInventory<Product>() => context.loader,
           InventoriesLoaded<Product>(data: var results) =>
             results.isEmpty
                 ? context.buildAddButton(

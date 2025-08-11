@@ -33,7 +33,7 @@ class _InitialScreenState extends State<InitialScreen> {
 
   /// Start a timer to trigger the dialog after a delay
   void _startTimer() {
-    _timer = Timer(kFProgressDelay, () {
+    _timer = Timer(kRProgressDelay, () {
       setState(() => _hideSplashScreen = true);
     });
   }

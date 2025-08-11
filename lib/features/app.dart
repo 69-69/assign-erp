@@ -14,13 +14,16 @@ class App extends StatelessWidget {
     required FirebaseFirestore fireStore,
     required AuthRepository authRepo,
     required RouteLogger routeLogger,
+    required AccessControlRepository accessControlRepo,
   }) : _fireStore = fireStore,
        _authRepo = authRepo,
-       _routeLogger = routeLogger;
+       _routeLogger = routeLogger,
+       _accessControlRepo = accessControlRepo;
 
   final FirebaseFirestore _fireStore;
   final AuthRepository _authRepo;
   final RouteLogger _routeLogger;
+  final AccessControlRepository _accessControlRepo;
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +35,7 @@ class App extends StatelessWidget {
 
     final blocProviders = [
       // _bloc<AuthBloc>(() => AuthBloc(authRepository: _authRepo)),
-      _bloc<AccessControlCubit>(
-        () => AccessControlCubit(AccessControlRepository(_fireStore)),
-      ),
+      _bloc<AccessControlCubit>(() => AccessControlCubit(_accessControlRepo)),
       _bloc<WorkspaceSignInBloc>(
         () => WorkspaceSignInBloc(authRepository: _authRepo),
       ),
@@ -155,14 +156,7 @@ class _AppViewState extends State<_AppView> {
       listener: (cxt, state) async {
         final loc = appRoute.state.matchedLocation;
         // final loc = GoRouter.of(cxt).state.matchedLocation;
-        final route = _authRedirect(state, loc);
-
-        // Clear permissions if logging out
-        if (state.authStatus == AuthStatus.unauthenticated) {
-          if (cxt.mounted) {
-            cxt.read<AccessControlCubit>().clear();
-          }
-        }
+        final route = _authRedirect(cxt, state, loc);
 
         if (route != null && route != loc) {
           // ✅ Load permissions if authenticated
@@ -178,7 +172,7 @@ class _AppViewState extends State<_AppView> {
   }
 
   // ✅ Load permissions if authenticated
-  Future<void> _loadPermissions(BuildContext context, AuthState state) async {
+  Future<void> _loadPermissions(BuildContext cxt, AuthState state) async {
     if (state.authStatus == AuthStatus.authenticated &&
         state.employee != null) {
       final wId = state.workspace?.id;
@@ -187,10 +181,9 @@ class _AppViewState extends State<_AppView> {
       final roleId = state.employee?.roleId ?? '';
 
       Future.microtask(() async {
-        prettyPrint('Subscribed-id', '$wSubscriptionId');
         try {
-          if (context.mounted) {
-            await context.read<AccessControlCubit>().loadAll(
+          if (cxt.mounted) {
+            await cxt.read<AccessControlCubit>().loadAll(
               roleId,
               workspaceId: wId,
               subscriptionId: wSubscriptionId,
@@ -205,9 +198,13 @@ class _AppViewState extends State<_AppView> {
   }
 
   // Redirect based on auth status
-  String? _authRedirect(AuthState state, String curLocation) {
+  String? _authRedirect(BuildContext cxt, AuthState state, String curLocation) {
     switch (state.authStatus) {
       case AuthStatus.unauthenticated:
+        // Clear permissions if logging out
+        if (cxt.mounted) {
+          cxt.read<AccessControlCubit>().clear();
+        }
         return RouteNames.initialScreen;
 
       case AuthStatus.workspaceAuthenticated:
@@ -228,6 +225,7 @@ class _AppViewState extends State<_AppView> {
         return '/${RouteNames.verifyWorkspaceEmail}';
 
       default:
+        prettyPrint('Steve-id', 'steve');
         // Handle unexpected cases by returning null
         return null;
     }
