@@ -1,4 +1,4 @@
-import 'package:assign_erp/core/widgets/custom_scaffold.dart';
+import 'package:assign_erp/core/widgets/layout/custom_scaffold.dart';
 import 'package:assign_erp/features/setup/data/models/employee_model.dart';
 import 'package:assign_erp/features/setup/presentation/bloc/create_acc/employee_bloc.dart';
 import 'package:assign_erp/features/setup/presentation/bloc/setup_bloc.dart';

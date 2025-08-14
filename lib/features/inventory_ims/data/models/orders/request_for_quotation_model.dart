@@ -10,7 +10,7 @@ class RequestForQuotation extends Equatable {
   final String storeNumber;
   final String rfqNumber;
   final String supplierId;
-
+  // final List<RFQLineItem> lineItems; // A list of items in the RFQ
   final String productName;
 
   final double unitPrice;
@@ -32,6 +32,21 @@ class RequestForQuotation extends Equatable {
   final DateTime createdAt;
   final String updatedBy;
   final DateTime updatedAt;
+
+  /// @TODO request for quotation fields
+  // * Terms & conditions
+  // * List of invited suppliers
+  // * Attachments (drawings/specs)
+  // * Responses (linked or stored in sub-table)
+
+  // Calculated net price from the line items
+  /*double get netPrice {
+    double total = 0;
+    for (var item in lineItems) {
+      total += item.unitPrice * item.quantity;
+    }
+    return total - (total * discountPercent / 100) + (total * taxPercent / 100);
+  }*/
 
   RequestForQuotation({
     this.id = '',
@@ -304,4 +319,19 @@ class RequestForQuotation extends Equatable {
     'Updated By',
     'Updated At',
   ];
+}
+
+class RFQLineItem extends Equatable {
+  final String productName;
+  final double unitPrice;
+  final int quantity;
+
+  const RFQLineItem({
+    required this.productName,
+    required this.unitPrice,
+    required this.quantity,
+  });
+
+  @override
+  List<Object?> get props => [productName, unitPrice, quantity];
 }

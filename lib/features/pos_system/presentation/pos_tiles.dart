@@ -11,7 +11,6 @@ String _getValue(e) => getEnumName<PosPermission>(e);
 extension POSTiles on dynamic {
   List<DashboardTile> get posTiles {
     final tilesData = [
-      // Orders tab
       {
         'label': 'orders',
         'icon': Icons.shopping_cart,
@@ -21,7 +20,6 @@ extension POSTiles on dynamic {
         'description':
             'place an order for a customer and then update its status.',
       },
-      // POS tab
       {
         'label': 'sales',
         'icon': Icons.shopping_basket,

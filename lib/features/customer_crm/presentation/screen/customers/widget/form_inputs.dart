@@ -1,6 +1,6 @@
 import 'package:assign_erp/core/util/date_time_picker.dart';
-import 'package:assign_erp/core/widgets/adaptive_layout.dart';
 import 'package:assign_erp/core/widgets/custom_text_field.dart';
+import 'package:assign_erp/core/widgets/layout/adaptive_layout.dart';
 import 'package:flutter/material.dart';
 
 /// Phone & ltPhone TextField [PhoneAndAltPhoneInput]

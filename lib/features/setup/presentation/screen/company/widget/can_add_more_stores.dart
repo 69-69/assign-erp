@@ -28,7 +28,7 @@ extension CompanyStoreX on BuildContext {
 
     final canAddMoreStores = state is SetupsLoaded<CompanyStores>
         ? state.data.length < workspace.maxAllowedDevices
-        : true; // allow while loading or unknown state
+        : false; // disallow while loading or unknown state
 
     return canAddMoreStores;
   }

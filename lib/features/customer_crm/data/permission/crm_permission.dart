@@ -27,7 +27,7 @@ enum CrmPermission {
   viewCrmSecrets,
 }
 
-final List<AccessControl> _crmPermissionDetails = [
+final List<AccessControl> _crmPermissions = [
   AccessControl(
     module: "crm",
     title: "Manage CRM",
@@ -179,7 +179,7 @@ final List<AccessControl> _crmMetricsPermissions = [
   ),
 ];
 
-final List<AccessControl> _secretPermissionDetails = [
+final List<AccessControl> _secretPermissions = [
   AccessControl(
     module: "CRM Secrets",
     title: "View Customer IDs",
@@ -190,13 +190,13 @@ final List<AccessControl> _secretPermissionDetails = [
 ];
 
 final List<AccessControl> crmPermissions = [
-  ..._crmPermissionDetails,
+  ..._crmPermissions,
   ..._leadsPermissions,
   ..._contactsPermissions,
   ..._opportunitiesPermissions,
   ..._customersPermissions,
   ..._crmMetricsPermissions,
-  ..._secretPermissionDetails,
+  ..._secretPermissions,
 ];
 
 final crmDisplayName = 'customer management';

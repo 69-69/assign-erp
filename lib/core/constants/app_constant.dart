@@ -47,6 +47,7 @@ const employeeSignInTitle = 'Employee Sign In';
 const agentTitle = 'agent';
 const posAppTitle = 'p.o.s';
 const inventoryAppTitle = 'inventory - ims';
+const procurementAppTitle = 'procurement & suppliers';
 const warehouseAppTitle = 'warehouse - wms';
 const customerAppTitle = 'customer - crm';
 const setupAppTitle = 'setup';
@@ -54,6 +55,10 @@ const storeSwitcherAppTitle = 'switch store locations';
 const userGuideAppTitle = 'user - guide';
 
 /// MANAGEMENT SUB-SCREENS TITLES
+const supplierManagementScreenTitle = 'supplier management';
+const supplierEvaluationScreenTitle = 'supplier evaluation';
+const supplierAccountScreenTitle = 'supplier account';
+const contractManagementScreenTitle = 'contract management';
 const liveSupportScreenTitle = 'live support';
 const allOrderScreenTitle = 'orders Management';
 const stocksScreenTitle = 'product management';
@@ -79,6 +84,7 @@ const kRProgressDelay = Duration(seconds: 3);
 const kFProgressDelay = Duration(seconds: 5);
 const kTProgressDelay = Duration(seconds: 10);
 const kAnimateDuration = Duration(milliseconds: 300);
+const fAnimateDuration = Duration(milliseconds: 500);
 
 //RegExp
 RegExp onlyNumbersRegExp = RegExp(r'^-?[0-9]+$');

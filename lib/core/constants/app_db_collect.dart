@@ -68,6 +68,9 @@ const miscOrdersDBCollectionPath = 'misc_orders_inventory_db';
 /// Firebase collection for purchase orders
 const purchaseOrdersDBCollectionPath = 'purchase_orders_inventory_db';
 
+/// Firebase collection for purchase requisition
+const purchaseRequisitionDBCollectionPath = 'purchase_requisition_inventory_db';
+
 /// Firebase collection for customer price quote requests
 const requestPriceQuoteDBCollectionPath = 'request_price_quote_inventory_db';
 

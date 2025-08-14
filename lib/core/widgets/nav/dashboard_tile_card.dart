@@ -24,6 +24,11 @@ class DashboardTileCard extends StatefulWidget {
   final void Function()? onTap;
   final List<DashboardTile> tiles;
   final Map<String, int>? metrics;
+
+  /*USAGE:
+  canAccess: (perm) {
+    return context.isLicensed(perm) || context.hasPermission(perm);
+  },*/
   final bool Function(String)? canAccess;
 
   const DashboardTileCard({
@@ -79,13 +84,12 @@ class _DashboardTileCardState extends State<DashboardTileCard> {
   void _handleFocusChange(bool hasFocus) =>
       hasFocus ? TooltipController.enable() : TooltipController.disable();
 
-  bool _canAccess(String perm, BuildContext cxt) {
+  bool _canAccess(String access, BuildContext cxt) {
     final can =
-        isUnknownPermission(perm) ||
-        cxt.isLicensed(perm) ||
-        cxt.hasPermission(perm);
+        isUnknownPermission(access) ||
+        cxt.isLicensed(access) ||
+        cxt.hasPermission(access);
     return can;
-    /*final canAccess = context.select((AccessControlCubit c) => c.has(perm));*/
   }
 
   @override
@@ -271,7 +275,7 @@ class _DashboardTileCardState extends State<DashboardTileCard> {
       padding: const EdgeInsets.all(20.0),
       duration: kAnimateDuration,
       decoration: BoxDecoration(
-        color: canAccess ? (widget.bgColor ?? ranColor) : ranColor.toAlpha(0.3),
+        color: canAccess ? (widget.bgColor ?? ranColor) : ranColor.toAlpha(0.2),
         borderRadius: BorderRadius.circular(kBorderRadius),
         border: canAccess ? null : Border.all(color: ranColor, width: 4),
       ),
@@ -324,30 +328,6 @@ class _DashboardTileCardState extends State<DashboardTileCard> {
         Expanded(
           child: TextButton.icon(
             onPressed: null,
-
-            /*onPressed:
-                widget.onTap ??
-                () async {
-                  TooltipController.enabled = false;
-                  // Check if the WorkspaceRole is AgentFranchise and tile action is liveChatSupport
-                  final shouldStop = await checkLiveChatSupportAccess(
-                    context,
-                    tile.action,
-                  );
-                  if (shouldStop) return;
-
-                  Future.delayed(Duration.zero, () {
-                    if (context.mounted) {
-                      tile.param.entries.isEmpty
-                          ? context.goNamed(tile.action)
-                          : context.goNamed(
-                              tile.action,
-                              extra: tile.param,
-                              pathParameters: tile.param,
-                            );
-                    }
-                  });
-                },*/
             icon: Expanded(
               child: Icon(
                 tile.icon,

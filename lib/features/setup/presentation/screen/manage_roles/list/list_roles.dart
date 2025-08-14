@@ -1,6 +1,6 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/widgets/custom_button.dart';
-import 'package:assign_erp/core/widgets/dynamic_table.dart';
+import 'package:assign_erp/core/widgets/button/custom_button.dart';
+import 'package:assign_erp/core/widgets/layout/dynamic_table.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/setup/data/models/role_model.dart';
 import 'package:assign_erp/features/setup/presentation/bloc/create_roles/role_bloc.dart';

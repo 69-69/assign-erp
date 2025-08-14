@@ -10,8 +10,10 @@ class PurchaseOrder extends Equatable {
   final String storeNumber;
   final String poNumber;
   final String supplierId;
+  // final List<POLineItem> lineItems; // A list of items in the RFQ
 
   final String productName;
+  final String currency;
 
   final double unitPrice;
   final int quantity;
@@ -38,9 +40,14 @@ class PurchaseOrder extends Equatable {
   final String updatedBy;
   final DateTime updatedAt;
 
+  /// @TODO purchase order fields
+  // Taxes
+  // Attachments (e.g., specifications)
+
   PurchaseOrder({
     this.id = '',
     this.poNumber = '',
+    required this.currency,
     required this.storeNumber,
     required this.supplierId,
     required this.status,
@@ -73,6 +80,7 @@ class PurchaseOrder extends Equatable {
       supplierId: data['supplierId'] ?? '',
       status: data['status'] ?? '',
       productName: data['productName'] ?? '',
+      currency: data['currency'] ?? '',
       orderType: data['orderType'] ?? 'purchase order',
       quantity: data['quantity'] ?? 0,
       unitPrice: data['unitPrice'] ?? 0.0,
@@ -98,6 +106,7 @@ class PurchaseOrder extends Equatable {
     'poNumber': poNumber,
     'supplierId': supplierId,
     'productName': productName,
+    'currency': currency,
     'unitPrice': unitPrice,
     'quantity': quantity,
     'status': status,
@@ -175,6 +184,7 @@ class PurchaseOrder extends Equatable {
       productName.contains(filter) ||
       status.contains(filter) ||
       supplierId.contains(filter) ||
+      currency.contains(filter) ||
       paymentTerms.contains(filter);
 
   /// [findPurchaseOrderById]
@@ -209,6 +219,7 @@ class PurchaseOrder extends Equatable {
     String? poNumber,
     String? supplierId,
     String? productName,
+    String? currency,
     String? orderType,
     double? unitPrice,
     int? quantity,
@@ -232,6 +243,7 @@ class PurchaseOrder extends Equatable {
       poNumber: poNumber ?? this.poNumber,
       supplierId: supplierId ?? this.supplierId,
       productName: productName ?? this.productName,
+      currency: currency ?? this.currency,
       unitPrice: unitPrice ?? this.unitPrice,
       orderType: orderType ?? this.orderType,
       quantity: quantity ?? this.quantity,
@@ -259,6 +271,7 @@ class PurchaseOrder extends Equatable {
     supplierId,
     status,
     productName,
+    currency,
     quantity,
     orderType,
     unitPrice,
@@ -285,6 +298,7 @@ class PurchaseOrder extends Equatable {
       supplierId,
       orderType.toTitleCase,
       status.toTitleCase,
+      currency.toTitleCase,
       paymentTerms.toTitleCase,
       productName.toTitleCase,
       '$ghanaCedis$unitPrice',
@@ -316,6 +330,7 @@ class PurchaseOrder extends Equatable {
     'Supplier ID',
     'Order Type',
     'Status',
+    'Currency',
     'Payment Terms',
     'Product Name',
     'Unit Price',
@@ -331,4 +346,19 @@ class PurchaseOrder extends Equatable {
     'Updated By',
     'Updated At',
   ];
+}
+
+class POLineItem extends Equatable {
+  final String productName;
+  final double unitPrice;
+  final int quantity;
+
+  const POLineItem({
+    required this.productName,
+    required this.unitPrice,
+    required this.quantity,
+  });
+
+  @override
+  List<Object?> get props => [productName, unitPrice, quantity];
 }

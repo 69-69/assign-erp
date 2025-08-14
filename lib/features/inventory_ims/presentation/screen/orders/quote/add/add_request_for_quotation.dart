@@ -2,7 +2,7 @@ import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/generate_new_uid.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/custom_button.dart';
+import 'package:assign_erp/core/widgets/button/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/dialog/async_progress_dialog.dart';
@@ -11,7 +11,7 @@ import 'package:assign_erp/core/widgets/dialog/form_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/dialog/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
-import 'package:assign_erp/features/inventory_ims/data/models/orders/request_price_quotation_model.dart';
+import 'package:assign_erp/features/inventory_ims/data/models/orders/request_for_quotation_model.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/bloc/inventory_bloc.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/bloc/orders/request_price_quotation_bloc.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/screen/orders/quote/widget/form_inputs.dart';
@@ -89,7 +89,7 @@ class _AddRequestForQuoteFormState extends State<_AddRequestForQuoteForm> {
 
   void _onSubmit() {
     if (_formKey.currentState!.validate()) {
-      /// Added Multiple Request for Price Quotation Simultaneously
+      /// Added Multiple Request for Quotation Simultaneously
       _quotes.add(_quoteData);
 
       context.read<RequestForQuotationBloc>().add(
@@ -105,7 +105,7 @@ class _AddRequestForQuoteFormState extends State<_AddRequestForQuoteForm> {
     }
   }
 
-  /// Function for Adding Multiple Request for Price Quotation Simultaneously
+  /// Function for Adding Multiple Request for Quotation Simultaneously
   void _addQuoteToList() {
     if (_formKey.currentState!.validate()) {
       setState(() => isMultipleQuotes = true);

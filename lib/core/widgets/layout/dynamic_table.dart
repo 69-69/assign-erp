@@ -4,20 +4,27 @@ import 'package:assign_erp/core/util/debug_printify.dart';
 import 'package:assign_erp/core/util/format_date_utl.dart';
 import 'package:assign_erp/core/util/size_config.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/custom_button.dart';
+import 'package:assign_erp/core/widgets/button/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/custom_text_field.dart';
 import 'package:assign_erp/core/widgets/dialog/prompt_user_for_action.dart';
 import 'package:assign_erp/core/widgets/file_doc_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class DynamicDataTable extends StatefulWidget {
-  /// Skip / Exclude / Hide the first value of each row [skip]
+  /// Hide the first value of each row [skip]
+  /// If set to `true`, the first column in each row (e.g., the ID or any value)
+  /// will be hidden but only toggled when the `showIDToggle` is set to `true`.
   final bool skip;
 
-  /// The LIST Position to skip in row [skipPos]
-  /// Especially, if you don't need to render a field-vale in the UI (e.g.: ID)
-  /// The value will be skipped in the UI, but available in the code
+  /// [skipPos] The position to skip or exclude from each row in the `rows` data.
+  ///
+  /// This value determines the index of the column to be excluded from the DataTable.
+  /// For example, if `skip` is set to `true` and `skipPos` is `1`, the second column
+  /// in each row (index 1) will be skipped (not displayed) in the DataTable view.
+  ///
+  /// By default, `skipPos` is set to `1`, meaning the second column will be excluded.
   final int skipPos;
 
   /// Show or Hide Sensitive ID [showIDToggle]
@@ -101,6 +108,8 @@ class _DynamicDataTableState extends State<DynamicDataTable> {
   bool _allSelectedStatus = false;
   late List<bool> _selectedRowsStatus;
   bool _allVisibleRowIds = false;
+  // Local variable to store the sorted rows
+  List<List<String>> _sortedRows = [];
 
   // Track the index of the row with visible ID
   int? _visibleRowIdIndex;
@@ -133,6 +142,8 @@ class _DynamicDataTableState extends State<DynamicDataTable> {
     super.initState();
     _initializeSelectedRows();
     _searchController.addListener(_onSearchChanged);
+    // Initialize _sortedRows with the initial rows from widget
+    _sortedRows = [...widget.rows];
   }
 
   void _initializeSelectedRows() =>
@@ -251,6 +262,7 @@ class _DynamicDataTableState extends State<DynamicDataTable> {
     // Ensure _selectedRows list is correctly sized
     _updateSelectedRowsForNewRowCount();
 
+    // Get filtered rows based on search query
     final filteredRows = _searchRowsFunc();
     final filteredChildRows = _searchChildRowsFunc();
 
@@ -274,21 +286,46 @@ class _DynamicDataTableState extends State<DynamicDataTable> {
             controller: _horScrollController,
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.only(bottom: 20.0),
-            child: _buildBody(context, filteredRows, filteredChildRows),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Sort By Dropdown Button
+                _SortByDropdown(
+                  headers: widget.headers,
+                  filteredRows: filteredRows,
+                  filteredChildRows: filteredChildRows,
+                  initialSelection: 'Name', // Default sorting criterion
+                  onSortedRowsChanged: (sortedRows) {
+                    setState(() {
+                      _sortedRows = sortedRows;
+                    });
+                  },
+                ),
+                // The table body using the sorted rows
+                Expanded(
+                  child: _buildBody(context, _sortedRows, filteredChildRows),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  DataTable _buildBody(
+  _buildBody(
     BuildContext context,
     List<List<String>> filteredRows,
     List<List<String>> filteredChildRows,
   ) {
+    const textStyle = TextStyle(overflow: TextOverflow.ellipsis);
+
     return DataTable(
+      // columnSpacing: context.screenWidth / widget.headers.length,
       showCheckboxColumn: false,
       border: const TableBorder(verticalInside: BorderSide(width: 0.1)),
+      headingTextStyle: textStyle,
+      dataTextStyle: textStyle,
       headingRowColor: const WidgetStatePropertyAll(kGrayBlueColor),
       columns: _buildDataColumns(context),
       rows: [
@@ -568,6 +605,115 @@ class _SearchTextField extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _SortByDropdown extends StatelessWidget {
+  final List<String> headers;
+  final List<List<String>> filteredRows;
+  final List<List<String>> filteredChildRows;
+  final String? initialSelection;
+  final ValueChanged<List<List<String>>> onSortedRowsChanged;
+
+  const _SortByDropdown({
+    required this.headers,
+    required this.filteredRows,
+    required this.filteredChildRows,
+    this.initialSelection,
+    required this.onSortedRowsChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownMenu<String>(
+      hintText: 'Sort By...',
+      initialSelection: initialSelection,
+      onSelected: (value) {
+        if (value != null) {
+          _applySorting(value);
+        }
+      },
+      dropdownMenuEntries: headers.map((header) {
+        return DropdownMenuEntry<String>(value: header, label: header);
+      }).toList(),
+      trailingIcon: const Icon(Icons.sort),
+      textStyle: const TextStyle(fontSize: 13),
+      enableFilter: true,
+      menuStyle: const MenuStyle(
+        visualDensity: VisualDensity.compact,
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero,
+            side: BorderSide.none,
+          ),
+        ),
+      ),
+      inputDecorationTheme: const InputDecorationTheme(
+        isDense: true,
+        border: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        labelStyle: TextStyle(overflow: TextOverflow.ellipsis),
+        contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      ),
+      width: 150,
+    );
+  }
+
+  void _applySorting(String criterion) {
+    // Combine rows before sorting
+    final rows = [...filteredRows, ...filteredChildRows];
+
+    // Identify the column index based on the selected sorting criterion
+    int columnIndex = headers.indexOf(criterion);
+
+    if (columnIndex == -1) return; // If criterion not found, don't sort
+
+    // Sort rows based on the selected header column
+    rows.sort((a, b) {
+      final valueA = a[columnIndex];
+      final valueB = b[columnIndex];
+
+      // Handle case where values are numeric
+      if (valueA.isNumeric && valueB.isNumeric) {
+        return double.parse(valueA).compareTo(double.parse(valueB));
+      }
+      // Handle case where values are DateTime strings
+      else if (_isValidDate(valueA) && _isValidDate(valueB)) {
+        final dateA = _parseDate(valueA);
+        final dateB = _parseDate(valueB);
+        return dateA.compareTo(dateB);
+      }
+      // Default string comparison
+      else {
+        return valueA.compareTo(valueB);
+      }
+    });
+
+    // Notify the parent widget that the rows have been sorted
+    onSortedRowsChanged(rows);
+  }
+
+  // Helper function to check if the value is a valid date string
+  bool _isValidDate(String value) {
+    try {
+      _parseDate(value);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Helper function to parse the date using DateFormat
+  DateTime _parseDate(String value) {
+    try {
+      // Try to parse the non-standard date format
+      final dateFormat = DateFormat("EEE, M/d/yyyy h:mm:ss a");
+      return dateFormat.parse(value);
+    } catch (e) {
+      // If parsing fails, throw an error
+      throw FormatException("Invalid date format");
+    }
   }
 }
 

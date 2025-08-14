@@ -1,4 +1,4 @@
-import 'package:assign_erp/core/widgets/custom_scaffold.dart';
+import 'package:assign_erp/core/widgets/layout/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/nav/custom_tab.dart';
 import 'package:assign_erp/features/trouble_shooting/presentation/screen/app_issues/error_logs.dart';
 import 'package:assign_erp/features/trouble_shooting/presentation/screen/user_device/user_device_specs.dart';

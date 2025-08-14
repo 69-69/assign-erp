@@ -109,14 +109,14 @@ class Attendance {
   ];
 
   static List<String> get dataTableHeader => const [
-    'employee id',
-    'id',
-    'type',
-    'name',
-    'ip',
-    'city',
-    'region',
+    'Employee id',
+    'ID',
+    'Type',
+    'Name',
+    'IP',
+    'City',
+    'Region',
     // 'areas viewed',
-    'created at',
+    'Created at',
   ];
 }

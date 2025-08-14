@@ -1,5 +1,5 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
-import 'package:assign_erp/core/widgets/custom_scaffold.dart';
+import 'package:assign_erp/core/widgets/layout/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/nav/dashboard_tile_card.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:assign_erp/features/customer_crm/presentation/customer_tiles.dart';
@@ -29,14 +29,15 @@ class CustomerApp extends StatelessWidget {
         return CustomScaffold(
           isGradientBg: true,
           title: customerAppTitle,
-          body: _buildTiles(context),
+          tiles: customerTiles,
+          body: _buildDashboard(context),
           floatingActionBtnLocation: FloatingActionButtonLocation.centerFloat,
         );
       },
     );
   }
 
-  Widget _buildTiles(BuildContext context) {
+  Widget _buildDashboard(BuildContext context) {
     /* Role Based Access Control
     final employee = context.employee;
     final tiles = [...?customerTiles[employee?.role]?.tiles];*/

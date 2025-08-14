@@ -11,6 +11,7 @@ import 'package:assign_erp/features/home/home_app.dart';
 import 'package:assign_erp/features/inventory_ims/presentation/index.dart';
 import 'package:assign_erp/features/live_support/presentation/index.dart';
 import 'package:assign_erp/features/pos_system/presentation/index.dart';
+import 'package:assign_erp/features/procurement/presentation/index.dart';
 import 'package:assign_erp/features/setup/presentation/index.dart';
 import 'package:assign_erp/features/startup/initial_screen.dart';
 import 'package:assign_erp/features/trouble_shooting/presentation/index.dart';
@@ -211,7 +212,7 @@ GoRoute _warehouseRoute() {
 
 /// Inventory App
 GoRoute _inventoryRoute() {
-  final List<({String name, Widget screen})> staticRoutes = [
+  final List<({String name, Widget screen})> inventoryRoutes = [
     (name: RouteNames.invoice, screen: const InvoiceScreen()),
     (name: RouteNames.deliveries, screen: const DeliveryScreen()),
     (name: RouteNames.products, screen: const ProductScreen()),
@@ -220,11 +221,13 @@ GoRoute _inventoryRoute() {
   ];
 
   final List<({String name, Widget screen})> orderSubRoutes = [
-    (name: RouteNames.placeAnOrder, screen: const OrderScreen()),
-    (name: RouteNames.purchaseOrders, screen: const PurchaseOrderScreen()),
+    (name: RouteNames.salesOrders, screen: const OrderScreen()),
+    (name: RouteNames.imsPurchaseOrders, screen: const PurchaseOrderScreen()),
     (name: RouteNames.miscOrders, screen: const MiscOrderScreen()),
+
+    /// @TODO be move to procurement
     (
-      name: RouteNames.requestForQuote,
+      name: RouteNames.imsRequestForQuote,
       screen: const RequestForQuotationScreen(),
     ),
   ];
@@ -235,8 +238,8 @@ GoRoute _inventoryRoute() {
     pageBuilder: (context, state) =>
         _animateTransition(state, const InventoryApp()),
     routes: [
-      // Static inventory routes
-      ..._mapStaticRoutes(staticRoutes),
+      // inventory routes
+      ..._mapStaticRoutes(inventoryRoutes),
 
       // Orders with subroutes
       GoRoute(
@@ -244,6 +247,58 @@ GoRoute _inventoryRoute() {
         path: RouteNames.orders,
         builder: (context, state) => const OrdersScreen(),
         routes: _mapStaticRoutes(orderSubRoutes),
+      ),
+    ],
+  );
+}
+
+/// Procurement App
+GoRoute _procurementRoute() {
+  final List<({String name, Widget screen})> procurementRoutes = [
+    (
+      name: RouteNames.proPurchaseOrders,
+      screen: const ProPurchaseOrderScreen(),
+    ),
+    (
+      name: RouteNames.proRequestForQuote,
+      screen: const ProRequestForQuoteScreen(),
+    ),
+    (
+      name: RouteNames.purchaseRequisition,
+      screen: const ProPurchaseRequisitionScreen(),
+    ),
+  ];
+
+  final List<({String name, Widget screen})> supplierSubRoutes = [
+    (
+      name: RouteNames.supplierAccount,
+      screen: const SupplierEvaluationScreen(),
+    ),
+    (
+      name: RouteNames.supplierEvaluation,
+      screen: const SupplierEvaluationScreen(),
+    ),
+    (
+      name: RouteNames.contractManagement,
+      screen: const ContractManagementScreen(),
+    ),
+  ];
+
+  return GoRoute(
+    name: RouteNames.procurementApp,
+    path: RouteNames.procurementApp,
+    pageBuilder: (context, state) =>
+        _animateTransition(state, const ProcurementApp()),
+    routes: [
+      // procurement routes
+      ..._mapStaticRoutes(procurementRoutes),
+
+      // Supplier management's subroutes
+      GoRoute(
+        name: RouteNames.supplierManagement,
+        path: RouteNames.supplierManagement,
+        builder: (context, state) => const ProSupplierManagementScreen(),
+        routes: _mapStaticRoutes(supplierSubRoutes),
       ),
     ],
   );
@@ -342,16 +397,17 @@ List<RouteBase> appRouterConfig = <RouteBase>[
         path: RouteNames.homeDashboard,
         child: const HomeApp(),
         routes: [
-          _setupRoute(),
-          _storesSwitcherRoute(),
-          _warehouseRoute(),
           _inventoryRoute(),
+          _procurementRoute(),
+          _setupRoute(),
+          _warehouseRoute(),
           _customerRoute(),
           _posRoute(),
-          _agentRoute(),
-          _troubleShootRoute(),
           _userGuideRoute(),
           _liveSupportRoute(),
+          _agentRoute(),
+          _troubleShootRoute(),
+          _storesSwitcherRoute(),
         ],
       ),
 

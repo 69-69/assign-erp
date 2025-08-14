@@ -9,33 +9,35 @@ import 'package:flutter/material.dart';
 extension LicenseTiles on BuildContext {
   List<DashboardTile> get licenseTiles {
     final appPackages = [
-      // Agent Package
-      {
-        'label': 'agent',
-        'icon': Icons.real_estate_agent_outlined,
-        'action': RouteNames.agent,
-        'param': {},
-        'access': _getValue(SubscriptionLicenses.agent),
-        'description': 'setup, oversee, and monitor workspaces for clients',
-      },
       // Inventory Package
       {
         'label': 'inventory',
-        'icon': Icons.category,
+        'icon': Icons.inventory_sharp,
         'action': RouteNames.inventoryApp,
         'param': {},
         'access': _getValue(SubscriptionLicenses.inventory),
-        'description': 'stocks, orders, deliveries, sales, invoices, tracking',
+        'description':
+            'Manage stock levels, track items, and oversee warehouse operations.',
+      },
+      // Procurement Package
+      {
+        'label': 'procurement - supplier',
+        'icon': Icons.add_shopping_cart,
+        'action': RouteNames.procurementApp,
+        'param': {},
+        'access': _getValue(SubscriptionLicenses.procurement),
+        'description':
+            'Oversee purchasing, track orders, and manage supplier data.',
       },
       // POS Package
       {
-        'label': 'pos',
+        'label': 'POS',
         'icon': Icons.point_of_sale,
         'action': RouteNames.posApp,
         'param': {},
         'access': _getValue(SubscriptionLicenses.pos),
         'description':
-            'Provides access to point of sale tools for transaction processing and sales management.',
+            'Handle retail transactions, sales, and customer checkouts.',
       },
       // Warehouse Package
       {
@@ -45,7 +47,7 @@ extension LicenseTiles on BuildContext {
         'param': {},
         'access': _getValue(SubscriptionLicenses.warehouse),
         'description':
-            'Grants access to warehouse management tools for inventory control and order processing.',
+            'Manage warehouse operations, stock movement, and storage locations.',
       },
       // Customer Package
       {
@@ -55,21 +57,11 @@ extension LicenseTiles on BuildContext {
         'param': {},
         'access': _getValue(SubscriptionLicenses.crm),
         'description':
-            'Provides access to CRM features for managing customer interactions, sales, and support.',
+            'Manage customer relationships, profiles, and communication history.',
       },
 
       /// Not-A-License - Only used for system setup and configuration of Tenant organization\'s workspace.
-      homeTiles,
-      // Troubleshoot Package
-      {
-        'label': 'troubleshoot',
-        'icon': Icons.troubleshoot,
-        'action': RouteNames.troubleShootingApp,
-        'param': {},
-        'access': _getValue(SubscriptionLicenses.dev),
-        'description':
-            'Provides access to troubleshooting tools and diagnostics.',
-      },
+      homeSetupTiles,
       {
         'label': 'user - guide',
         'icon': Icons.library_books,
@@ -87,6 +79,25 @@ extension LicenseTiles on BuildContext {
         'param': {},
         'access': _getValue(SubscriptionLicenses.training),
         'description': 'Get 24/7 live chat support from our agents and experts',
+      },
+      // Agent Package
+      {
+        'label': 'agent',
+        'icon': Icons.real_estate_agent_outlined,
+        'action': RouteNames.agent,
+        'param': {},
+        'access': _getValue(SubscriptionLicenses.agent),
+        'description': 'setup, oversee, and monitor workspaces for clients',
+      },
+      // Troubleshoot Package
+      {
+        'label': 'troubleshoot',
+        'icon': Icons.troubleshoot,
+        'action': RouteNames.troubleShootingApp,
+        'param': {},
+        'access': _getValue(SubscriptionLicenses.dev),
+        'description':
+            'Provides access to troubleshooting tools and diagnostics.',
       },
     ];
 
@@ -118,7 +129,7 @@ String _getValue(e) => getEnumName<SubscriptionLicenses>(e);
       // Inventory Package
       {
         'label': 'inventory',
-        'icon': Icons.category,
+        'icon': Icons.inventory_sharp,
         'action': RouteNames.inventoryApp,
         'param': {},
         'access': SubscriptionLicenses.inventory.name,

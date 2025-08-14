@@ -3,7 +3,7 @@ import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/calculate_extras.dart';
 import 'package:assign_erp/core/util/generate_new_uid.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/custom_button.dart';
+import 'package:assign_erp/core/widgets/button/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_scroll_bar.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/dialog/async_progress_dialog.dart';
@@ -51,6 +51,7 @@ class _AddPurchaseOrdersBodyState extends State<_AddPurchaseOrdersBody> {
   String _newPONumber = '';
   String _selectedSupplierId = '';
   String? _selectedPOStatus;
+  String? _selectedCurrency;
   String? _selectedPaymentTerms;
   DateTime? _selectedDeliveryDate;
   double _discountAmount = 0.0;
@@ -109,6 +110,7 @@ class _AddPurchaseOrdersBodyState extends State<_AddPurchaseOrdersBody> {
     supplierId: _selectedSupplierId,
     productName: _productDescController.text,
     orderType: 'purchase order',
+    currency: _selectedCurrency ?? '',
     quantity: int.tryParse(_quantityController.text) ?? 0,
     unitPrice: _strToDouble(_unitPriceController.text),
     paymentTerms: _selectedPaymentTerms ?? '',
@@ -244,36 +246,7 @@ class _AddPurchaseOrdersBodyState extends State<_AddPurchaseOrdersBody> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            RichText(
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                text: 'PO Number:\n',
-                style: context.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                children: [
-                  TextSpan(
-                    text: _newPONumber,
-                    style: context.textTheme.titleLarge?.copyWith(
-                      color: kDangerColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            FittedBox(
-              child: context.buildRefreshButton(
-                'Refresh Order Number',
-                onPressed: _generatePONumber,
-              ),
-            ),
-          ],
-        ),
+        _buildTitle(),
         const SizedBox(width: 10.0),
         SupplierIDInput(
           onChanged: (id, name) => setState(() => _selectedSupplierId = id),
@@ -297,9 +270,10 @@ class _AddPurchaseOrdersBodyState extends State<_AddPurchaseOrdersBody> {
           },
         ),
         const SizedBox(height: 20.0),
-        POStatusAndPaymentTermsDropdown(
+        POStatusCurrencyPayTermsDropdown(
           onPayChange: (t) => setState(() => _selectedPaymentTerms = t),
           onStatusChange: (s) => setState(() => _selectedPOStatus = s),
+          onCurrencyChange: (c) => setState(() => _selectedCurrency = c),
         ),
         const SizedBox(height: 20.0),
         ListTile(
@@ -355,6 +329,39 @@ class _AddPurchaseOrdersBodyState extends State<_AddPurchaseOrdersBody> {
           onPressed: _onSubmit,
         ),
         const SizedBox(height: 20.0),
+      ],
+    );
+  }
+
+  Row _buildTitle() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        RichText(
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
+          text: TextSpan(
+            text: 'PO Number:\n',
+            style: context.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+            children: [
+              TextSpan(
+                text: _newPONumber,
+                style: context.textTheme.titleLarge?.copyWith(
+                  color: kDangerColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+        FittedBox(
+          child: context.buildRefreshButton(
+            'Refresh Order Number',
+            onPressed: _generatePONumber,
+          ),
+        ),
       ],
     );
   }

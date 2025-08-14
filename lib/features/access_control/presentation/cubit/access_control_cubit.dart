@@ -122,6 +122,8 @@ class AccessControlCubit extends Cubit<AccessControlState> {
 }
 
 extension AccessControlCubitExtensions on BuildContext {
+  /*final canAccess = context.watch((AccessControlCubit c) => c.has(perm));*/
+
   // Watch version (reactive) [_watchAcCubit]
   AccessControlCubit _watchAcCubit() => watch<AccessControlCubit>();
 

@@ -78,14 +78,12 @@ class _SideNavState extends State<SideNav> with SingleTickerProviderStateMixin {
   Color get _iconColor =>
       _shouldExpand ? kLightColor : kLightBlueColor; // surfaceTintColor
 
-  bool _canAccess(String perm, BuildContext cxt) {
+  bool _canAccess(String access, BuildContext cxt) {
     final can =
-        isUnknownPermission(perm) ||
-        cxt.isLicensed(perm) ||
-        cxt.hasPermission(perm);
+        isUnknownPermission(access) ||
+        cxt.isLicensed(access) ||
+        cxt.hasPermission(access);
     return can;
-
-    /*final canAccess = context.select((AccessControlCubit c) => c.has(perm));*/
   }
 
   @override

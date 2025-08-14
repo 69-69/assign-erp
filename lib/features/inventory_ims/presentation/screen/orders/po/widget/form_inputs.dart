@@ -3,9 +3,9 @@ import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/constants/app_enum.dart';
 import 'package:assign_erp/core/util/date_time_picker.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/adaptive_layout.dart';
-import 'package:assign_erp/core/widgets/custom_dropdown_field.dart';
+import 'package:assign_erp/core/widgets/button/custom_dropdown_field.dart';
 import 'package:assign_erp/core/widgets/custom_text_field.dart';
+import 'package:assign_erp/core/widgets/layout/adaptive_layout.dart';
 import 'package:assign_erp/features/setup/presentation/screen/product_config/widget/search_suppliers.dart';
 import 'package:flutter/material.dart';
 
@@ -22,19 +22,23 @@ class SupplierIDInput extends StatelessWidget {
   }
 }
 
-/// Purchase Order Status & Payment Terms Dropdown [POStatusAndPaymentTermsDropdown]
-class POStatusAndPaymentTermsDropdown extends StatelessWidget {
+/// Purchase Order Status, Currency & Payment Terms Dropdown [POStatusCurrencyPayTermsDropdown]
+class POStatusCurrencyPayTermsDropdown extends StatelessWidget {
   final String? serverPay;
+  final void Function(dynamic s) onCurrencyChange;
+  final String? serverCurrency;
   final void Function(dynamic s) onPayChange;
   final String? serverStatus;
   final void Function(dynamic s) onStatusChange;
 
-  const POStatusAndPaymentTermsDropdown({
+  const POStatusCurrencyPayTermsDropdown({
     super.key,
     this.serverPay,
     this.serverStatus,
+    this.serverCurrency,
     required this.onPayChange,
     required this.onStatusChange,
+    required this.onCurrencyChange,
   });
 
   @override
@@ -49,6 +53,13 @@ class POStatusAndPaymentTermsDropdown extends StatelessWidget {
           labelText: 'payment terms',
           serverValue: serverPay,
           onValueChange: (String? v) => onPayChange(v),
+        ),
+        CustomDropdown(
+          key: key,
+          items: currencyType,
+          labelText: 'currency',
+          serverValue: serverCurrency,
+          onValueChange: (String? v) => onCurrencyChange(v),
         ),
       ],
     );

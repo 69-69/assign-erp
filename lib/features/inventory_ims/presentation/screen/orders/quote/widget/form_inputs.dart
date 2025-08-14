@@ -2,9 +2,9 @@ import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/constants/app_enum.dart';
 import 'package:assign_erp/core/util/date_time_picker.dart';
-import 'package:assign_erp/core/widgets/adaptive_layout.dart';
-import 'package:assign_erp/core/widgets/custom_dropdown_field.dart';
+import 'package:assign_erp/core/widgets/button/custom_dropdown_field.dart';
 import 'package:assign_erp/core/widgets/custom_text_field.dart';
+import 'package:assign_erp/core/widgets/layout/adaptive_layout.dart';
 import 'package:assign_erp/features/setup/presentation/screen/product_config/widget/search_suppliers.dart';
 import 'package:flutter/material.dart';
 
@@ -370,7 +370,7 @@ class RFQStatusDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomDropdown(
       key: key,
-      items: requestForQuoteStatus,
+      items: ['quote status', ...requestForQuoteStatus],
       labelText: 'quote status',
       serverValue: serverValue,
       onValueChange: (String? v) => onChange(v),

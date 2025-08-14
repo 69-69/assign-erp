@@ -188,7 +188,7 @@ class Subscription extends Equatable {
     'ID',
     'Fee',
     'Subscription',
-    'Create At',
+    'Created At',
     'Created By',
     'Updated By',
     'Updated At',

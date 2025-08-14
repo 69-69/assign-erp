@@ -1,7 +1,8 @@
 import 'package:assign_erp/features/access_control/data/model/access_control_model.dart';
 
 /// PERMISSION BASED ACCESS-CONTROL
-/*enum PosPermission {
+/*
+enum PosPermission {
   createPosSale,
   viewSalesHistory,
   applyDiscount,
@@ -258,7 +259,7 @@ final List<AccessControl> _metricsPermissions = [
   ),
 ];
 
-final List<AccessControl> _secretPermissionDetails = [
+final List<AccessControl> _secretPermissions = [
   AccessControl(
     module: "POS Secrets",
     title: "View POS IDs",
@@ -276,7 +277,7 @@ final List<AccessControl> posPermissions = [
   ..._customersPermissions,
   ..._inventoryPermissions,
   ..._metricsPermissions,
-  ..._secretPermissionDetails,
+  ..._secretPermissions,
 ];
 
 /*/// Set Up Permissions for Each Role [rolePermissions]

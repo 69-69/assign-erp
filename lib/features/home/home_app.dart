@@ -1,4 +1,4 @@
-import 'package:assign_erp/core/widgets/custom_scaffold.dart';
+import 'package:assign_erp/core/widgets/layout/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/nav/dashboard_tile_card.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_bloc.dart';
@@ -31,18 +31,13 @@ class HomeApp extends StatelessWidget {
 
   Widget _buildBody(BuildContext context, AuthState authState) {
     if (authState.authStatus == AuthStatus.authenticated) {
-      return _buildTiles(context, authState);
+      return _buildDashboard(context, authState);
     }
     return context.loader;
   }
 
-  Widget _buildTiles(BuildContext context, AuthState authState) {
-    return DashboardTileCard(
-      tiles: context.licenseTiles,
-      /*canAccess: (perm) {
-        return context.isLicensed(perm) || context.hasPermission(perm);
-      },*/
-    );
+  Widget _buildDashboard(BuildContext context, AuthState authState) {
+    return DashboardTileCard(tiles: context.licenseTiles);
   }
 
   /*final tiles = [

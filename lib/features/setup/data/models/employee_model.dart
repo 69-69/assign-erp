@@ -218,7 +218,7 @@ class Employee extends Equatable {
     'Store number',
     'Name',
     'Mobile',
-    'Create At',
+    'Created At',
     'Created By',
     'Updated By',
     'Updated At',

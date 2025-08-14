@@ -16,8 +16,8 @@ enum SubscriptionLicenses {
   /// [inventory] Inventory (I.M.S) License: Grants customers access to the Inventory Management System.
   inventory,
 
-  // [full] Full Access License: Grants unrestricted access to all App system operations/packages.
-  // full,
+  /// [procurement] Procurement License: Grants customers access to the Procurement system.
+  procurement,
 
   /// [agent] Agent License: Allows agents to manage their own and client's (tenants) workspaces.
   agent,
@@ -66,17 +66,24 @@ final List<AccessControl> subscriptionLicenses = [
   ),
 
   AccessControl(
-    module: 'warehouse management',
-    title: 'Warehouse License',
-    description: 'Access to the Warehouse Management System.',
-    access: SubscriptionLicenses.warehouse,
-  ),
-
-  AccessControl(
     module: 'inventory management',
     title: 'Inventory License',
     description: 'Access to the Inventory Management System.',
     access: SubscriptionLicenses.inventory,
+  ),
+
+  AccessControl(
+    module: 'procurement management',
+    title: 'Procurement License',
+    description: 'Access to the Procurement system.',
+    access: SubscriptionLicenses.procurement,
+  ),
+
+  AccessControl(
+    module: 'warehouse management',
+    title: 'Warehouse License',
+    description: 'Access to the Warehouse Management System.',
+    access: SubscriptionLicenses.warehouse,
   ),
 
   AccessControl(

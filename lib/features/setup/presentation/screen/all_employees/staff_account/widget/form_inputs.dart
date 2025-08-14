@@ -1,10 +1,10 @@
 import 'package:assign_erp/core/constants/account_status.dart';
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/adaptive_layout.dart';
-import 'package:assign_erp/core/widgets/custom_button.dart';
-import 'package:assign_erp/core/widgets/custom_dropdown_field.dart';
+import 'package:assign_erp/core/widgets/button/custom_button.dart';
+import 'package:assign_erp/core/widgets/button/custom_dropdown_field.dart';
 import 'package:assign_erp/core/widgets/custom_text_field.dart';
+import 'package:assign_erp/core/widgets/layout/adaptive_layout.dart';
 import 'package:assign_erp/features/setup/data/data_sources/remote/get_roles.dart';
 import 'package:assign_erp/features/setup/data/models/role_model.dart';
 import 'package:assign_erp/features/setup/presentation/screen/company/widget/search_stores.dart';

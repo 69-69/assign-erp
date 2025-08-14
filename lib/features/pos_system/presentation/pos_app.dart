@@ -1,5 +1,5 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
-import 'package:assign_erp/core/widgets/custom_scaffold.dart';
+import 'package:assign_erp/core/widgets/layout/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/nav/dashboard_tile_card.dart';
 import 'package:assign_erp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:assign_erp/features/pos_system/presentation/pos_tiles.dart';
@@ -29,7 +29,8 @@ class POSApp extends StatelessWidget {
         return CustomScaffold(
           isGradientBg: true,
           title: posAppTitle,
-          body: _buildTiles(context),
+          tiles: posTiles,
+          body: _buildDashboard(context),
           floatingActionBtnLocation: FloatingActionButtonLocation.centerFloat,
           floatingActionButton: context.buildPOSGroupBtn(),
         );
@@ -37,7 +38,7 @@ class POSApp extends StatelessWidget {
     );
   }
 
-  Widget _buildTiles(BuildContext context) {
+  Widget _buildDashboard(BuildContext context) {
     /* Role Based Access Control
     final employee = context.employee;
     final tiles = [...?posTiles[employee?.role]?.tiles]; */

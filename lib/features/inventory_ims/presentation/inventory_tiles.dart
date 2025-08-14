@@ -10,20 +10,20 @@ extension InventoryTiles on dynamic {
   List<DashboardTile> get ordersTiles {
     final tilesData = [
       {
-        'label': 'orders',
-        'icon': Icons.shopping_cart,
-        'action': RouteNames.placeAnOrder,
+        'label': 'sales order',
+        'icon': Icons.trending_up,
+        'action': RouteNames.salesOrders,
         'param': {},
         'access': _getValue(InventoryPermission.manageSOs),
-        'description': 'Place an order for customers or clients',
+        'description': 'Create orders for customers or clients',
       },
       {
         'label': 'purchase - order',
         'icon': Icons.paypal,
-        'action': RouteNames.purchaseOrders,
+        'action': RouteNames.imsPurchaseOrders,
         'param': {},
         'access': _getValue(InventoryPermission.managePOs),
-        'description': 'generate PO to suppliers to request goods or services',
+        'description': 'generate POs to suppliers to request goods or services',
       },
       {
         'label': 'misc - order',
@@ -35,12 +35,13 @@ extension InventoryTiles on dynamic {
             'create additional orders that may include special requests, one-time purchases',
       },
       {
-        'label': 'request - quotation',
+        'label': 'request - for quotation',
         'icon': Icons.request_page_outlined,
-        'action': RouteNames.requestForQuote,
+        'action': RouteNames.imsRequestForQuote,
         'param': {},
         'access': _getValue(InventoryPermission.manageRFQs),
-        'description': 'create request for price quotation from suppliers',
+        'description':
+            'create quotation requests to suppliers for pricing and terms',
       },
     ];
 
@@ -66,7 +67,25 @@ extension InventoryTiles on dynamic {
         'param': {},
         'access': _getValue(InventoryPermission.manageOrders),
         'description':
-            'create purchase orders (POs), sales orders (SOs), and miscellaneous orders for suppliers or customers',
+            'create purchase orders (POs), sales orders (SOs), and miscellaneous orders (MOs) for suppliers or customers',
+      },
+      {
+        'label': 'Product Categories',
+        'icon': Icons.dashboard_customize_outlined,
+        'action': RouteNames.productCategories,
+        'param': {},
+        'access': _getValue(InventoryPermission.manageProductCategory),
+        'description':
+            'Organize products into categories for easier tracking and reporting.',
+      },
+      {
+        'label': 'Product Suppliers',
+        'icon': Icons.local_shipping,
+        'action': RouteNames.productSuppliers,
+        'param': {},
+        'access': _getValue(InventoryPermission.manageProductSuppliers),
+        'description':
+            'Manage suppliers linked to specific products for sourcing and restocking.',
       },
       // deliveries tab
       {

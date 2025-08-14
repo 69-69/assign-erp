@@ -1,6 +1,6 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/custom_scaffold.dart';
+import 'package:assign_erp/core/widgets/layout/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/nav/custom_tab.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/auth/presentation/screen/workspace/update/update_workspace_password.dart';
@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 const _sideTabs = [
   {'label': 'company', 'icon': Icons.home_work},
   {'label': 'employees', 'icon': Icons.manage_accounts},
-  {'label': 'manage roles', 'icon': Icons.admin_panel_settings},
+  {'label': 'Roles & Permissions', 'icon': Icons.admin_panel_settings},
   {'label': 'product config', 'icon': Icons.category},
   {'label': 'back up', 'icon': Icons.backup},
   {'label': 'renew license', 'icon': Icons.local_police},

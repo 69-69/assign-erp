@@ -1,7 +1,7 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
 import 'package:assign_erp/core/util/calculate_extras.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/custom_button.dart';
+import 'package:assign_erp/core/widgets/button/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/dialog/custom_bottom_sheet.dart';
 import 'package:assign_erp/core/widgets/dialog/form_bottom_sheet.dart';
@@ -45,6 +45,7 @@ class _UpdatePurchaseOrderFormState extends State<_UpdatePurchaseOrderForm> {
   String? _selectedSupplierId;
   String? _selectedPOStatus;
   String? _selectedPaymentTerms;
+  String? _selectedCurrency;
   DateTime? _selectedDeliveryDate;
   double _discountAmount = 0.0;
   double _taxAmount = 0.0;
@@ -111,6 +112,7 @@ class _UpdatePurchaseOrderFormState extends State<_UpdatePurchaseOrderForm> {
     quantity: int.tryParse(_quantityController.text) ?? 0,
     unitPrice: _strToDouble(_unitPriceController.text),
     paymentTerms: _selectedPaymentTerms ?? '',
+    currency: _selectedCurrency ?? '',
     deliveryDate: _selectedDeliveryDate,
     discountPercent: _strToDouble(_discountPercentController.text),
     taxPercent: _strToDouble(_taxPercentController.text),
@@ -219,11 +221,13 @@ class _UpdatePurchaseOrderFormState extends State<_UpdatePurchaseOrderForm> {
           },
         ),
         const SizedBox(height: 20.0),
-        POStatusAndPaymentTermsDropdown(
+        POStatusCurrencyPayTermsDropdown(
           serverPay: _order.paymentTerms,
           onPayChange: (t) => setState(() => _selectedPaymentTerms = t),
           serverStatus: _order.status,
           onStatusChange: (s) => setState(() => _selectedPOStatus = s),
+          serverCurrency: _order.currency,
+          onCurrencyChange: (c) => setState(() => _selectedCurrency = c),
         ),
         const SizedBox(height: 20.0),
         ListTile(

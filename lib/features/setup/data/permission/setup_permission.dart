@@ -186,7 +186,7 @@ final List<AccessControl> _employeePermissions = [
 final List<AccessControl> _rolePermissions = [
   AccessControl(
     module: "role",
-    title: "Manage roles",
+    title: "roles & permissions",
     description: "Allow users to create, edit, and delete roles.",
     access: SetupPermission.manageRole,
   ),
@@ -344,7 +344,7 @@ final List<AccessControl> _licensePermissions = [
   ),
 ];
 
-final List<AccessControl> _secretPermissionDetails = [
+final List<AccessControl> _secretPermissions = [
   AccessControl(
     module: "Setup Secrets",
     title: "View Configuration IDs",
@@ -369,7 +369,7 @@ final List<AccessControl> setupPermissions = [
   ..._productCategoryPermissions,
   ..._printSettingPermissions,
   ..._licensePermissions,
-  ..._secretPermissionDetails,
+  ..._secretPermissions,
 ];
 
 Set<Permission> _defaultStoreOwnerPermissions = setupPermissions

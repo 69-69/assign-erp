@@ -54,6 +54,10 @@ enum InventoryPermission {
   viewRFQ,
   updateRFQ,
   deleteRFQ,
+  // Product Category
+  manageProductCategory,
+  // Product Suppliers/Vendors
+  manageProductSuppliers,
   // Customer
   manageCustomers,
   createCustomer,
@@ -74,7 +78,7 @@ enum InventoryPermission {
   viewImsSecrets, // For viewing items IDs
 }
 
-final List<AccessControl> _inventoryPermissionDetails = [
+final List<AccessControl> _inventoryPermissions = [
   AccessControl(
     module: "inventory",
     title: "Manage inventory",
@@ -83,7 +87,7 @@ final List<AccessControl> _inventoryPermissionDetails = [
   ),
 ];
 
-final List<AccessControl> _salesPermissionDetails = [
+final List<AccessControl> _salesPermissions = [
   // Sales
   AccessControl(
     module: "ims sales",
@@ -117,7 +121,7 @@ final List<AccessControl> _salesPermissionDetails = [
   ),
 ];
 
-final List<AccessControl> _ordersPermissionDetails = [
+final List<AccessControl> _ordersPermissions = [
   AccessControl(
     module: "ims orders",
     title: "Manage orders",
@@ -126,7 +130,7 @@ final List<AccessControl> _ordersPermissionDetails = [
   ),
 ];
 
-final List<AccessControl> _salesOrderPermissionDetails = [
+final List<AccessControl> _salesOrderPermissions = [
   AccessControl(
     module: "ims sales orders",
     title: "Manage sales orders",
@@ -159,7 +163,7 @@ final List<AccessControl> _salesOrderPermissionDetails = [
   ),
 ];
 
-final List<AccessControl> _purchaseOrderPermissionDetails = [
+final List<AccessControl> _purchaseOrderPermissions = [
   AccessControl(
     module: "ims purchase orders",
     title: "Manage purchase orders",
@@ -192,7 +196,7 @@ final List<AccessControl> _purchaseOrderPermissionDetails = [
   ),
 ];
 
-final List<AccessControl> _miscOrderPermissionDetails = [
+final List<AccessControl> _miscOrderPermissions = [
   AccessControl(
     module: "ims misc orders",
     title: "Manage misc orders",
@@ -225,7 +229,7 @@ final List<AccessControl> _miscOrderPermissionDetails = [
   ),
 ];
 
-final List<AccessControl> _requestForQuotePermissionDetails = [
+final List<AccessControl> _requestForQuotePermissions = [
   AccessControl(
     module: "ims request for quotes",
     title: "Manage request for quotes",
@@ -261,7 +265,7 @@ final List<AccessControl> _requestForQuotePermissionDetails = [
   ),
 ];
 
-final List<AccessControl> _customersPermissionDetails = [
+final List<AccessControl> _customersPermissions = [
   AccessControl(
     module: "ims customers",
     title: "Manage customers",
@@ -295,7 +299,7 @@ final List<AccessControl> _customersPermissionDetails = [
   ),
 ];
 
-final List<AccessControl> _stockPermissionDetails = [
+final List<AccessControl> _stockPermissions = [
   AccessControl(
     module: "ims stock",
     title: "Manage inventory",
@@ -330,7 +334,7 @@ final List<AccessControl> _stockPermissionDetails = [
   ),
 ];
 
-final List<AccessControl> _deliveryPermissionDetails = [
+final List<AccessControl> _deliveryPermissions = [
   AccessControl(
     module: "ims delivery",
     title: "Manage deliveries",
@@ -363,7 +367,7 @@ final List<AccessControl> _deliveryPermissionDetails = [
   ),
 ];
 
-final List<AccessControl> _metricsPermissionDetails = [
+final List<AccessControl> _metricsPermissions = [
   AccessControl(
     module: "ims metrics",
     title: "Print Invoices",
@@ -384,7 +388,7 @@ final List<AccessControl> _metricsPermissionDetails = [
   ),
 ];
 
-final List<AccessControl> _secretPermissionDetails = [
+final List<AccessControl> _secretPermissions = [
   AccessControl(
     module: "IMS Secrets",
     title: "View Item IDs",
@@ -395,19 +399,19 @@ final List<AccessControl> _secretPermissionDetails = [
 
 final inventoryDisplayName = 'inventory';
 
-final List<AccessControl> inventoryPermissionDetails = [
-  ..._inventoryPermissionDetails,
-  ..._stockPermissionDetails,
-  ..._ordersPermissionDetails,
-  ..._salesPermissionDetails,
-  ..._salesOrderPermissionDetails,
-  ..._purchaseOrderPermissionDetails,
-  ..._miscOrderPermissionDetails,
-  ..._requestForQuotePermissionDetails,
-  ..._deliveryPermissionDetails,
-  ..._customersPermissionDetails,
-  ..._metricsPermissionDetails,
-  ..._secretPermissionDetails,
+final List<AccessControl> inventoryPermissions = [
+  ..._inventoryPermissions,
+  ..._stockPermissions,
+  ..._ordersPermissions,
+  ..._salesPermissions,
+  ..._salesOrderPermissions,
+  ..._purchaseOrderPermissions,
+  ..._miscOrderPermissions,
+  ..._requestForQuotePermissions,
+  ..._deliveryPermissions,
+  ..._customersPermissions,
+  ..._metricsPermissions,
+  ..._secretPermissions,
 ];
 
 /* can I use PageStorage to store user permissions...

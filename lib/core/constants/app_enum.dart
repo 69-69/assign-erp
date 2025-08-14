@@ -29,6 +29,20 @@ const paymentTerms = [
   'payment upon delivery',
 ];
 
+const currencyType = [
+  'currency',
+  'GHC',
+  'USD',
+  'EUR',
+  'GBP',
+  'CAD',
+  'AUD',
+  'CHF',
+  'JPY',
+  'NZD',
+  'SGD',
+];
+
 const paymentStatus = [
   'payment status',
   'unpaid',
@@ -79,9 +93,8 @@ const deliveryStatus = [
   'delayed',
 ];
 
-/// Request For Quotation Statuses
-const requestForQuoteStatus = [
-  'quote status',
+/// Request For Quotation & Purchase Requisition Statuses
+const _rFqPrStatus = [
   'draft',
   'submitted',
   'open',
@@ -91,6 +104,12 @@ const requestForQuoteStatus = [
   'rejected',
   'cancelled',
 ];
+
+/// Request For Quotation Statuses
+const requestForQuoteStatus = ['quote status', ..._rFqPrStatus];
+
+/// Purchase Requisition Statuses
+const requisitionStatus = ['requisition status', ..._rFqPrStatus];
 
 /// Orders Sources
 const orderSources = ['order source', 'website', 'in store', 'mobile app'];

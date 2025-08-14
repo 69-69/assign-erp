@@ -9,6 +9,7 @@ import 'package:assign_erp/features/agent/data/permission/agent_permission.dart'
 import 'package:assign_erp/features/customer_crm/data/permission/crm_permission.dart';
 import 'package:assign_erp/features/inventory_ims/data/permission/inventory_permission.dart';
 import 'package:assign_erp/features/pos_system/data/permission/pos_permission.dart';
+import 'package:assign_erp/features/procurement/data/permission/procurement_permission.dart';
 import 'package:assign_erp/features/setup/data/models/permission_model.dart';
 import 'package:assign_erp/features/setup/data/models/tab_content_model.dart';
 import 'package:assign_erp/features/setup/data/permission/setup_permission.dart';
@@ -18,11 +19,18 @@ import 'package:flutter/material.dart';
 
 final _tabContent = [
   TabContent<SubscriptionLicenses>(
-    label: 'Agent',
-    icon: Icons.real_estate_agent_outlined,
-    accessEnum: SubscriptionLicenses.agent,
-    displayName: agentDisplayName,
-    permissions: agentPermissions,
+    label: 'IMS',
+    icon: Icons.inventory_sharp,
+    accessEnum: SubscriptionLicenses.inventory,
+    displayName: inventoryDisplayName,
+    permissions: inventoryPermissions,
+  ),
+  TabContent<SubscriptionLicenses>(
+    label: 'PSM',
+    icon: Icons.shopping_cart,
+    accessEnum: SubscriptionLicenses.procurement,
+    displayName: procurementDisplayName,
+    permissions: procurementPermission,
   ),
   TabContent<SubscriptionLicenses>(
     label: 'POS',
@@ -32,11 +40,11 @@ final _tabContent = [
     permissions: posPermissions,
   ),
   TabContent<SubscriptionLicenses>(
-    label: 'IMS',
-    icon: Icons.category,
-    accessEnum: SubscriptionLicenses.inventory,
-    displayName: inventoryDisplayName,
-    permissions: inventoryPermissionDetails,
+    label: 'WMS',
+    icon: Icons.warehouse,
+    accessEnum: SubscriptionLicenses.warehouse,
+    displayName: wmsDisplayName,
+    permissions: warehousePermissions,
   ),
   TabContent<SubscriptionLicenses>(
     label: 'CRM',
@@ -46,17 +54,17 @@ final _tabContent = [
     permissions: crmPermissions,
   ),
   TabContent<SubscriptionLicenses>(
-    label: 'WMS',
-    icon: Icons.warehouse,
-    accessEnum: SubscriptionLicenses.warehouse,
-    displayName: wmsDisplayName,
-    permissions: warehousePermissions,
-  ),
-  TabContent<SubscriptionLicenses>(
     label: 'Setup',
     icon: Icons.settings,
     displayName: setupDisplayName,
     permissions: setupPermissions,
+  ),
+  TabContent<SubscriptionLicenses>(
+    label: 'Agent',
+    icon: Icons.real_estate_agent_outlined,
+    accessEnum: SubscriptionLicenses.agent,
+    displayName: agentDisplayName,
+    permissions: agentPermissions,
   ),
   TabContent<SubscriptionLicenses>(
     label: 'Trouble Shoot',
@@ -131,7 +139,7 @@ class PermissionCard extends StatelessWidget {
 /*final tabsLabels = [
   {'label': 'Agent', 'icon': Icons.real_estate_agent_outlined},
   {'label': 'POS', 'icon': Icons.point_of_sale},
-  {'label': 'IMS', 'icon': Icons.category},
+  {'label': 'IMS', 'icon': Icons.inventory_sharp},
   {'label': 'CRM', 'icon': Icons.group},
   {'label': 'WMS', 'icon': Icons.warehouse},
   {'label': 'Setup', 'icon': Icons.settings},

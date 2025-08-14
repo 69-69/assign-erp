@@ -16,6 +16,15 @@ class Supplier extends Equatable {
   final String updatedBy;
   final DateTime updatedAt;
 
+  /*class ProductSupplier {
+  final String productId;
+  final String supplierId; // foreign key to Procurement's Supplier
+  final double price;
+  // refers to the number of days it typically takes for a supplier to deliver an item from the moment a purchase order (PO) is placed until the goods arrive at your warehouse or facility.
+  final int leadTimeDays;
+  final bool isDefault;
+}*/
+
   Supplier({
     this.id = '',
     required this.name,

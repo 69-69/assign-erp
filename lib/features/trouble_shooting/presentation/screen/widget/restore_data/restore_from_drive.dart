@@ -1,6 +1,6 @@
 import 'package:assign_erp/core/constants/app_colors.dart';
-import 'package:assign_erp/core/result/result_data.dart';
-import 'package:assign_erp/core/widgets/custom_button.dart';
+import 'package:assign_erp/core/network/data_sources/models/result_data.dart';
+import 'package:assign_erp/core/widgets/button/custom_button.dart';
 import 'package:assign_erp/core/widgets/custom_snack_bar.dart';
 import 'package:assign_erp/core/widgets/data_backup_manager.dart';
 import 'package:assign_erp/core/widgets/dialog/async_progress_dialog.dart';

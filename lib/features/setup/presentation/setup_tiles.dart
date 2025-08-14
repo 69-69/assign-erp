@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 
 /// Settings Navigation Links [SetupTiles]
 extension SetupTiles on dynamic {
-  /// [homeTiles] Used for system setup and configuration of Tenant organization\'s workspace
-  get homeTiles => {
+  /// [homeSetupTiles] Used for system setup and configuration of Tenant organization\'s workspace
+  get homeSetupTiles => {
     'label': 'setup',
     'icon': Icons.settings,
     'action': RouteNames.setupApp,
@@ -37,7 +37,7 @@ extension SetupTiles on dynamic {
             'create staff attendance, accounts, assign roles for their utilization of the software',
       },
       {
-        'label': 'manage - roles',
+        'label': 'roles - permissions',
         'icon': Icons.admin_panel_settings,
         'action': RouteNames.manageRoles,
         'param': {'openTab': '2'},

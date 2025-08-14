@@ -1,5 +1,5 @@
-import 'package:assign_erp/core/widgets/custom_scaffold.dart';
-import 'package:assign_erp/core/widgets/dynamic_table.dart';
+import 'package:assign_erp/core/widgets/layout/custom_scaffold.dart';
+import 'package:assign_erp/core/widgets/layout/dynamic_table.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/setup/data/models/category_model.dart';
 import 'package:assign_erp/features/setup/presentation/bloc/product_config/category_bloc.dart';

@@ -1,5 +1,5 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
-import 'package:assign_erp/core/widgets/custom_scaffold.dart';
+import 'package:assign_erp/core/widgets/layout/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/nav/dashboard_tile_card.dart';
 import 'package:assign_erp/features/setup/presentation/setup_tiles.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +24,7 @@ class SetupApp extends StatelessWidget {
     return CustomScaffold(
       isGradientBg: true,
       title: setupAppTitle,
+      tiles: setupTiles,
       body: DashboardTileCard(tiles: setupTiles),
     );
   }

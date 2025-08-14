@@ -24,6 +24,7 @@ abstract class RouteNames {
 
   /// ──────────────────────── 🏠 Home Modules / Tiles ────────────────────────
   static const inventoryApp = 'inventory_app';
+  static const procurementApp = 'procurement_app';
   static const posApp = 'pos_app';
   static const setupApp = 'setup_app';
   static const warehouseApp = 'warehouse_app';
@@ -49,15 +50,28 @@ abstract class RouteNames {
   /// ───────────────────────── 📦 Inventory Module ─────────────────────────
   static const invoice = 'invoice_screen';
   static const orders = 'all_orders_screen';
-  static const placeAnOrder = 'sales_orders_screen';
-  static const purchaseOrders = 'purchase_orders_screen';
+  static const productCategories = 'product_categories_screen';
+  static const productSuppliers = 'product_suppliers_screen';
+  static const salesOrders = 'sales_orders_screen';
+  static const imsPurchaseOrders = 'inventory_purchase_orders_screen';
   static const miscOrders = 'miscellaneous_orders_screen';
-  static const requestForQuote = 'request_for_quotation_screen';
+  static const imsRequestForQuote = 'inventory_request_for_quote_screen';
   static const deliveries = 'deliveries_screen';
   static const products = 'products_screen';
   static const sales = 'sales_screen';
   static const ordersTracking = 'orders_tracking';
   static const inventReports = 'invent_reports_screen';
+
+  // for procurement
+  /// ───────────────────────── 📦 Procurement Module ─────────────────────────
+  static const proPurchaseOrders = 'procurement_purchase_orders_screen';
+  static const purchaseRequisition = 'purchase_requisition_screen';
+  static const proRequestForQuote = 'procurement_request_for_quote_screen';
+  static const supplierManagement = 'supplier_management_screen';
+  static const supplierAccount = 'supplier_account_screen';
+  static const procurementReports = 'procurement_reports_screen';
+  static const supplierEvaluation = 'supplier_evaluation_screen';
+  static const contractManagement = 'contract_management_screen';
 
   /// ───────────────────────── 🧾 POS Module ─────────────────────────
   static const posPayments = 'pos_payments_screen';

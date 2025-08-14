@@ -1,7 +1,7 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/constants/app_enum.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/custom_scaffold.dart';
+import 'package:assign_erp/core/widgets/layout/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/nav/custom_tab.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/auth/presentation/guard/auth_guard.dart';
@@ -81,7 +81,7 @@ class HowToConfigAppScreen extends StatelessWidget {
       'setup' => Icons.settings,
       'pos' => Icons.point_of_sale,
       'crm' => Icons.group,
-      'inventory' => Icons.inventory,
+      'inventory' => Icons.inventory_sharp,
       'warehouse' => Icons.warehouse,
       _ => Icons.help_outline,
     };

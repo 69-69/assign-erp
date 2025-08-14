@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:assign_erp/core/constants/app_db_collect.dart';
-import 'package:assign_erp/core/result/result_data.dart';
+import 'package:assign_erp/core/network/data_sources/models/result_data.dart';
 import 'package:assign_erp/core/util/debug_printify.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';

@@ -9,7 +9,7 @@ enum AgentPermission {
   viewWorkspaceSecrets,
 }
 
-final List<AccessControl> _agentPermissions = [
+final List<AccessControl> agentPermissions = [
   AccessControl(
     module: "agent",
     title: "Manage agent",
@@ -44,5 +44,3 @@ final List<AccessControl> _agentPermissions = [
 ];
 
 final agentDisplayName = 'agent';
-
-final List<AccessControl> agentPermissions = [..._agentPermissions];

@@ -1,6 +1,6 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/custom_scaffold.dart';
+import 'package:assign_erp/core/widgets/layout/custom_scaffold.dart';
 import 'package:assign_erp/features/trouble_shooting/data/models/subscription_model.dart';
 import 'package:assign_erp/features/trouble_shooting/presentation/bloc/subscription/subscription_bloc.dart';
 import 'package:assign_erp/features/trouble_shooting/presentation/bloc/tenant_bloc.dart';

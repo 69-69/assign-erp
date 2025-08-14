@@ -17,7 +17,7 @@ enum WarehousePermission {
   viewWmsSecrets,
 }
 
-final List<AccessControl> _warehousePermissionDetails = [
+final List<AccessControl> _warehousePermissions = [
   AccessControl(
     module: "warehouse",
     title: "Manage warehouse",
@@ -105,7 +105,7 @@ final List<AccessControl> _metricsPermissions = [
   ),
 ];
 
-final List<AccessControl> _secretPermissionDetails = [
+final List<AccessControl> _secretPermissions = [
   AccessControl(
     module: "Warehouse Secrets",
     title: "View Packages IDs",
@@ -118,10 +118,10 @@ final List<AccessControl> _secretPermissionDetails = [
 final wmsDisplayName = 'warehouse';
 
 final List<AccessControl> warehousePermissions = [
-  ..._warehousePermissionDetails,
+  ..._warehousePermissions,
   ..._inventoryPermissions,
   ..._shipmentsPermissions,
   ..._operationsPermissions,
   ..._metricsPermissions,
-  ..._secretPermissionDetails,
+  ..._secretPermissions,
 ];

@@ -1,6 +1,6 @@
 import 'package:assign_erp/core/constants/app_constant.dart';
 import 'package:assign_erp/core/util/str_util.dart';
-import 'package:assign_erp/core/widgets/custom_scaffold.dart';
+import 'package:assign_erp/core/widgets/layout/custom_scaffold.dart';
 import 'package:assign_erp/core/widgets/nav/custom_tab.dart';
 import 'package:assign_erp/core/widgets/screen_helper.dart';
 import 'package:assign_erp/features/inventory_ims/data/models/orders/order_model.dart';
@@ -38,10 +38,7 @@ class FinanceScreen extends StatelessWidget {
       tabs: [
         {'label': 'Orders', 'icon': Icons.shopping_cart},
         {'label': 'Pending', 'icon': Icons.pending},
-        {
-          'label': 'Shipped or Dispatched',
-          'icon': Icons.local_shipping_outlined,
-        },
+        {'label': 'Shipped or Dispatched', 'icon': Icons.local_shipping},
         {'label': 'Completed', 'icon': Icons.done_all},
       ],
       children: [

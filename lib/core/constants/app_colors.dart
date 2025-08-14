@@ -42,6 +42,7 @@ extension DefaultColors on BuildContext {
   Color get onPrimaryContainer => colorScheme.onPrimaryContainer;
   Color get surfaceColor => colorScheme.surface;
   Color get surfaceTintColor => colorScheme.surfaceTint;
+  Color get scaffoldBgColor => ofTheme.scaffoldBackgroundColor;
 }
 
 // list of random colors for the cards
